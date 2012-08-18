@@ -1,4 +1,7 @@
 node_modules/
 .DS_Store
 *-config.json
-public/outbound/*
+public/outbound/*.png
+public/outbound/*.jpg
+public/outbound/*.gif
+public/outbound/*.jpeg
