@@ -1,9 +1,36 @@
 {
-  "name": "application-name",
+  "name": "photopipe",
+  "description": "Sinatra inspired web development framework",
   "version": "0.0.1",
-  "private": true,
+  "author": {
+    "name": "Joe McCann",
+    "email": "joe@subprint.com"
+  },
+  "contributors": [
+    {
+      "name": "Joe McCann",
+      "email": "joe@subprint.com"
+    }],
   "scripts": {
     "start": "node app"
+  },
+  "keywords": [
+    "photo",
+    "pipe",
+    "photopipe",
+    "image",
+    "stream",
+    "restful",
+    "images",
+    "upload",
+    "api"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/joemccann/photopipe"
+  },
+  "engines": {
+    "node": ">=0.8.x"
   },
   "dependencies": {
     "express": "3.0.0rc3",
