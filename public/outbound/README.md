@@ -1,0 +1,1 @@
+This is your outbound images directory.  The images in here are ignored in the `.gitignore` file.
