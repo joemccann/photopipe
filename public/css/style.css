@@ -1,0 +1,38 @@
+body {
+  font: 100% 'Aldrich', Helvetica, Arial, sans-serif;
+}
+#main {
+  width: 98%;
+  max-width: 720px;
+  margin: 2% auto 0;
+}
+section {
+  margin: 2.75% auto;
+}
+label {
+  display: block;
+  padding-bottom: 2%;
+}
+input[type='url'] {
+  display: block;
+  width: 94%;
+  padding: 1.75%;
+  margin-bottom: 2%;
+}
+fieldset {
+  background: rgba(0,0,0,0.05);
+  border: 2px dotted #0cc50c;
+  padding: 3% 5%;
+}
+#demoCurlSection > pre {
+  background: rgba(0,0,0,0.05);
+  border: 2px dotted #0cc50c;
+  padding: 3% 5%;
+}
+h1 {
+  font-size: 3.6em;
+  line-height: 0.5;
+}
+.cool {
+  color: #0cc50c;
+}
