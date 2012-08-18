@@ -35,6 +35,7 @@
   "dependencies": {
     "express": "3.0.0rc3",
     "ejs": "*",
-    "stylus": "*"
+    "stylus": "*",
+    "request": ">=2.9.203"
   }
 }
