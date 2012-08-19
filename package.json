@@ -1,7 +1,7 @@
 {
   "name": "photopipe",
-  "description": "Piping photos all over the web and stuff.",
-  "version": "0.0.1",
+  "description": "Pipe yer photos all over the web and stuff.",
+  "version": "0.0.1-12",
   "author": {
     "name": "Joe McCann",
     "email": "joe@subprint.com"
@@ -10,9 +10,10 @@
     {
       "name": "Joe McCann",
       "email": "joe@subprint.com"
-    }],
+    }
+  ],
   "scripts": {
-    "start": "node app"
+    "start": "node app.js"
   },
   "keywords": [
     "photo",
@@ -30,12 +31,13 @@
     "url": "git://github.com/joemccann/photopipe"
   },
   "engines": {
-    "node": "0.8.6"
+    "node": "0.8.x"
   },
   "dependencies": {
     "express": "3.0.0rc3",
     "ejs": "*",
     "stylus": "*",
     "request": ">=2.9.203"
-  }
+  },
+  "subdomain": "photopipe"
 }
