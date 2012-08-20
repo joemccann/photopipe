@@ -69,16 +69,16 @@ exports.smoke = function(req, res){
       }
       // So now we just echo it back. Ideally you want to redirect
       // it to another service...see below.
-      res.json(echo)
+      // res.json(echo)
       
       /******************** PUT PLUGIN HOOKS BELOW HERE **********************/
       
       // For example, to pipe to Bazaarvoice, include it from plugins directory
-      // var bv = require(path.resolve(__dirname, '..', 'plugins/bazaarvoice/bv.js'))
+      var bv = require(path.resolve(__dirname, '..', 'plugins/bazaarvoice/bv.js'))
       
       // Now, just pipe the echo object and be sure to pass the
       // response object as well.
-      // bv.pipeToBv(echo, res)
+      bv.pipeToBv(echo, res)
 
       // IMPORTANT: Since we are passing the 'res' object here, you need
       // to comment it out or remove it above (the res.json(echo) line).
@@ -101,3 +101,12 @@ exports.smoke = function(req, res){
   } // end if timeToDie
   
 } // end inbound route
+
+
+/*
+ * GET home page.
+ */
+
+exports.instagram = function(req, res){
+  res.render('instagram', { title: 'PhotoPipe - Instagram OAuth' })
+}
