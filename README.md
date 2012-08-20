@@ -28,7 +28,10 @@ Installation
 
 or
 
-`npm install photopipe`
+1. `npm i photopipe`
+2. `node app`
+3. `open 127.0.0.1:1337`
 
-**Free Software, Fuck Yeah**
+
+*Free Software, Fuck Yeah*
 
