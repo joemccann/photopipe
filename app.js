@@ -5,7 +5,6 @@ var express = require('express')
   , request = require('request')
   , cluster = require('cluster')
   , fs = require('fs')
-  , os = require('os')
 
 var app = express()
 
@@ -30,25 +29,7 @@ app.get('/', routes.index)
 
 app.post('/smoke', routes.smoke)
 
-
-if (cluster.isMaster){
-  
-  var numCPUs = os.cpus().length
-
-  // Fork workers.
-  for (var i = 0; i < numCPUs; i++) {
-    cluster.fork()
-  }
-  
-  cluster.on('death', function(worker) {
-    // We need to spin back up on death.
-    cluster.fork()
-    console.log('Worker ' + worker.pid + ' died. :(');
-  })
-
-}
-else{ 
-  http.createServer(app).listen(app.get('port'), function(){
-    console.log("Express server holdin it down on port " + app.get('port'));
-  })
-}
+// Start the server...
+http.createServer(app).listen(app.get('port'), function(){
+  console.log("Express server holdin it down on port " + app.get('port'));
+})
