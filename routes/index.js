@@ -2,12 +2,27 @@ var path = require('path')
   , request = require('request')
   , fs = require('fs')
 
+/**
+
+Plugins...
+
+**/
+
+var Instagram = require(path.resolve(__dirname, '..', 'plugins/instagram/instagram.js')).Instagram
+
+
+/**
+
+Actual Routes...
+
+**/
+
 /*
  * GET home page.
  */
 
 exports.index = function(req, res){
-  res.render('index', { title: 'PhotoPipe - Put Your Image URL In and Smoke It!' });
+  res.render('index', { title: 'PhotoPipe - Put Your Image URL In and Smoke It!' })
 }
 
 /*
@@ -103,10 +118,79 @@ exports.smoke = function(req, res){
 } // end inbound route
 
 
+
+
+/******************************************
+
+          Instagram stuff
+
+****************************************/
+
+
 /*
- * GET home page.
+ * GET instagram page.
  */
 
 exports.instagram = function(req, res){
-  res.render('instagram', { title: 'PhotoPipe - Instagram OAuth' })
+  
+  if(req.query.error === 'true'){
+    return res.render('error', {type: 'instagram'})
+  }
+  
+  if(!Instagram._user){
+
+    // Protip: Use a space when specifying various scope descriptors
+    var auth_url = Instagram.oauth.authorization_url({
+      scope: 'basic', 
+      display: 'touch'
+    })
+
+    res.render('instagram', { 
+        title: 'PhotoPipe - Instagram OAuth'
+      , auth_url: auth_url})
+    
+  }
+  else{
+
+    Instagram.users.recent({ 
+      user_id: Instagram._user.user.id, 
+      complete: function(data){
+        
+        res.render('instagram-user', { 
+            title: 'PhotoPipe - Hello '+ Instagram._user.user.username,
+            username: Instagram._user.user.username,
+            media: JSON.stringify(data)
+          })
+      } 
+    }) // end recent
+      
+
+  }
+
+} // end instagram route
+
+/*
+ * GET instagram oaut page.
+ */
+
+exports.instagram_oauth = function(req,res){
+  
+  Instagram.oauth.ask_for_access_token({
+      request: req,
+      response: res,
+      complete: function(params, response){
+        
+        Instagram._user = params
+        Instagram.set('access_token', Instagram._user.access_token)
+        
+        return res.redirect('/instagram')
+
+      },
+      error: function(errorMessage, errorObject, caller, response){
+        // errorMessage is the raised error message
+        // errorObject is either the object that caused the issue, or the nearest neighbor
+        res.redirect('/instagram?error=true')
+      }
+    })
+    return null
 }

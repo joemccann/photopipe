@@ -13,9 +13,26 @@
   </head>
   <body>
     <div id="main">
-      <h1>Photo<span class="cool">Pipe</span></h1>
-			<p>Connect your Instagram account by signing in.</p>
-      <a class="button-signing-instagram" href="<%- auth_url %>"></a>
+      
+      <h1>Hi <span class="cool"><%= username %></span></h1>
+			<div id="images">
+			
+			</div>
     </div>
+    
+		<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
+
+		<script type="text/javascript">window.Instagram = <%- media %>
+
+		var images = ''
+		
+		Instagram.forEach(function(el,i){
+			images += "<img data-standard-res='"+el.images.standard_resolution.url+"' src='"+el.images.thumbnail.url+"'>"
+		})
+		
+		$('#images').append(images)
+		</script>
+
+
   </body>
 </html>

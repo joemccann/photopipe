@@ -10,7 +10,7 @@ var express = require('express')
 var app = express()
 
 app.configure(function(){
-  app.set('port', process.env.PORT || 1337)
+  app.set('port', process.env.PORT || 80)
   app.set('views', __dirname + '/views')
   app.set('view engine', 'ejs')
   app.use(express.favicon(__dirname + '/public/favicon.ico'))
@@ -26,11 +26,18 @@ app.configure('development', function(){
   app.use(express.errorHandler())
 })
 
+/* GET routes */
 app.get('/', routes.index)
 
+app.get('/instagram', routes.instagram)
+
+app.get('/oauth/instagram', routes.instagram_oauth)
+
+
+/* POST routes */
 app.post('/smoke', routes.smoke)
 
-
+/*
 if (cluster.isMaster){
   
   var numCPUs = os.cpus().length
@@ -52,3 +59,8 @@ else{
     console.log("Express server holdin it down on port " + app.get('port'));
   })
 }
+*/
+
+http.createServer(app).listen(app.get('port'), function(){
+  console.log("Express server holdin it down on port " + app.get('port'));
+})

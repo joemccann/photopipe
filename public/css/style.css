@@ -36,3 +36,9 @@ h1 {
 .cool {
   color: #0cc50c;
 }
+.button-signing-instagram {
+  display: block;
+  width: 196px;
+  height: 38px;
+  background: transparent url("/img/button-signin-instagram-196x38.png") no-repeat scroll top left;
+}
