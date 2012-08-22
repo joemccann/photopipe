@@ -26,6 +26,7 @@ app.configure('development', function(){
   app.use(express.errorHandler())
 })
 
+
 /* GET routes */
 app.get('/', routes.index)
 

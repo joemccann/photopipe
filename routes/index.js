@@ -2,27 +2,27 @@ var path = require('path')
   , request = require('request')
   , fs = require('fs')
 
-/**
+/****************************************************************
 
 Plugins...
 
-**/
+****************************************************************/
 
 var Instagram = require(path.resolve(__dirname, '..', 'plugins/instagram/instagram.js')).Instagram
 
 
-/**
+/****************************************************************
 
 Actual Routes...
 
-**/
+****************************************************************/
 
 /*
  * GET home page.
  */
 
 exports.index = function(req, res){
-  res.render('index', { title: 'PhotoPipe - Put Your Image URL In and Smoke It!' })
+  res.render('index', { title: 'PhotoPipe - Put Your Image URL In and Smoke It!'})
 }
 
 /*
@@ -118,15 +118,6 @@ exports.smoke = function(req, res){
 } // end inbound route
 
 
-
-
-/******************************************
-
-          Instagram stuff
-
-****************************************/
-
-
 /*
  * GET instagram page.
  */
@@ -134,7 +125,7 @@ exports.smoke = function(req, res){
 exports.instagram = function(req, res){
   
   if(req.query.error === 'true'){
-    return res.render('error', {type: 'instagram'})
+    return res.render('error', {type: 'instagram', title: 'PhotoPipe - Error!'})
   }
   
   if(!Instagram._user){
@@ -152,25 +143,27 @@ exports.instagram = function(req, res){
   }
   else{
 
+    // Let's grab the user's recent photos from their feed.
     Instagram.users.recent({ 
       user_id: Instagram._user.user.id, 
       complete: function(data){
+        
+        // TODO: ADD PAGINATION
         
         res.render('instagram-user', { 
             title: 'PhotoPipe - Hello '+ Instagram._user.user.username,
             username: Instagram._user.user.username,
             media: JSON.stringify(data)
           })
-      } 
+      } // end complete 
     }) // end recent
-      
 
-  }
+  } // end else
 
 } // end instagram route
 
 /*
- * GET instagram oaut page.
+ * GET instagram oauth page.
  */
 
 exports.instagram_oauth = function(req,res){
@@ -180,9 +173,14 @@ exports.instagram_oauth = function(req,res){
       response: res,
       complete: function(params, response){
         
+        // Set the JSON object response to the _user object
+        // for access later...
         Instagram._user = params
+        // Stash the access_token for signed requests later...
         Instagram.set('access_token', Instagram._user.access_token)
         
+        // Head back to instagram page, but this time, we'll enter
+        // the else block because we have an Instagram._user object
         return res.redirect('/instagram')
 
       },

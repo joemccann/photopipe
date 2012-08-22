@@ -1,39 +1,27 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <title><%= title %></title>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <meta name="description" content="PhotoPipe allows you to redirct a photo from its URL to another web service.">
-    <meta name="author" content="Joe McCann">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0;">
-    <link rel="shortcut icon" href="/favicon.ico" />
-    <link rel='stylesheet' href='/css/normalize.css' />
-    <link href="https://fonts.googleapis.com/css?family=Aldrich&subset=latin" rel="stylesheet" type="text/css">
-    <link rel='stylesheet' href='/css/style.css' />
-  </head>
-  <body>
-    <div id="main">
-      
-      <h1>Photo<span class="cool">Pipe</span></h1>
-      <p>WTF is PhotoPipe?</p>
-      <p>It's a service for taking a URL of a photo and then piping it to some other service!</p>
-      
-      <section id="demoFormSection">
-        <form id="photoPipeDemoForm" action="/smoke" enctype="application/x-www-form-urlencoded" method="post">
-          <fieldset>
-            <label for='photoUrl'>Enter A Photo's URL</label>
-            <input type='url' name='photoUrl' value='http://cdn.subprint.com/pipe.jpg'>
-            <input type='submit' value='Pipe It!'>
-          </fieldset>
-        </form>
-      </section>
-      
-      <section id="demoCurlSection">
-        <p>Or open up a terminal an execute the following command:</p>
-        <pre>curl -d "photoUrl=http://cdn.subprint.com/pipe.jpg" <script type="text/javascript">document.write(window.location)</script>smoke</pre>
-      </section>
-      
-    </div>
+<%- include head %>
+<body>
+  <div id="main">
+    <h1>Photo<span class="cool">Pipe</span></h1>
+    <p>WTF is PhotoPipe?</p>
+    <p>It's a service for taking a URL of a photo and then piping it to some other service!</p>
     
-  </body>
+    <section id="demoFormSection">
+      <form id="photoPipeDemoForm" action="/smoke" enctype="application/x-www-form-urlencoded" method="post">
+        <fieldset>
+          <label for='photoUrl'>Enter A Photo's URL</label>
+          <input type='url' name='photoUrl' value='http://cdn.subprint.com/pipe.jpg'>
+          <input type='submit' value='Pipe It!'>
+        </fieldset>
+      </form>
+    </section>
+    
+    <section id="demoCurlSection">
+      <p>Or open up a terminal an execute the following command:</p>
+      <pre>curl -d "photoUrl=http://cdn.subprint.com/pipe.jpg" <script type="text/javascript">document.write(window.location)</script>smoke</pre>
+    </section>
+    
+  </div> <!-- end #main -->
+</body>
 </html>

@@ -1,38 +1,101 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <title><%= title %></title>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <meta name="description" content="PhotoPipe allows you to redirct a photo from its URL to another web service.">
-    <meta name="author" content="Joe McCann">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0;">
-    <link rel="shortcut icon" href="/favicon.ico" />
-    <link rel='stylesheet' href='/css/normalize.css' />
-    <link href="https://fonts.googleapis.com/css?family=Aldrich&subset=latin" rel="stylesheet" type="text/css">
-    <link rel='stylesheet' href='/css/style.css' />
-  </head>
-  <body>
-    <div id="main">
-      
-      <h1>Hi <span class="cool"><%= username %></span></h1>
-			<div id="images">
-			
+<%- include head %>
+<body>
+	
+  <div id="main">
+    <h1>Hi <span class="cool"><%= username %></span></h1>
+		<div id="images"></div>
+		<div id="overlay"></div>
+		<div id="one-up">
+			<div id="one-up-relative">
+				<div id="one-up-controls-wrapper">
+					<button id="one-up-controls-cancel">Cancel</button>
+					<button id="one-up-controls-use">Use</button>
+				</div>
 			</div>
-    </div>
-    
-		<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
+		</div>
+  </div>
+  
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
 
-		<script type="text/javascript">window.Instagram = <%- media %>
+<script type="text/javascript">window.Instagram = <%- media %>
 
-		var images = ''
+var images = ''
+
+Instagram.forEach(function(el,i){
+	images += "<img data-standard-res='"+el.images.standard_resolution.url+"' src='"+el.images.thumbnail.url+"'>"
+})
+
+$('#images').append(images)
+
+$('#images')
+	.find('img')
+	.each(function(i,el){
+	
+		var $el = $(el)
+	
+		$el.bind('click', function(e){
 		
-		Instagram.forEach(function(el,i){
-			images += "<img data-standard-res='"+el.images.standard_resolution.url+"' src='"+el.images.thumbnail.url+"'>"
-		})
+			var fullSize = $el.attr('data-standard-res')
 		
-		$('#images').append(images)
-		</script>
+			// Show modal with confirm/cancel for this image
+			$('#overlay').show(1,function(){
+				$('#one-up')
+					.prepend('<img src="'+fullSize+'"/>')
+					.show()
+			})
+		
+		}) // end bind click
 
+	}) // end each
 
-  </body>
+function closeModalAndOneUp(){
+	
+	$('#overlay').hide()
+	$('#one-up')
+		.find('img')
+		.remove()
+		.end()
+		.hide()	
+	
+}
+
+// Wire up overlay events.
+$('#overlay')
+	.bind('click', closeModalAndOneUp)
+	
+$(document)
+	.bind('keyup', function(e){
+		if (e.keyCode === 27) {
+			return closeModalAndOneUp()
+		}
+	})
+
+$('#one-up-controls-cancel').bind('click', closeModalAndOneUp) 
+
+$('#one-up-controls-use').bind('click', function(){
+	
+	// Assign handlers immediately after making the request,
+	    // and remember the jqxhr object for this request
+	    var jqxhr = $.post("/smoke", {photoUrl: $('#one-up').find('img')[0].src}, function(){console.log('sent')})
+	    .success(function(data) { 
+				closeModalAndOneUp()
+				console.dir(data)
+				alert(data.Photo.Id + " is your review Id.")
+		 })
+	    .error(function() { 
+				closeModalAndOneUp()
+				alert("error")
+			})
+	    .complete(function() { 
+				console.log("complete") 
+			})
+
+	
+})
+
+</script>
+
+</body>
 </html>
