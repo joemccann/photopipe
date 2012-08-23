@@ -128,8 +128,8 @@ exports.instagram = function(req, res){
     return res.render('error', {type: 'instagram', title: 'PhotoPipe - Error!'})
   }
   
-  if(!Instagram._user){
-
+  if(!req.session.instagram){
+    
     // Protip: Use a space when specifying various scope descriptors
     var auth_url = Instagram.oauth.authorization_url({
       scope: 'basic', 
@@ -144,18 +144,26 @@ exports.instagram = function(req, res){
   else{
 
     // Let's grab the user's recent photos from their feed.
+    Instagram.set('access_token', req.session.instagram.access_token)
+
     Instagram.users.recent({ 
-      user_id: Instagram._user.user.id, 
+      user_id: req.session.instagram.user.id, 
       complete: function(data){
         
         // TODO: ADD PAGINATION
         
         res.render('instagram-user', { 
-            title: 'PhotoPipe - Hello '+ Instagram._user.user.username,
-            username: Instagram._user.user.username,
+            title: 'PhotoPipe - Hello '+ req.session.instagram.user.username,
+            username: req.session.instagram.user.username,
             media: JSON.stringify(data)
           })
+          
+          // unset access_token --> 
+          // this is probably pretty bad in practice actually (race conditions)
+          Instagram.set('access_token', null)
+          
       } // end complete 
+    
     }) // end recent
 
   } // end else
@@ -175,9 +183,7 @@ exports.instagram_oauth = function(req,res){
         
         // Set the JSON object response to the _user object
         // for access later...
-        Instagram._user = params
-        // Stash the access_token for signed requests later...
-        Instagram.set('access_token', Instagram._user.access_token)
+        req.session.instagram = params
         
         // Head back to instagram page, but this time, we'll enter
         // the else block because we have an Instagram._user object
