@@ -3,9 +3,7 @@ var express = require('express')
   , http = require('http')
   , path = require('path')
   , request = require('request')
-  , cluster = require('cluster')
   , fs = require('fs')
-  , os = require('os')
 
 var app = express()
 
@@ -30,6 +28,9 @@ app.configure('development', function(){
 /* GET routes */
 app.get('/', routes.index)
 
+/* Instagram Module Routes*/
+
+// Remove or comment them if you don't want instagram support (read-only)
 app.get('/instagram', routes.instagram)
 
 app.get('/oauth/instagram', routes.instagram_oauth)
@@ -37,30 +38,6 @@ app.get('/oauth/instagram', routes.instagram_oauth)
 
 /* POST routes */
 app.post('/smoke', routes.smoke)
-
-/*
-if (cluster.isMaster){
-  
-  var numCPUs = os.cpus().length
-
-  // Fork workers.
-  for (var i = 0; i < numCPUs; i++) {
-    cluster.fork()
-  }
-  
-  cluster.on('death', function(worker) {
-    // We need to spin back up on death.
-    cluster.fork()
-    console.log('Worker ' + worker.pid + ' died. :(');
-  })
-
-}
-else{ 
-  http.createServer(app).listen(app.get('port'), function(){
-    console.log("Express server holdin it down on port " + app.get('port'));
-  })
-}
-*/
 
 http.createServer(app).listen(app.get('port'), function(){
   console.log("Express server holdin it down on port " + app.get('port'));

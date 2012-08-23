@@ -29,8 +29,9 @@ Installation
 or
 
 1. `npm i photopipe`
-2. `node app`
-3. `open 127.0.0.1:1337`
+2. `cd node_modules/photopipe`
+3. `node app`
+4. `open 127.0.0.1:1337`
 
 
 *Free Software, Fuck Yeah*
