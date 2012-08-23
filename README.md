@@ -23,15 +23,15 @@ Installation
 1. `git clone https://github.com/joemccann/photopipe.git`
 2. `cd photopipe`
 3. `npm i`
-4. `node app`
-5. `open 127.0.0.1:1337`
+4. `sudo node app`
+5. `open 127.0.0.1`
 
 or
 
 1. `npm i photopipe`
 2. `cd node_modules/photopipe`
-3. `node app`
-4. `open 127.0.0.1:1337`
+3. `sudo node app`
+4. `open 127.0.0.1`
 
 
 *Free Software, Fuck Yeah*
