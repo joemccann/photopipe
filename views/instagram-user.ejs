@@ -23,6 +23,17 @@
 
 var images = ''
 
+function closeModalAndOneUp(){
+	
+	$('#overlay').hide()
+	$('#one-up')
+		.find('img')
+		.remove()
+		.end()
+		.hide()	
+	
+}
+
 Instagram.forEach(function(el,i){
 	images += "<img data-standard-res='"+el.images.standard_resolution.url+"' src='"+el.images.thumbnail.url+"'>"
 })
@@ -50,17 +61,6 @@ $('#images')
 
 	}) // end each
 
-function closeModalAndOneUp(){
-	
-	$('#overlay').hide()
-	$('#one-up')
-		.find('img')
-		.remove()
-		.end()
-		.hide()	
-	
-}
-
 // Wire up overlay events.
 $('#overlay')
 	.bind('click', closeModalAndOneUp)
@@ -76,22 +76,22 @@ $('#one-up-controls-cancel').bind('click', closeModalAndOneUp)
 
 $('#one-up-controls-use').bind('click', function(){
 	
-	// Assign handlers immediately after making the request,
-	    // and remember the jqxhr object for this request
-	    var jqxhr = $.post("/smoke", {photoUrl: $('#one-up').find('img')[0].src}, function(){console.log('sent')})
-	    .success(function(data) { 
-				closeModalAndOneUp()
-				console.dir(data)
-				alert(data.Photo.Id + " is your review Id.")
-		 })
-	    .error(function() { 
-				closeModalAndOneUp()
-				alert("error")
-			})
-	    .complete(function() { 
-				console.log("complete") 
-			})
-
+	var jqxhr = $.post("/smoke",{
+			photoUrl: $('#one-up').find('img')[0].src
+		}, function(){
+		// console.log('sent')
+	})
+	.success(function(data) { 
+		closeModalAndOneUp()
+		// console.dir(data)
+	})
+	.error(function() { 
+		closeModalAndOneUp()
+		alert("Error")
+	})
+	.complete(function() { 
+		// console.log("complete") 
+	})
 	
 })
 
