@@ -1,7 +1,7 @@
 {
   "name": "photopipe",
   "description": "Pipe yer photos all over the web and stuff.",
-  "version": "0.0.1-13",
+  "version": "0.0.1-18",
   "author": {
     "name": "Joe McCann",
     "email": "joe@subprint.com"
@@ -39,5 +39,9 @@
     "stylus": "*",
     "request": ">=2.9.203"
   },
-  "subdomain": "photopipe"
+  "subdomain": "photopipe",
+  "domains": [
+    "photopi.pe",
+    "www.photopi.pe"
+  ]
 }
