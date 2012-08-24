@@ -7,17 +7,22 @@
      <h1>Photo<span class="cool">Pipe</span></h1>
      
      <section id="errorSection">
-			<% if(type === 'instagram') { %>
-				<p>Something went wrong with the Instagram connection.</p>
-				<p>
-					<a href="/instagram">Try again here.</a>
-				</p>
-			<% }else{ %>
-				<p>Something simply went wrong.</p>
-				<p>
-					<a href="/">Head to PhotoPipe Home Page</a>
-				</p>
-			<% } %>
+      <% if(type === 'instagram') { %>
+      <p>Something went wrong with the Instagram connection.</p>
+      <p>
+        <a href="/<%= type %>">Try again here.</a>
+      </p>
+      <% }else if(type === 'facebook') { %>
+      <p>Something went wrong with the Facebook connection.</p>
+      <p>
+        <a href="/<%= type %>">Try again here.</a>
+      </p>
+      <% }else{ %>
+      <p>Something simply went wrong.</p>
+      <p>
+        <a href="/">Head to PhotoPipe Home Page</a>
+      </p>
+      <% } %>
      </section>
      
      
