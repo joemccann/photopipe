@@ -4,7 +4,6 @@ var express = require('express')
   , path = require('path')
   , request = require('request')
   , fs = require('fs')
-  , everyauth = require('everyauth')
 
 var app = express()
 
@@ -28,33 +27,44 @@ app.configure('development', function(){
 })
 
 
+/************************** PhotoPipe Main **************************/
+
 /* GET routes */
 app.get('/', routes.index)
-
-/* Instagram Module Routes*/
-
-// Remove or comment them if you don't want instagram support (read-only)
-app.get('/instagram', routes.instagram)
-
-app.get('/oauth/instagram', routes.instagram_oauth)
-
-// Remove or comment them if you don't want Facebook support
-app.get('/facebook', routes.facebook)
-
-app.get('/facebook/get_photo_album_cover', routes.facebook_get_photo_album_cover)
-
-app.get('/facebook/get_photos_from_album_id', routes.facebook_get_photos_from_album_id)
-
-app.get('/facebook/get_photo_albums', routes.facebook_get_photo_albums)
-
-app.get('/facebook/get_tagged_in_photos', routes.facebook_get_tagged_in_photos)
-
-app.get('/oauth/facebook', routes.facebook_oauth)
-
 
 /* POST routes */
 app.post('/smoke', routes.smoke)
 
+
+/************************** Instagram Support **************************/
+
+// Remove or comment below if you don't want instagram support (read-only)
+var instagram_routes = require('./routes/instagram')
+
+app.get('/instagram', instagram_routes.instagram)
+
+app.get('/oauth/instagram', instagram_routes.instagram_oauth)
+
+
+/************************** Facebook Support **************************/
+
+// Remove or comment below if you don't want Facebook support
+var facebook_routes = require('./routes/facebook')
+
+app.get('/facebook', facebook_routes.facebook)
+
+app.get('/facebook/get_photo_album_cover', facebook_routes.facebook_get_photo_album_cover)
+
+app.get('/facebook/get_photos_from_album_id', facebook_routes.facebook_get_photos_from_album_id)
+
+app.get('/facebook/get_photo_albums', facebook_routes.facebook_get_photo_albums)
+
+app.get('/facebook/get_tagged_in_photos', facebook_routes.facebook_get_tagged_in_photos)
+
+app.get('/oauth/facebook', facebook_routes.facebook_oauth)
+
+
+// Spin up le server...
 http.createServer(app).listen(app.get('port'), function(){
   console.log("Express server holdin it down on port " + app.get('port'));
 })
