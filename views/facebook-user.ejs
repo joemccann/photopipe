@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html>
+<%- include head %>
+<body>
+
+  <div id="main">
+    <h1>Hi <span class="cool"><%= username %></span></h1>
+    <div id="images"></div>
+    <div id="things"></div>
+    <div id="overlay"></div>
+    <div id="one-up">
+      <div id="one-up-relative">
+        <div id="one-up-controls-wrapper">
+          <button id="one-up-controls-cancel">Cancel</button>
+          <button id="one-up-controls-use">Use</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
+
+<script type="text/javascript">window.Facebook = <%- media %>
+
+var images = ''
+  , overall = Facebook.length
+
+function closeModalAndOneUp(){
+	
+	$('#overlay').hide()
+	$('#one-up')
+		.find('img')
+		.remove()
+		.end()
+		.hide()	
+	
+}
+
+function imgGalleries(){
+  $('#images')
+    .find('div')
+    .find('img')
+    .each(function(i,el){
+
+      var $el = $(el)
+
+      $el.bind('click', function(e){
+
+      var albumId = $el.attr('data-album-id')
+
+        // Show modal with confirm/cancel for this image
+        $('#overlay').show(1,function(){
+          
+          // Fetch the images for said gallery
+          fetchImagesForGallery(albumId)
+
+        })
+
+      }) // end bind click
+
+    }) // end each
+  
+}
+
+function fetchImagesForGallery(id){
+  
+  var jqxhr = $.get('/facebook/get_photos_from_album_id?id='+id, function(){})
+  .success(function(d, resp, x){ 
+
+    console.dir(d)
+    
+    var thumbs = ""
+    
+    if(d.message) thumbs += "<p>"+d.message+"</p>"
+    else{
+      d.data.forEach(function(el,i){
+        thumbs += "<img src='"+el.picture+"' />"
+      })
+    }
+
+    $('#one-up')
+      .append(thumbs)
+      .show()
+    
+
+  })
+  .error(function(e,r){ 
+    if(e.status === 404) alert('Images were not found.')
+    if(e.status === 403) alert('That request was not allowed.')
+    if(e.status === 500) alert('Something went really wrong.')
+  })
+  .complete(function(){})
+  
+  
+}
+
+Facebook.forEach(function(el,i){
+  
+  var jqxhr = $.get('/facebook/get_photo_album_cover?cover_photo='+el.cover_photo, function(){})
+  .success(function(data){ 
+
+    images += "<div><p>"+el.name+"</p><img data-album-id='"+el.id+"' src='"+data+"'></div>"
+
+    --overall
+
+  })
+  .error(function(){ alert("Error") })
+  .complete(function(){ 
+    if(!overall){
+      console.log('overall completed')
+      $('#images').append(images)
+      imgGalleries()
+    }
+  })
+  
+}) // end forEach()
+
+// Wire up overlay events.
+$('#overlay')
+	.bind('click', closeModalAndOneUp)
+	
+$(document)
+	.bind('keyup', function(e){
+		if (e.keyCode === 27) {
+			return closeModalAndOneUp()
+		}
+	})
+
+$('#one-up-controls-cancel').bind('click', closeModalAndOneUp) 
+
+$('#one-up-controls-use').bind('click', function(){
+	
+	var jqxhr = $.post("/smoke",{
+			photoUrl: $('#one-up').find('img')[0].src
+		}, function(){
+		// console.log('sent')
+	})
+	.success(function(data) { 
+		closeModalAndOneUp()
+		// console.dir(data)
+	})
+	.error(function() { 
+		closeModalAndOneUp()
+		alert("Error")
+	})
+	.complete(function() { 
+		// console.log("complete") 
+	})
+	
+})
+
+</script>
+
+</body>
+</html>
