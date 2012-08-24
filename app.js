@@ -4,6 +4,7 @@ var express = require('express')
   , path = require('path')
   , request = require('request')
   , fs = require('fs')
+  , everyauth = require('everyauth')
 
 var app = express()
 
@@ -36,6 +37,17 @@ app.get('/', routes.index)
 app.get('/instagram', routes.instagram)
 
 app.get('/oauth/instagram', routes.instagram_oauth)
+
+// Remove or comment them if you don't want Facebook support
+app.get('/facebook', routes.facebook)
+
+app.get('/facebook/get_photos_from_album', routes.facebook_get_photos_from_album)
+
+app.get('/facebook/get_photos_from_album_id', routes.facebook_get_photos_from_album_id)
+
+app.get('/facebook/get_photo_album_cover', routes.facebook_get_photo_album_cover)
+
+app.get('/oauth/facebook', routes.facebook_oauth)
 
 
 /* POST routes */
