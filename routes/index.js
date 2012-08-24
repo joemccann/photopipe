@@ -1,6 +1,7 @@
 var path = require('path')
   , request = require('request')
   , fs = require('fs')
+  , qs = require('querystring')
 
 /****************************************************************
 
@@ -197,4 +198,199 @@ exports.instagram_oauth = function(req,res){
       }
     })
     return null
+}
+
+
+/*
+ * GET facebook oauth page.
+ */
+
+exports.facebook = function(req, res){
+  
+  if(req.query.error === 'true'){
+    return res.render('error', {type: 'facebook', title: 'PhotoPipe - Error!'})
+  }
+
+  if(!req.session.facebook){
+
+    res.render('facebook', {
+      title: 'PhotoPipe - Facebook OAuth',
+      auth_url: 'https://www.facebook.com/dialog/oauth?client_id=324545737642081'
+                +'&redirect_uri=http://photopi.pe/oauth/facebook'
+                +'&scope=user_photos,photo_upload,publish_stream'
+                +'&state='+new Date
+    })
+
+  }
+  else{
+    
+    // console.log('Access Token: %s', req.session.facebook.access_token)
+
+    // Fetch profile from graph API
+    request.get('https://graph.facebook.com/me?access_token='+req.session.facebook.access_token, function(e,r,b){
+
+      if(e) return res.render('error', {type: 'facebook', title: 'PhotoPipe - Error!'})
+      
+      var fbJson = JSON.parse(b)
+      
+      // console.dir(fbJson)
+
+      req.session.facebook.username = fbJson.username
+      req.session.facebook.name = fbJson.name
+      req.session.facebook.id = fbJson.id
+      
+      // Fetch user's photos, NOT their albums (so these are typically photos they are tagged in)
+      /*
+      request.get('https://graph.facebook.com/me/photos?access_token='+req.session.facebook.access_token, function(e,r,b){
+        
+        if(e) return res.render('error', {type: 'facebook', title: 'PhotoPipe - Error!'})
+        
+        var fbImagesJson = JSON.parse(b)
+        var media = fbImagesJson.data
+        
+        res.render('facebook-user', { 
+            title: 'PhotoPipe - Hello '+ req.session.facebook.name,
+            username: req.session.facebook.name,
+            media: JSON.stringify(media)
+          })
+        
+      }) // request.get(fb-photos)
+      */
+      
+      // Fetch user's albums (so these are typically photos they have uploaded)
+      request.get('https://graph.facebook.com/'+req.session.facebook.id
+                  +'/albums?access_token='+req.session.facebook.access_token, function(e,r,b){
+        
+        if(e) return res.render('error', {type: 'facebook', title: 'PhotoPipe - Error!'})
+        
+        var fbImagesJson = JSON.parse(b)
+        var albums = fbImagesJson.data
+        
+        // Now we need to 
+        
+        res.render('facebook-user', { 
+            title: 'PhotoPipe - Hello '+ req.session.facebook.name,
+            username: req.session.facebook.name,
+            media: JSON.stringify(albums)
+          })
+        
+      }) // request.get(fb-photos)
+      
+    }) // end request.get(fb-me)
+
+   } // end else
+  
+} // end facebook route
+
+
+exports.facebook_get_photo_album_cover = function(req,res){
+  
+  if(!req.session.facebook || !req.session.facebook.access_token) return res.redirect('/facebook')
+  
+  var coverImgId = req.query.cover_photo
+
+  request.get('https://graph.facebook.com/'+coverImgId
+              +'?access_token='+req.session.facebook.access_token, function(e,r,b){
+    
+    if(e){
+      res.type('text/plain')
+      return res.send('/img/pipe-75x75.png')
+    }
+    
+    var fbImagesJson = JSON.parse(b)
+
+    var theImg = fbImagesJson.picture || fbImagesJson.source // source is larger size
+
+    if(!theImg){
+      res.type('text/plain')
+      return res.send('/img/pipe-75x75.png')
+    }
+
+    res.type('text/plain') 
+    return res.send(theImg)
+    
+  }) // request.get(fb-album-cover)
+  
+}
+
+exports.facebook_get_photos_from_album_id = function(req,res){
+  
+  if(!req.session.facebook || !req.session.facebook.access_token) return res.redirect('/facebook')
+  
+  var galleryId = req.query.id
+
+  request.get('https://graph.facebook.com/'
+              +galleryId+'/photos?access_token='+req.session.facebook.access_token, function(e,r,b){
+    
+    if(e){
+      res.status('404')
+      res.type('text/plain')
+      return res.send(e)
+    }
+    
+    var fbImagesJson = JSON.parse(b)
+
+    if(!fbImagesJson.data){
+      return res.json({message: "Unable to grab photos for gallery."})
+    }
+
+    return res.json(fbImagesJson)
+    
+  }) // request.get(fb-album-cover)
+  
+}
+
+/*
+ * GET facebook oauth page.
+ */
+
+exports.facebook_oauth = function(req,res){
+  // https://developers.facebook.com/docs/authentication/server-side/
+  if(req.query && req.query.code){
+    /*
+    YOUR_REDIRECT_URI?
+        state=YOUR_STATE_VALUE
+       &code=CODE_GENERATED_BY_FACEBOOK
+    */
+    // handle initial code response
+    
+    var code = req.query.code
+    
+    request.get('https://graph.facebook.com/oauth/access_token?client_id=324545737642081'
+       +'&redirect_uri=http://photopi.pe/oauth/facebook'
+       +'&client_secret=4ed9c8a7f48ad42b5f966435c488525a'
+       +'&code='+code, function(e,r,b){
+         if(e) return res.send(e)
+         
+         var parseQs = qs.parse(b)
+         
+         req.session.facebook = {
+           access_token: parseQs.access_token,
+           expires: parseQs.expires
+         }
+         res.redirect('/facebook')
+       })
+    
+    
+  }
+  else if(req.query && req.query.error){
+    /*
+    YOUR_REDIRECT_URI?
+        error_reason=user_denied
+       &error=access_denied
+       &error_description=The+user+denied+your+request.
+       &state=YOUR_STATE_VALUE
+    */
+    // handle deny auth case
+    
+    return res.render('error', {
+      type: 'facebook', 
+      title: 'PhotoPipe - Error!',
+      fb_error:{
+          error_reason: req.query.error_reason,
+          error: req.query.error,
+          error_description: req.query.error_description,
+        } 
+      }) // end res.render
+  } // end else if
 }
