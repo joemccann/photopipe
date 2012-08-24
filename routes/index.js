@@ -120,6 +120,12 @@ exports.smoke = function(req, res){
 } // end inbound route
 
 
+/****************************************************************
+
+Instagram....
+
+****************************************************************/
+
 /*
  * GET instagram page.
  */
@@ -202,6 +208,13 @@ exports.instagram_oauth = function(req,res){
 }
 
 
+/****************************************************************
+
+Facebook....
+
+****************************************************************/
+
+
 /*
  * GET facebook oauth page.
  */
@@ -244,7 +257,7 @@ exports.facebook = function(req, res){
       req.session.facebook.id = fbJson.id
       
       // Get the photo albums
-      getFbPhotoAlbums(req,res,function(err,data){
+      Facebook.getFbPhotoAlbums(req,res,function(err,data){
         
         if(err){
           return res.render('error',{
@@ -275,6 +288,7 @@ exports.facebook = function(req, res){
  * 'cover_photo' param required
  * returns a string, does not render a page.
  */
+ 
 exports.facebook_get_photo_album_cover = function(req,res){
   
   if(!req.session.facebook || !req.session.facebook.access_token) return res.redirect('/facebook')
@@ -348,55 +362,21 @@ exports.facebook_get_photos_from_album_id = function(req,res){
  * 
  * returns a JSON, does not render a page.
  */
+ 
 exports.facebook_get_photo_albums = function(req,res){
   
   if(!req.session.facebook || !req.session.facebook.access_token) return res.redirect('/facebook')
   
-  getFbPhotoAlbums(req,res)
+  Facebook.getFbPhotoAlbums(req,res)
               
 } // end facebook_get_photo_albums handler
-
-
-// if cb does not exist, then we just need to marshall back the json
-function getFbPhotoAlbums(req,res,cb){
-  
-  // Fetch user's albums (so these are typically photos they have uploaded)
-  request.get('https://graph.facebook.com/'+req.session.facebook.id
-              +'/albums?access_token='+req.session.facebook.access_token, function(e,r,b){
-
-                // If this is a request to the server directly,
-                // then there should be no callback
-                if(typeof cb !== 'function'){
-
-                  if(e){
-                    res.type('text/plain')
-                    return res.status('404').send(e)
-                  }
-
-                  var fbAlbumsJson = JSON.parse(b)
-
-                  res.json(fbAlbumsJson.data)
-                  
-                }else{
-
-                  if(e){
-                    return cb(e,null)
-                  }else{
-                    var fbAlbumsJson = JSON.parse(b)
-                    cb(null, fbAlbumsJson.data)
-                  }
-
-                } // end outer else isRequest
-                
-              }) // request.get(fb-albums)
-  
-}
 
 /*
  * GET facebook photos a user is tagged in.
  * 
  * returns a JSON, does not render a page.
  */
+ 
 exports.facebook_get_tagged_in_photos = function(req,res){
   
   if(!req.session.facebook || !req.session.facebook.access_token) return res.redirect('/facebook')

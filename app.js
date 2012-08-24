@@ -41,9 +41,13 @@ app.get('/oauth/instagram', routes.instagram_oauth)
 // Remove or comment them if you don't want Facebook support
 app.get('/facebook', routes.facebook)
 
+app.get('/facebook/get_photo_album_cover', routes.facebook_get_photo_album_cover)
+
 app.get('/facebook/get_photos_from_album_id', routes.facebook_get_photos_from_album_id)
 
-app.get('/facebook/get_photo_album_cover', routes.facebook_get_photo_album_cover)
+app.get('/facebook/get_photo_albums', routes.facebook_get_photo_albums)
+
+app.get('/facebook/get_tagged_in_photos', routes.facebook_get_tagged_in_photos)
 
 app.get('/oauth/facebook', routes.facebook_oauth)
 
