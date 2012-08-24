@@ -209,7 +209,7 @@ exports.facebook_oauth = function(req,res){
     var code = req.query.code
     
     request.get('https://graph.facebook.com/oauth/access_token?client_id='+Facebook.config.client_id
-       +'&redirect_uri=http://photopi.pe/oauth/facebook'
+       +'&redirect_uri='+Facebook.config.redirect_uri
        +'&client_secret='+Facebook.config.client_secret
        +'&code='+code, function(e,r,b){
          if(e) return res.send(e)
