@@ -37,6 +37,7 @@ function closeModalAndOneUp(){
 }
 
 function imgGalleries(){
+
   $('#images')
     .find('div')
     .find('img')
@@ -59,15 +60,16 @@ function imgGalleries(){
       }) // end bind click
 
     }) // end each
-  
+
 }
 
 function fetchImagesForGallery(id){
   
-  var jqxhr = $.get('/facebook/get_photos_from_album_id?id='+id, function(){})
+  $
+  .get('/facebook/get_photos_from_album_id?id='+id)
   .success(function(d, resp, x){ 
 
-    console.dir(d)
+    // console.dir(d)
     
     var thumbs = ""
     
@@ -84,19 +86,18 @@ function fetchImagesForGallery(id){
     
 
   })
-  .error(function(e,r){ 
-    if(e.status === 404) alert('Images were not found.')
-    if(e.status === 403) alert('That request was not allowed.')
-    if(e.status === 500) alert('Something went really wrong.')
+  .error(function(e){ 
+    if(e.status === 404) alert(e.responseText || 'Images were not found.')
+    if(e.status === 403) alert(e.responseText || 'That request was not allowed.')
+    if(e.status === 500) alert(e.responseText || 'Something went really wrong.')
   })
-  .complete(function(){})
-  
   
 }
 
 Facebook.forEach(function(el,i){
   
-  var jqxhr = $.get('/facebook/get_photo_album_cover?cover_photo='+el.cover_photo, function(){})
+  $
+  .get('/facebook/get_photo_album_cover?cover_photo='+el.cover_photo)
   .success(function(data){ 
 
     images += "<div><p>"+el.name+"</p><img data-album-id='"+el.id+"' src='"+data+"'></div>"
@@ -104,10 +105,9 @@ Facebook.forEach(function(el,i){
     --overall
 
   })
-  .error(function(){ alert("Error") })
+  .error(function(e){ alert(e.responseText || "Error") })
   .complete(function(){ 
     if(!overall){
-      console.log('overall completed')
       $('#images').append(images)
       imgGalleries()
     }
@@ -117,36 +117,32 @@ Facebook.forEach(function(el,i){
 
 // Wire up overlay events.
 $('#overlay')
-	.bind('click', closeModalAndOneUp)
-	
+  .bind('click', closeModalAndOneUp)
+
 $(document)
-	.bind('keyup', function(e){
-		if (e.keyCode === 27) {
-			return closeModalAndOneUp()
-		}
-	})
+  .bind('keyup', function(e){
+    if (e.keyCode === 27) {
+      return closeModalAndOneUp()
+    }
+  })
 
 $('#one-up-controls-cancel').bind('click', closeModalAndOneUp) 
 
 $('#one-up-controls-use').bind('click', function(){
-	
-	var jqxhr = $.post("/smoke",{
-			photoUrl: $('#one-up').find('img')[0].src
-		}, function(){
-		// console.log('sent')
-	})
-	.success(function(data) { 
-		closeModalAndOneUp()
-		// console.dir(data)
-	})
-	.error(function() { 
-		closeModalAndOneUp()
-		alert("Error")
-	})
-	.complete(function() { 
-		// console.log("complete") 
-	})
-	
+
+  $
+  .post("/smoke",{
+    photoUrl: $('#one-up').find('img')[0].src
+  })
+  .success(function(data) { 
+    closeModalAndOneUp()
+    // console.dir(data)
+  })
+  .error(function() { 
+    closeModalAndOneUp()
+    alert("Error")
+  })
+
 })
 
 </script>

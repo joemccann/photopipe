@@ -10,6 +10,7 @@ Plugins...
 ****************************************************************/
 
 var Instagram = require(path.resolve(__dirname, '..', 'plugins/instagram/instagram.js')).Instagram
+var Facebook = require(path.resolve(__dirname, '..', 'plugins/facebook/facebook.js')).Facebook
 
 
 /****************************************************************
@@ -212,11 +213,14 @@ exports.facebook = function(req, res){
   }
 
   if(!req.session.facebook){
+    
+    // You may want to modify the scope here, but what is listed
+    // below is required for PhotoPipe
 
     res.render('facebook', {
       title: 'PhotoPipe - Facebook OAuth',
-      auth_url: 'https://www.facebook.com/dialog/oauth?client_id=324545737642081'
-                +'&redirect_uri=http://photopi.pe/oauth/facebook'
+      auth_url: 'https://www.facebook.com/dialog/oauth?client_id='+Facebook.config.client_id
+                +'&redirect_uri='+Facebook.config.redirect_uri
                 +'&scope=user_photos,photo_upload,publish_stream'
                 +'&state='+new Date
     })
@@ -239,50 +243,38 @@ exports.facebook = function(req, res){
       req.session.facebook.name = fbJson.name
       req.session.facebook.id = fbJson.id
       
-      // Fetch user's photos, NOT their albums (so these are typically photos they are tagged in)
-      /*
-      request.get('https://graph.facebook.com/me/photos?access_token='+req.session.facebook.access_token, function(e,r,b){
+      // Get the photo albums
+      getFbPhotoAlbums(req,res,function(err,data){
         
-        if(e) return res.render('error', {type: 'facebook', title: 'PhotoPipe - Error!'})
-        
-        var fbImagesJson = JSON.parse(b)
-        var media = fbImagesJson.data
-        
-        res.render('facebook-user', { 
-            title: 'PhotoPipe - Hello '+ req.session.facebook.name,
-            username: req.session.facebook.name,
-            media: JSON.stringify(media)
-          })
-        
-      }) // request.get(fb-photos)
-      */
-      
-      // Fetch user's albums (so these are typically photos they have uploaded)
-      request.get('https://graph.facebook.com/'+req.session.facebook.id
-                  +'/albums?access_token='+req.session.facebook.access_token, function(e,r,b){
-        
-        if(e) return res.render('error', {type: 'facebook', title: 'PhotoPipe - Error!'})
-        
-        var fbImagesJson = JSON.parse(b)
-        var albums = fbImagesJson.data
-        
-        // Now we need to 
+        if(err){
+          return res.render('error',{
+              type: 'facebook', 
+              title: 'PhotoPipe - Error!',
+              fb_error: err
+            }) // end res.render
+        }
         
         res.render('facebook-user', { 
             title: 'PhotoPipe - Hello '+ req.session.facebook.name,
             username: req.session.facebook.name,
-            media: JSON.stringify(albums)
+            media: JSON.stringify(data)
           })
         
-      }) // request.get(fb-photos)
-      
+        
+      }) // end getFbPhotoAlbums
+
     }) // end request.get(fb-me)
 
    } // end else
   
 } // end facebook route
 
-
+/*
+ * GET facebook photo album cover via cover photo ID.
+ * 
+ * 'cover_photo' param required
+ * returns a string, does not render a page.
+ */
 exports.facebook_get_photo_album_cover = function(req,res){
   
   if(!req.session.facebook || !req.session.facebook.access_token) return res.redirect('/facebook')
@@ -313,19 +305,30 @@ exports.facebook_get_photo_album_cover = function(req,res){
   
 }
 
+/*
+ * GET facebook photos from an album's ID.
+ * 
+ * 'id' param required
+ * returns a JSON, does not render a page.
+ */
+
 exports.facebook_get_photos_from_album_id = function(req,res){
   
   if(!req.session.facebook || !req.session.facebook.access_token) return res.redirect('/facebook')
   
   var galleryId = req.query.id
+  
+  if(!galleryId){
+    res.type('text/plain')
+    return res.status('404').send("No album ID present in request.")
+  }
 
   request.get('https://graph.facebook.com/'
               +galleryId+'/photos?access_token='+req.session.facebook.access_token, function(e,r,b){
     
     if(e){
-      res.status('404')
       res.type('text/plain')
-      return res.send(e)
+      return res.status('404').send(e)
     }
     
     var fbImagesJson = JSON.parse(b)
@@ -341,24 +344,98 @@ exports.facebook_get_photos_from_album_id = function(req,res){
 }
 
 /*
+ * GET facebook user's albums.
+ * 
+ * returns a JSON, does not render a page.
+ */
+exports.facebook_get_photo_albums = function(req,res){
+  
+  if(!req.session.facebook || !req.session.facebook.access_token) return res.redirect('/facebook')
+  
+  getFbPhotoAlbums(req,res)
+              
+} // end facebook_get_photo_albums handler
+
+
+// if cb does not exist, then we just need to marshall back the json
+function getFbPhotoAlbums(req,res,cb){
+  
+  // Fetch user's albums (so these are typically photos they have uploaded)
+  request.get('https://graph.facebook.com/'+req.session.facebook.id
+              +'/albums?access_token='+req.session.facebook.access_token, function(e,r,b){
+
+                // If this is a request to the server directly,
+                // then there should be no callback
+                if(typeof cb !== 'function'){
+
+                  if(e){
+                    res.type('text/plain')
+                    return res.status('404').send(e)
+                  }
+
+                  var fbAlbumsJson = JSON.parse(b)
+
+                  res.json(fbAlbumsJson.data)
+                  
+                }else{
+
+                  if(e){
+                    return cb(e,null)
+                  }else{
+                    var fbAlbumsJson = JSON.parse(b)
+                    cb(null, fbAlbumsJson.data)
+                  }
+
+                } // end outer else isRequest
+                
+              }) // request.get(fb-albums)
+  
+}
+
+/*
+ * GET facebook photos a user is tagged in.
+ * 
+ * returns a JSON, does not render a page.
+ */
+exports.facebook_get_tagged_in_photos = function(req,res){
+  
+  if(!req.session.facebook || !req.session.facebook.access_token) return res.redirect('/facebook')
+  
+  // Fetch user's photos, NOT their albums (so these are typically photos they are tagged in)
+  
+  request.get('https://graph.facebook.com/me/photos?access_token='
+              +req.session.facebook.access_token, function(e,r,b){
+                
+                if(e) {
+                  res.type('text/plain')
+                  return res.status('404').send(e)
+                }
+
+                var fbImagesJson = JSON.parse(b)
+
+                return res.json(fbImagesJson.data)
+                
+              }) // request.get(fb-tagged-photos)
+  
+} // end facebook_get_tagged_in_photos handler
+
+/*
  * GET facebook oauth page.
  */
 
 exports.facebook_oauth = function(req,res){
+  
   // https://developers.facebook.com/docs/authentication/server-side/
+  
   if(req.query && req.query.code){
-    /*
-    YOUR_REDIRECT_URI?
-        state=YOUR_STATE_VALUE
-       &code=CODE_GENERATED_BY_FACEBOOK
-    */
-    // handle initial code response
+    
+    // Handle initial code response
     
     var code = req.query.code
     
-    request.get('https://graph.facebook.com/oauth/access_token?client_id=324545737642081'
+    request.get('https://graph.facebook.com/oauth/access_token?client_id='+Facebook.config.client_id
        +'&redirect_uri=http://photopi.pe/oauth/facebook'
-       +'&client_secret=4ed9c8a7f48ad42b5f966435c488525a'
+       +'&client_secret='+Facebook.config.client_secret
        +'&code='+code, function(e,r,b){
          if(e) return res.send(e)
          
@@ -371,17 +448,10 @@ exports.facebook_oauth = function(req,res){
          res.redirect('/facebook')
        })
     
-    
   }
   else if(req.query && req.query.error){
-    /*
-    YOUR_REDIRECT_URI?
-        error_reason=user_denied
-       &error=access_denied
-       &error_description=The+user+denied+your+request.
-       &state=YOUR_STATE_VALUE
-    */
-    // handle deny auth case
+    
+    // Handle deny auth case
     
     return res.render('error', {
       type: 'facebook', 
@@ -389,8 +459,10 @@ exports.facebook_oauth = function(req,res){
       fb_error:{
           error_reason: req.query.error_reason,
           error: req.query.error,
-          error_description: req.query.error_description,
+          error_description: req.query.error_description
         } 
       }) // end res.render
+      
   } // end else if
-}
+  
+} // end facebook_oauth handler
