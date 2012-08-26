@@ -4,18 +4,28 @@
 <body>
 
   <div id="main">
-    <h1>Hi <span class="cool"><%= username %></span></h1>
-    <div id="images"></div>
-    <div id="things"></div>
-    <div id="overlay"></div>
-    <div id="one-up">
-      <div id="one-up-relative">
-        <div id="one-up-controls-wrapper">
-          <button id="one-up-controls-cancel">Cancel</button>
-          <button id="one-up-controls-use">Use</button>
+
+    <nav>
+      <h1><a href="/">Photo<span class="cool">Pipe</span></a></h1>
+      <div id="spin"></div>
+      <hr />
+    </nav>
+
+    <section>
+      <h1>Hi <span class="cool"><%= username %></span></h1>
+      <div id="images"></div>
+      <div id="things"></div>
+      <div id="overlay"></div>
+      <div id="one-up">
+        <div id="one-up-relative">
+          <div id="one-up-controls-wrapper">
+            <button id="one-up-controls-cancel">Cancel</button>
+            <button id="one-up-controls-use">Use</button>
+          </div>
         </div>
       </div>
-    </div>
+    </section>
+    
   </div>
   
 <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>

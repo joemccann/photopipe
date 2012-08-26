@@ -30,6 +30,9 @@ exports.instagram = function(req, res){
       , auth_url: auth_url})
     
   }
+  
+  // We are actually auth'd so no reason to be here.
+  res.redirect('/')
 
 } // end instagram route
 
