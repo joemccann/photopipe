@@ -220,8 +220,29 @@ exports.facebook_oauth = function(req,res){
            access_token: parseQs.access_token,
            expires: parseQs.expires
          }
-         res.redirect('/facebook')
-       })
+         
+         // Fetch profile from graph API
+         request.get('https://graph.facebook.com/me?access_token='+req.session.facebook.access_token, function(e,r,b){
+
+           // TODO: TEST THIS IN ACTUAL ENVIRONMENT...WHAT WILL THIS LOOK LIKE
+           if(e){
+             res.type('text/plain')
+             return res.status(403).send("Unable to fetch profile from graph.")
+           } 
+
+           var fbJson = JSON.parse(b)
+
+           // console.dir(fbJson)
+
+           req.session.facebook.username = fbJson.username
+           req.session.facebook.name = fbJson.name
+           req.session.facebook.id = fbJson.id
+           
+           return res.redirect('/')
+
+         }) // end request.get(fb-me)
+         
+       }) // end request.get(access-token)
     
   }
   else if(req.query && req.query.error){

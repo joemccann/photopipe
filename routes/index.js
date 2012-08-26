@@ -104,6 +104,11 @@ exports.smoke = function(req, res){
       /******************** PUT PLUGIN HOOKS BELOW HERE **********************/
       
       if(type === 'facebook'){
+        // TODO: Not sure if this check goes here or in pipePhotoToFb() in facebook.js plugin 
+        if(!req.session.facebook || !req.session.facebook.access_token){
+          res.type('text/plain')
+          return res.status(403).send("You are not authenticated with Facebook.")
+        } 
 
         var fb = require(path.resolve(__dirname, '..', 'plugins/facebook/facebook.js')).Facebook
 

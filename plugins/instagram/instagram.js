@@ -1,5 +1,6 @@
 var fs = require('fs')
   , path = require('path')
+  , request = require('request')
 
 var instagram_config = JSON.parse( fs.readFileSync( path.resolve(__dirname, 'instagram-config.json'), 'utf-8' ) )
 
@@ -23,24 +24,45 @@ Instagram.photopipe = {
        var err = JSON.parse(errorObject)
        return res.status(err.meta.code).send(err.error_message)
       },
-      complete: function(data){
+      complete: function(data,page){
+        
+        // We are going to push the pagination object
+        // as the last item in the data array.
+        // IMPORTANT: Client side code should reflect this
+        data.push(page)
+        // console.dir(data,5)
+
+        // unset access_token --> 
+        // this is probably pretty bad in practice actually (race conditions)
+        Instagram.set('access_token', null)
 
         // TODO: ADD PAGINATION
         return res.json(data)
-        
-        res.render('instagram-user', { 
-            title: 'PhotoPipe - Hello '+ req.session.instagram.user.username,
-            username: req.session.instagram.user.username,
-            media: JSON.stringify(data)
-          })
           
-          // unset access_token --> 
-          // this is probably pretty bad in practice actually (race conditions)
-          Instagram.set('access_token', null)
           
       } // end complete 
     
     }) // end recent
+    
+  },
+  getNextPageUserRecentPhotos: function(req,res){
+
+    var url = req.query.next_page_url
+    
+    request({url: url}, function(e,r,b){
+      if(e) {
+        console.error(e)
+        return res.json(e)
+      }
+      var parsedBody = JSON.parse(b)
+      var respJson = parsedBody.data
+      // In order to keep the response from instagram API
+      // similar to the response that is sent back by the 
+      // instagram node module, we need to change it a bit
+      // by pushing this object on the end of the array.
+      respJson.push(parsedBody.pagination)
+      return res.json(respJson)
+    })
     
   }
 }

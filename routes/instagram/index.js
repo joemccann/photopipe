@@ -41,6 +41,19 @@ exports.instagram_get_user_recent_photos = function(req,res){
     
 }
 
+exports.instagram_get_next_page_user_recent_photos = function(req,res){
+
+  if(!req.session.instagram) return res.redirect('/instagram')
+
+  if(!req.query.next_page_url) {
+    res.type('text/plain')
+    return res.status(403).send("Bad Request. Missing next_page_url param")
+  }
+  
+  Instagram.photopipe.getNextPageUserRecentPhotos(req,res)
+  
+}
+
 /*
  * GET instagram oauth page.
  */

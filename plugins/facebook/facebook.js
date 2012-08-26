@@ -5,6 +5,7 @@ var fs = require('fs')
 
 var facebook_config = JSON.parse( fs.readFileSync( path.resolve(__dirname, 'facebook-config.json'), 'utf-8' ) )
 
+// TODO: ADD OPEN GRAPH ACTIVITY WHENEVER A USER POSTS A PHOTO TO FB VIA PHOTOPIPE
 exports.Facebook = {
   config: facebook_config,
   getFbPhotoAlbums: function(req,res,cb){
@@ -44,6 +45,8 @@ exports.Facebook = {
     
     // "source": file binary
     // "message": optional caption
+    
+    console.log(req.session.facebook.id + " is the id")
     
     var url = 'https://graph.facebook.com/'
                 +req.session.facebook.id

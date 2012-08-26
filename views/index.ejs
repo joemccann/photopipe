@@ -6,7 +6,7 @@
   <div id="main">
     
     <nav>
-      <h1>Photo<span class="cool">Pipe</span></h1>
+      <h1><a href="/">Photo<span class="cool">Pipe</span></a></h1>
       <div id="spin"></div>
       <hr />
     </nav>
@@ -19,7 +19,7 @@
       <ul id="photo-to-pipe">
         <li><a id="facebook" data-auth="<%= isInstagramAuth %>" href="/facebook" class="button-facebook"></a></li>
         <li><a id="instagram" data-auth="<%= isInstagramAuth %>" href="/instagram/get_user_recent_photos" class="button-instagram"></a></li>
-        <li><a id="twitter" data-auth="<%= isTwitterAuth %>" href="/twitter/get_user_recent_photos" class="button-connect-twitter"></a></li>
+        <!--<li><a id="twitter" data-auth="<%= isTwitterAuth %>" href="/twitter/get_user_recent_photos" class="button-connect-twitter"></a></li> -->
       </ul>  
     </section>
     
@@ -70,7 +70,7 @@
         </div>
 
         <div class="load-more">
-          <a class="button add" id="instagram-load-more">Load MOAR Photos</a>
+          <a class="button add" data-pagination="" id="instagram-load-more" href="/instagram/get_next_page_user_recent_photos">LOAD MOAR PHOTOS</a>
         </div>
 
       </section>

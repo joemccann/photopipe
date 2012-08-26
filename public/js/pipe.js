@@ -73,6 +73,12 @@
 
 $(function(){
   
+  // Yes, this is needed...
+  String.prototype.regexIndexOf = function(regex, startpos) {
+      var indexOf = this.substring(startpos || 0).search(regex);
+      return (indexOf >= 0) ? (indexOf + (startpos || 0)) : indexOf;
+  }
+  
   var $twitter = $('#twitter')
     , $facebook = $('#facebook')
     , $instagram = $('#instagram')
@@ -92,6 +98,7 @@ $(function(){
     , $oneUpTwitter = $('#one-up-twitter')
     , $oneUpFacebook = $('#one-up-facebook')
     , $oneUpInstagram = $('#one-up-instagram')
+    , $gallery = $('.gallery')
     , $usePhoto = $('.use-photo')
     , $closeOneUp = $('.close-one-up')
     , $spin = $('#spin')
@@ -130,6 +137,16 @@ $(function(){
     
   }
 
+  // Attach click handlers to respective elements.
+  function wirePaginationButtons(){
+
+    $twitter.isAuthenticated && $twitterLoadMore.bind('click', twitterPaginationClickHandler)
+    $facebook.isAuthenticated && $facebookLoadMore.bind('click', facebookPaginationClickHandler)
+    $instagram.isAuthenticated && $instagramLoadMore.bind('click', instagramPaginationClickHandler)
+    
+    
+  }
+
 
   // Step #1 twitter connection
   function twitterClickHandler(){
@@ -155,7 +172,18 @@ $(function(){
       
       $spin.hide()
       
-      // console.dir(d)
+      console.dir(d)
+      
+      // IMPORTANT: The last item in the array is the 
+      // pagination object. We must pop it off
+      var pageObj = d.pop()
+      var nextPageUrl = pageObj.next_url
+      
+      console.log(nextPageUrl + ' is hte next page url')
+
+      // Let's update the pagination button with the next 
+      // page's URL
+      updatePaginationButton($instagramLoadMore, nextPageUrl)
 
       var thumbs = ""
 
@@ -189,6 +217,80 @@ $(function(){
       if(e.status === 400) alert(e.responseText || 'Bad request.')
       if(e.status === 401) alert(e.responseText || 'Unauthorized request.')
       if(e.status === 402) alert(e.responseText || 'Forbidden request.')
+      if(e.status === 403) alert(e.responseText || 'Forbidden request.')
+      if(e.status === 404) alert(e.responseText || 'Images were not found.')
+      if(e.status === 405) alert(e.responseText || 'That method is not allowed.')
+      if(e.status === 408) alert(e.responseText || 'The request timed out. Try again.')
+      if(e.status === 500) alert(e.responseText || 'Something went really wrong.')
+    })
+    
+    // /instagram/get_photos_from_album_id?id='+id
+    
+    return false
+  }
+  
+  // Twitter pagination handler
+  function twitterPaginationClickHandler(){
+    return console.warn('Not Implemented Yet.')
+  }
+    
+  // Facebook pagination handler
+  function facebookPaginationClickHandler(){
+    return console.warn('Not Implemented Yet.')
+  }
+
+  // Instagram pagination handler
+  // TODO: REFACTOR THIS WITH 'instagramClickHandler' TO BE DRY
+  function instagramPaginationClickHandler(){
+    
+    // In case it is in view
+    closeOneUp()    
+
+    var nextPageUrl = $instagramLoadMore.attr('data-pagination') 
+    var url = $instagramLoadMore.attr('href') + "?next_page_url=" + encodeURIComponent(nextPageUrl)
+    
+    $
+    .get(url)
+    .success(function(d, resp){ 
+      
+      $spin.hide()
+
+      // console.dir(d)
+      
+      // IMPORTANT: The last item in the array is the 
+      // pagination object. We must pop it off
+      var pageObj = d.pop()
+      var nextPageUrl = pageObj.next_url
+      
+      // Let's update the pagination button with the next 
+      // page's URL
+      updatePaginationButton($instagramLoadMore, nextPageUrl)
+
+      var thumbs = ""
+
+      // Iterate over the images and add to thumbs string
+      d.forEach(function(el,i){
+        thumbs += "<img data-standard-resolution='"
+                  + el.images.standard_resolution.url
+                  +"' src='"+ el.images.thumbnail.url +"' />"
+      })
+      
+      // Remove old photos...
+      appendPhotosFromPagination(thumbs)
+      
+      $photoPickerInstagram
+        .show()
+
+      // Wire up the events to the images...
+      wireInstagramGalleryPicker()
+
+    })
+    .error(function(e){
+      $spin.hide()
+      if(e.status === 400) alert(e.responseText || 'Bad request.')
+      if(e.status === 401) alert(e.responseText || 'Unauthorized request.')
+      if(e.status === 402) alert(e.responseText || 'Forbidden request.')
+      if(e.status === 403) alert(e.responseText || 'Forbidden request.')
       if(e.status === 404) alert(e.responseText || 'Images were not found.')
       if(e.status === 405) alert(e.responseText || 'That method is not allowed.')
       if(e.status === 408) alert(e.responseText || 'The request timed out. Try again.')
@@ -259,15 +361,11 @@ $(function(){
     }
     
   }
-  
-  // Helper method to calculate height of overlay
-  // and show it on the screen.
-  function showOverlay(){
 
-    $overlay
-      .height( $document.height() )
-      .show()
-    
+  // Method to update the data-pagination value
+  // of the 'el' with the 'url' passed in 
+  function updatePaginationButton(el, url){
+    el.attr('data-pagination', url)
   }
   
   // Helper method to close the One Up View
@@ -351,16 +449,39 @@ $(function(){
       caption: $('#caption').val()
     })
     .success(function(data) { 
+      $spin.hide()
       console.dir(data)
-      alert('success')
+      alert('Success!')
     })
-    .error(function(e) { 
-      console.dir(JSON.parse(e))
-      alert("Error")
+    .error(function(e) {
+      $spin.hide()
+      if(e.status === 400) alert(e.responseText || 'Bad request.')
+      if(e.status === 401) alert(e.responseText || 'Unauthorized request.')
+      if(e.status === 402) alert(e.responseText || 'Forbidden request.')
+      if(e.status === 403) alert(e.responseText || 'Forbidden request.')
+      if(e.status === 404) alert(e.responseText || 'Images were not found.')
+      if(e.status === 405) alert(e.responseText || 'That method is not allowed.')
+      if(e.status === 408) alert(e.responseText || 'The request timed out. Try again.')
+      if(e.status === 500) alert(e.responseText || 'Something went really wrong.')
+      
+      // TODO: RESTART AT STEP ONE? 0N 403 YES.
+      if(e.status === 403 && (e.responseText.regexIndexOf(/twitter/gi) > -1)) window.location = "/twitter"
+      if(e.status === 403 && (e.responseText.regexIndexOf(/facebook/gi) > -1)) window.location = "/facebook"
+      if(e.status === 403 && (e.responseText.regexIndexOf(/instagram/gi) > -1)) window.location = "/instagram"
     })
     
     return false
     
+  }
+  
+  // Method to remove current photos in picker view
+  // Used during pagination calls
+  function appendPhotosFromPagination(imgs){
+    
+    // TODO: INSTEAD OF REMOVING ALTOGETHER, JUST APPEND
+    $gallery
+      .find('img:last')
+      .after(imgs)
   }
   
   // Some basic AJAX setup things...
@@ -403,6 +524,16 @@ $(function(){
     
   }
   
+  // Helper method to calculate height of overlay
+  // and show it on the screen.
+  function showOverlay(){
+
+    $overlay
+      .height( $document.height() )
+      .show()
+    
+  }
+  
   // TODO: Method that watches position of spinner and will reposition
   // based on scroll. We need it to show up when we scroll down
   function spinnerWatcher(){
@@ -439,14 +570,17 @@ $(function(){
   (function init(){
     // Order is important here.
     checkForAuths()
+
     wireSourceClickHandlers()
     wireDestinationClickHandlers()
     wireUsePhotoHandlers()
+    wirePaginationButtons()
+    wireOneUpHandlers()
+    wirePipeForm()
+
     spinner()
     spinnerWatcher()
     ajaxSetup()
-    wireOneUpHandlers()
-    wirePipeForm()
     
   })()
   
