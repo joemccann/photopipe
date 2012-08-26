@@ -114,13 +114,22 @@ $(function(){
   }  
   
   // Attach click handlers to respective elements.
-  function wireProviderClickHandlers(){
+  function wireSourceClickHandlers(){
 
+    $twitter.isAuthenticated && $twitter.bind('click', twitterClickHandler)
     $facebook.isAuthenticated && $facebook.bind('click', facebookClickHandler)
     $instagram.isAuthenticated && $instagram.bind('click', instagramClickHandler)
-    $twitter.isAuthenticated && $twitter.bind('click', twitterClickHandler)
     
   }
+
+  // Attach click handlers to respective elements.
+  function wireDestinationClickHandlers(){
+
+    $twitter.isAuthenticated && $twitterDestination.bind('click', twitterDestinationClickHandler)
+    $facebook.isAuthenticated && $facebookDestination.bind('click', facebookDestinationClickHandler)
+    
+  }
+
 
   // Step #1 twitter connection
   function twitterClickHandler(){
@@ -134,6 +143,7 @@ $(function(){
 
   // Step #1 instagram connection
   function instagramClickHandler(){
+    
     // This method will only get called if we are auth'd
     // Fetch photos from instagram
     
@@ -186,6 +196,22 @@ $(function(){
     })
     
     // /instagram/get_photos_from_album_id?id='+id
+    
+    return false
+  }
+  
+  // Step #3 twitter destination
+  function twitterDestinationClickHandler(){
+
+    _photoDestination = 'twitter'
+    
+    return false
+  }
+    
+  // Step #3 facebook destination
+  function facebookDestinationClickHandler(){
+
+    _photoDestination = 'facebook'
     
     return false
   }
@@ -298,6 +324,7 @@ $(function(){
     
   }
   
+  // Wire up the pipe submission form
   function wirePipeForm(){
     $photoPipeForm.bind('submit', pipePhotoPostHandler)
   }
@@ -316,10 +343,6 @@ $(function(){
     </form>
     
     */
-    
-    // TODO: CHECK THAT THEY ARE AUTH'D BEFORE SUBMITTING FORM/ENABLING BUTTON
-    
-    _photoDestination = 'facebook' // TODO THIS IS JUST FOR TESTING...REMOVE THIS
     
     $
     .post("/smoke",{
@@ -416,7 +439,8 @@ $(function(){
   (function init(){
     // Order is important here.
     checkForAuths()
-    wireProviderClickHandlers()
+    wireSourceClickHandlers()
+    wireDestinationClickHandlers()
     wireUsePhotoHandlers()
     spinner()
     spinnerWatcher()
