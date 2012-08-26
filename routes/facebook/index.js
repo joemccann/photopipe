@@ -194,6 +194,17 @@ exports.facebook_get_tagged_in_photos = function(req,res){
   
 } // end facebook_get_tagged_in_photos handler
 
+
+/*
+ * GET facebook photos a user is tagged in.
+ * 
+ * returns a JSON, does not render a page.
+ */
+
+exports.facebook_get_next_page_user_photos = function(req,res){
+  return res.status(404).send("facebook_get_next_page_user_photos not implemented yet")
+}
+
 /*
  * GET facebook oauth page.
  */

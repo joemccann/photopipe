@@ -65,6 +65,8 @@ app.get('/facebook/get_photo_albums', facebook_routes.facebook_get_photo_albums)
 
 app.get('/facebook/get_tagged_in_photos', facebook_routes.facebook_get_tagged_in_photos)
 
+app.get('/facebook/get_next_page_user_photos', facebook_routes.facebook_get_next_page_user_photos)
+
 app.get('/oauth/facebook', facebook_routes.facebook_oauth)
 
 

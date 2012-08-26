@@ -91,13 +91,18 @@ $(function(){
     , $stepFour = $('#step-four')
     , $photoPickerTwitter = $('#photo-picker-twitter')
     , $photoPickerFacebook = $('#photo-picker-facebook')
+    , $galleryPickerFacebook = $('#gallery-picker-facebook')
     , $photoPickerInstagram = $('#photo-picker-instagram')
     , $twitterLoadMore = $('#twitter-load-more')
     , $facebookLoadMore = $('#facebook-load-more')
     , $instagramLoadMore = $('#instagram-load-more')
+    , $facebookGallery = $('#facebook-gallery')
     , $oneUpTwitter = $('#one-up-twitter')
     , $oneUpFacebook = $('#one-up-facebook')
     , $oneUpInstagram = $('#one-up-instagram')
+    , $oneUpFacebookWrapper = $('#one-up-facebook-wrapper')
+    , $stepThreeDestinationWrapper = $('#step-three-destination-wrapper')
+    , $fbGalleryWrapper = null
     , $gallery = $('.gallery')
     , $usePhoto = $('.use-photo')
     , $closeOneUp = $('.close-one-up')
@@ -154,8 +159,88 @@ $(function(){
   }
     
   // Step #1 facebook connection
-  function facebookClickHandler(){
-    return console.warn('Not Implemented Yet.')
+  function facebookClickHandler(e){
+    
+    // This method will only get called if we are auth'd
+    // Fetch photo galleries from facebook
+    
+    var url = $facebook.attr('href') // /facebook/get_photo_albums
+
+    $
+    .get(url)
+    .success(function(data, resp){ 
+      
+      $spin.hide()
+      
+      // console.dir(data)
+
+      var thumbs = ""
+        ,  overall = data.length
+      
+      // We have to fetch each album image by id via ajax
+      $.each(data, function(i,el){
+        
+        $
+        .get('/facebook/get_photo_album_cover?cover_photo='+el.cover_photo)
+        .success(function(data){ 
+
+          thumbs += "<div class='inline-block fb-gallery-wrapper'>"+
+                      "<img data-album-id='"+el.id+"' src='"+data+"'/>"+
+                      "<span class='fb-gallery-label'>"+el.name+"</span>"+
+                    "</div>"
+
+          --overall
+
+        })
+        .error(function(e){
+          --overall 
+          alert(e.responseText || "Error") 
+        })
+        .complete(function(){ 
+          
+          if(!overall){
+            
+            $spin.hide()
+            // append the gallery thumbs
+            $facebookGallery
+              .append(thumbs)
+              .show()
+            
+            // Show the photo picker fb section
+            $galleryPickerFacebook
+              .show()
+            
+            // Wire up the events to the galleries' containers...
+            wireFacebookGalleryGroups()
+
+            // Progress to Step 2
+            progressToNextStep($stepOne, function(){
+
+              $stepTwo.slideDown(333)
+
+            })
+            
+          } // end if !overall
+          
+        }) // end complete()
+        
+      }) // end $.each()
+      
+    })
+    .error(function(e,b){
+      $spin.hide()
+      if(e.status === 400) alert(e.responseText || 'Bad request.')
+      if(e.status === 401) alert(e.responseText || 'Unauthorized request.')
+      if(e.status === 402) alert(e.responseText || 'Forbidden request.')
+      if(e.status === 403) alert(e.responseText || 'Forbidden request.')
+      if(e.status === 404) alert(e.responseText || 'Images were not found.')
+      if(e.status === 405) alert(e.responseText || 'That method is not allowed.')
+      if(e.status === 408) alert(e.responseText || 'The request timed out. Try again.')
+      if(e.status === 500) alert(e.responseText || 'Something went really wrong.')
+    })
+    
+    return false
+    
   }
 
   // Step #1 instagram connection
@@ -275,7 +360,7 @@ $(function(){
                   +"' src='"+ el.images.thumbnail.url +"' />"
       })
       
-      // Remove old photos...
+      // Add moar photos...
       appendPhotosFromPagination(thumbs)
       
       $photoPickerInstagram
@@ -310,15 +395,80 @@ $(function(){
     return false
   }
     
-  // Step #3 facebook destination
+  // Step #4 facebook destination
   function facebookDestinationClickHandler(){
 
     _photoDestination = 'facebook'
     
     return false
   }
-  
+
   // Method that extracts the one up size image to be piped
+  function wireFacebookGalleryGroups(){
+    
+    // stash for later, may need them
+    $fbGalleryWrapper = $('.fb-gallery-wrapper') 
+    
+    $fbGalleryWrapper
+      .each(function(i,el){
+        $(el).bind('click', wireFacebookGalleryGroupClickHandler)
+      }) // end each()
+  }
+
+  function wireFacebookGalleryGroupClickHandler(){
+    var albumId = $(this).find('img').attr('data-album-id')
+    console.log(albumId + " is the albumId")
+
+    // Fetch the images for said gallery
+    fetchImagesForFbGallery(albumId)
+    
+  }
+  
+  function fetchImagesForFbGallery(id){
+
+    $
+    .get('/facebook/get_photos_from_album_id?id='+id)
+    .success(function(d, resp, x){ 
+
+      console.dir(d)
+
+      var thumbs = ""
+
+      if(d.message) thumbs += "<p>"+d.message+"</p>"
+      else{
+        d.data.forEach(function(el,i){
+          thumbs += "<img src='"+el.picture+"' />"
+        })
+      }
+
+      $oneUpFacebook
+        .before(thumbs)
+      
+      $photoPickerFacebook
+        .show()
+
+      $spin
+        .hide()
+        
+      // wire up the images int the fb gallery
+      wireFacebookGalleryPicker()  
+
+      progressToNextStep($stepTwo, function(){
+
+        $stepThree.slideDown(333)
+
+      })
+
+    })
+    .error(function(e){ 
+      if(e.status === 404) alert(e.responseText || 'Images were not found.')
+      if(e.status === 403) alert(e.responseText || 'That request was not allowed.')
+      if(e.status === 500) alert(e.responseText || 'Something went really wrong.')
+    })
+
+  }
+  
+  // Method that extracts the one up size instagram image to be piped
   function wireInstagramGalleryPicker(){
     
     $photoPickerInstagram
@@ -329,6 +479,20 @@ $(function(){
         
       }) // end each()
   }
+
+  // Method that extracts the one up size fb image to be piped
+  function wireFacebookGalleryPicker(){
+    
+    $photoPickerFacebook
+      .find('img')
+      .each(function(i,el){
+        
+        $(el).bind('click', facebookOneUpClickHandler)
+        
+      }) // end each()
+  }
+
+
   
   // Method that handles the one up view (large view) of an image
   function instagramOneUpClickHandler(e){
@@ -361,6 +525,13 @@ $(function(){
     }
     
   }
+  
+  
+  function facebookOneUpClickHandler(){
+    console.warn('not implemented: facebookOneUpClickHandler')
+  }
+  
+  
 
   // Method to update the data-pagination value
   // of the 'el' with the 'url' passed in 
@@ -409,6 +580,8 @@ $(function(){
         _photoToUse = $('.one-up:visible').find('img')[0].src
         
         closeOneUp()
+        
+        $stepThreeDestinationWrapper.show()
         
         progressToNextStep($stepTwo, function(){
 
@@ -478,7 +651,6 @@ $(function(){
   // Used during pagination calls
   function appendPhotosFromPagination(imgs){
     
-    // TODO: INSTEAD OF REMOVING ALTOGETHER, JUST APPEND
     $gallery
       .find('img:last')
       .after(imgs)

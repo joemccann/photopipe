@@ -354,15 +354,38 @@ a:visited {
   margin: 4% auto 0;
   max-width: 20em;
 }
+.inline {
+  display: inline;
+}
+.inline-block {
+  display: inline-block;
+}
 .cool {
   color: #3f729b;
 }
 .gallery {
   position: relative;
 }
-.gallery > img {
-  padding: 2% 2% 2% 0;
+.gallery > img,
+.fb-gallery-wrapper {
+  border: 3px solid #ccc;
+  -webkit-border-radius: 4px;
+  -moz-border-radius: 4px;
+  border-radius: 4px;
+  background: rgba(0,0,0,0.1);
+  padding: 2%;
+  margin: 2%;
   cursor: pointer;
+}
+.gallery > img {
+  max-width: 130px;
+}
+.fb-gallery-wrapper {
+  max-width: 130px;
+  text-align: center;
+}
+.fb-gallery-label {
+  display: block;
 }
 #photo-to-pipe {
   margin: 3% 0;
@@ -409,12 +432,14 @@ a:visited {
   height: 36px;
   background: transparent url("/img/button-signin-facebook-210x36.png") no-repeat scroll top left;
 }
+.none,
 #step-two,
 #step-three,
 #step-four,
 #photo-picker-twitter,
 #photo-picker-facebook,
-#photo-picker-instagram {
+#photo-picker-instagram,
+#gallery-picker-facebook {
   display: none;
 }
 .one-up {
@@ -470,7 +495,7 @@ a:visited {
   margin-top: 3%;
 }
 #debug {
-  display: none;
+  display: block;
 }
 #debug p {
   font-size: 1.2em;
