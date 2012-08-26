@@ -1,6 +1,7 @@
 var fs = require('fs')
   , path = require('path')
   , request = require('request')
+  , exec = require('child_process').exec
 
 var facebook_config = JSON.parse( fs.readFileSync( path.resolve(__dirname, 'facebook-config.json'), 'utf-8' ) )
 
@@ -38,5 +39,35 @@ exports.Facebook = {
                   } // end outer else isRequest
 
                 }) // request.get(fb-albums)
-  }
+  },
+  pipePhotoToFb: function(obj,req,res){
+    
+    // "source": file binary
+    // "message": optional caption
+    
+    var url = 'https://graph.facebook.com/'
+                +req.session.facebook.id
+                +'/photos?access_token='
+                +req.session.facebook.access_token
+                
+    console.log("\n\nurl: %s", url)
+    
+    var command = 'curl -F "message='+obj.caption+'" -F "source=@'
+                  + obj.fullPhotoPath +'" -L '+ url+''
+
+    console.log("\n\nurl: %s", command)
+
+
+    exec(command, function(err,data){
+      if(err) {
+        console.error(err)
+        return res.json(err)
+      }
+      if(data) {
+        console.dir(data,8)
+        return res.json(JSON.parse(data))
+      }
+    })
+    
+  } // end postPhotoToFb
 }

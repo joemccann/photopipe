@@ -13,10 +13,17 @@
   </head>
   <body>
     <div id="main">
-      <h1>Photo<span class="cool">Pipe</span></h1>
-      <p>Connect your Facebook account by signing in.</p>
-      <a class="button-signing-facebook" href="<%- auth_url %>">Connect with Facebook</a>
-
+      <nav>
+        <h1><a href="/">Photo<span class="cool">Pipe</span></a></h1>
+        <div id="spin"></div>
+        <hr />
+      </nav>
+      <section class="oauth-page">
+        <p class="steps-copy">Connect with Facebook</p>
+        <p>
+          <a class="button-connect-facebook" href="<%- auth_url %>"></a>
+        </p>
+      </section>
     </div>
   </body>
 </html>

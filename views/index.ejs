@@ -2,26 +2,129 @@
 <html>
 <%- include head %>
 <body>
+  <div id="overlay"></div>
   <div id="main">
-    <h1>Photo<span class="cool">Pipe</span></h1>
-    <p>WTF is PhotoPipe?</p>
-    <p>It's a service for taking a URL of a photo and then piping it to some other service!</p>
     
-    <section id="demoFormSection">
-      <form id="photoPipeDemoForm" action="/smoke" enctype="application/x-www-form-urlencoded" method="post">
+    <nav>
+      <h1>Photo<span class="cool">Pipe</span></h1>
+      <div id="spin"></div>
+      <hr />
+    </nav>
+    
+    <!-- Step 1: Pick a photo source. -->
+    
+    <section id="step-one">
+      <p class="steps">Step 1</p>
+      <p class="steps-copy">Select your photo source:</p>
+      <ul id="photo-to-pipe">
+        <li><a id="facebook" data-auth="<%= isInstagramAuth %>" href="/facebook" class="button-facebook"></a></li>
+        <li><a id="instagram" data-auth="<%= isInstagramAuth %>" href="/instagram/get_user_recent_photos" class="button-instagram"></a></li>
+        <li><a id="twitter" data-auth="<%= isTwitterAuth %>" href="/twitter/get_user_recent_photos" class="button-connect-twitter"></a></li>
+      </ul>  
+    </section>
+    
+    <!-- Step 2: Pick a photo or gallery (in facebook case). -->
+    
+    <section id="step-two">
+
+      <section class="gallery" id="photo-picker-twitter">
+        <p class="steps">Step 2</p>
+        <p class="steps-copy">Select the photo you want to pipe:</p>
+        
+        <div id="one-up-twitter" class="one-up">
+          <span class="close-one-up" data-icon="&#x2297;"></span>
+
+          <div class="use-photo-container">
+            <a class="button save" id="twitter-use-photo">Click To Pipe This Photo</a>
+          </div>
+
+        </div>
+        <div class="load-more">
+          <a class="button add" id="twitter-load-more">Load More Photos</a>
+        </div>
+
+        
+      </section>
+
+      <section id="photo-picker-facebook">
+        <!-- We have to select from a gallery first -->
+        <div class="gallery" id="facebook-gallery">
+          <p class="steps">Step 2</p>
+          <p class="steps-copy">Select the gallery first:</p>
+          
+        </div>
+      </section>
+
+      <section class="gallery" id="photo-picker-instagram">
+        
+        <p class="steps">Step 2</p>
+        <p class="steps-copy">Select the photo you want to pipe:</p>
+        
+        <div id="one-up-instagram" class="one-up">
+          <span class="close-one-up" data-icon="&#x2297;"></span>
+
+          <div class="use-photo-container">
+            <a class="button save use-photo" id="instagram-use-photo">This One!</a>
+          </div>
+
+        </div>
+
+        <div class="load-more">
+          <a class="button add" id="instagram-load-more">Load MOAR Photos</a>
+        </div>
+
+      </section>
+
+    </section>
+    
+    <!-- Step 3: Pick a photo destination. -->
+    
+    <section id="step-three">
+      <p class="steps">Step 3</p>
+      <p class="steps-copy">Select your photo destination:</p>
+      <ul id="photo-to-pipe">
+        <li><a id="facebook-destination" data-auth="<%= isInstagramAuth %>" href="/facebook/get_photo_album_cover" class="button-facebook"></a></li>
+        <li><a id="twitter-destination" data-auth="<%= isTwitterAuth %>" href="/twitter/get_user_recent_photos" class="button-connect-twitter"></a></li>
+      </ul>
+      <form id="photoPipeForm" action="/smoke" enctype="application/x-www-form-urlencoded" method="post">
         <fieldset>
-          <label for='photoUrl'>Enter A Photo's URL</label>
-          <input type='url' name='photoUrl' value='http://cdn.subprint.com/pipe.jpg'>
+          <label for='photoUrl'>Caption (optional)</label>
+          <input type='hidden' name='type' value='echo'>
+          <input type='hidden' name='photoUrl' value=''>
+          <input type='text' name='caption' id="caption" value='PhotoPipe'>
           <input type='submit' value='Pipe It!'>
         </fieldset>
       </form>
+        
     </section>
     
-    <section id="demoCurlSection">
-      <p>Or open up a terminal an execute the following command:</p>
-      <pre>curl -d "photoUrl=http://cdn.subprint.com/pipe.jpg" <script type="text/javascript">document.write(window.location)</script>smoke</pre>
+    <section id="debug">
+      <p>Is Instagram Authenticated? <%- isInstagramAuth ? "<span class='cool'>yes</span>" : "no" %> </p>
+      <p>Is Facebook Authenticated? <%- isFacebookAuth ? "<span class='cool'>yes</span>" : "no" %> </p>
+      <p>Is Twitter Authenticated? <%- isTwitterAuth ? "<span class='cool'>yes</span>" : "no" %> </p>
     </section>
     
   </div> <!-- end #main -->
+  <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
+  <script type="text/javascript" src="/js/spin.min.js"></script>
+  <script type="text/javascript" src="/js/pipe.js"></script>
 </body>
 </html>
+
+
+<!--
+<section id="demoFormSection">
+  <form id="photoPipeDemoForm" action="/smoke" enctype="application/x-www-form-urlencoded" method="post">
+    <fieldset>
+      <label for='photoUrl'>Enter A Photo's URL</label>
+      <input type='url' name='photoUrl' value='http://cdn.subprint.com/pipe.jpg'>
+      <input type='submit' value='Pipe It!'>
+    </fieldset>
+  </form>
+</section>
+
+<section id="demoCurlSection">
+  <p>Or open up a terminal an execute the following command:</p>
+  <pre>curl -d "photoUrl=http://cdn.subprint.com/pipe.jpg" <script type="text/javascript">document.write(window.location)</script>smoke</pre>
+</section>
+-->

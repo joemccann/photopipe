@@ -1,21 +1,19 @@
-mainColor = #0CC50C
-
+/*
 *
   -moz-transition all 0.2s ease
   -o-transition all 0.2s ease
   -webkit-transition all 0.2s ease
   -ms-transition all 0.2s ease
-
+*/
 @import 'mixins'
 @import 'normalize'
+@import 'buttons'
+@import 'icons'
 
 body
   font 100% 'Aldrich', Helvetica, Arial, sans-serif
-
-#main
-  width 98%
-  max-width 720px
-  margin 2% auto 0
+  background transparent url('/img/bg-noise-150x150.png') repeat scroll top left
+  color textColor
 
 section
   margin 2.75% auto
@@ -34,51 +32,130 @@ fieldset
   background rgba(0,0,0,0.05)
   border 2px dotted mainColor
   padding 3% 5%
-  
-#demoCurlSection > pre
-  background rgba(0,0,0,0.05)
-  border 2px dotted mainColor
-  padding 3% 5% 
 
 h1
-  font-size 3.6em
-  line-height .5
+  font-size 2.4em
+  line-height 0
+  display inline-block
+  float left
+  margin 2% auto 3%
 
-.cool
-  color mainColor
+hr
+  clear both
 
-.button-signing-instagram
-  display block
-  width 196px
-  height 38px
-  background transparent url('/img/button-signin-instagram-196x38.png') no-repeat scroll top left
+p 
+  font-size 2.8em
+  line-height 1
+  margin 0
+  padding 0
+
+ul
+  margin 0
+  padding 0
+
+li
+  list-style-type none
 
 img
   max-width 100%
 
-#images > img
-  padding 1%
+a
+  text-decoration none
+  color textColor
+  
+a:visited
+  color textColor
+
+#main
+  width 98%
+  max-width 720px
+  margin 1% auto 0
+  text-align center
 
 #overlay
-  z-index 1
+  background-color rgb(0,0,0)
+  opacity 0.5
   position absolute
-  background rgba(0,0,0,0.7)
+  top 0
+  left 0
   width 100%
   height 100%
   display none
-  top 0 
-  left 0
 
-#one-up
-  display none
+#spin
+  display block
+  margin 1.25% 2.75% 0 0
+  float right
+
+.steps
+  font-size 6em
+  margin 6% 0 3%
+
+.steps-copy
+  font-size 2.4em
+  margin-bottom 3%
+
+.cool
+  color mainColor
+
+.gallery
+  position relative
+  
+.gallery > img
+  padding 2% 2% 2% 0
+  cursor pointer
+
+#photo-to-pipe
+  margin 3% 0
+
+#photo-to-pipe li
+  margin 0 2% 0 0
+  display inline
+
+.button-instagram,
+.button-facebook
+  display inline-block
+  width 200px
+  height 200px
   padding 2%
+  
+.button-instagram
+  background transparent url('/img/instagram-200x200.png') no-repeat scroll top left
+
+.button-facebook
+  background transparent url('/img/facebook-200x200.png') no-repeat scroll top left
+
+.button-connect-instagram
+  display inline-block
+  width 186px
+  height 38px
+  background transparent url('/img/button-signin-instagram-186x36.png') no-repeat scroll top left
+
+.button-connect-facebook
+  display inline-block
+  width 210px
+  height 36px
+  background transparent url('/img/button-signin-facebook-210x36.png') no-repeat scroll top left
+
+
+#step-two, 
+#step-three, 
+#step-four,
+#photo-picker-twitter,
+#photo-picker-facebook,
+#photo-picker-instagram
+  display none
+  
+.one-up
+  display none
+  padding 3%
   borderRadius(4px)
-  background #fff
+  background #ccc
   z-index 2
   position absolute
-  top 4%
-  left 25%
-
+  top 0
+  left 3.5%
+  
 #one-up-relative
   position relative
 
@@ -88,12 +165,44 @@ img
   height 36px
   width 100%
 
-#one-up-controls-cancel, #one-up-controls-use
+#one-up-controls-cancel, 
+#one-up-controls-use
   display inline
   width 50%
   float left
   height 30px
   background #cecece
   font-family Helvetica
+
+#demoCurlSection > pre
+  background rgba(0,0,0,0.05)
+  border 2px dotted mainColor
+  padding 3% 5%
+
+.close-one-up
+  color #ff3
+  position absolute
+  top -3.2%
+  right -3.2%  
+  display none
+  z-index 5
+  font-size 3em
+  cursor pointer
+
+.use-photo-container
+  margin 2% auto 0
+  text-align center
+
+.oauth-page
+  margin-top 3%
+
+#debug
+  display none
+
+#debug p
+  font-size 1.2em
+  line-height 2
+  color red
+
   
 @import 'responsive'

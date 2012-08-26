@@ -3,6 +3,10 @@ var path = require('path')
   , fs = require('fs')
   , qs = require('querystring')
 
+function _mergeObj(obj1,obj2){
+  for (var key in obj2) { obj1[key] = obj2[key] }
+  return obj1
+}
 
 /****************************************************************
 
@@ -15,7 +19,24 @@ Actual Routes...
  */
 
 exports.index = function(req, res){
-  res.render('index', { title: 'PhotoPipe - Put Your Image URL In and Smoke It!'})
+  
+  if(req.query.error){
+    return res.render('error', {
+      type: req.query.type, 
+      title: 'PhotoPipe - Put Your Image URL In and Smoke It!'
+    })
+  }
+  
+  // Some flags to be set for client-side logic.
+  var auths = {
+    isTwitterAuth: !!req.session.twitter,
+    isFacebookAuth: !!req.session.facebook,
+    isInstagramAuth: !!req.session.instagram
+  }
+  
+  var locals = _mergeObj( auths, {title: 'PhotoPipe - Put Your Image URL In and Smoke It!'})
+  
+  res.render('index', locals)
 }
 
 /*
@@ -32,6 +53,9 @@ exports.index = function(req, res){
 exports.smoke = function(req, res){
   // Check for a mufkcn photo url...
   if(!req.body.photoUrl) return res.json({error: true, message: "No photo URL in yer POST, brah."})
+  
+  // Type of pipe
+  var type = req.body.type || 'echo'   
 
   // Echo back all the things.
   var echo = {}
@@ -40,6 +64,7 @@ exports.smoke = function(req, res){
   // http://bit.ly/node-path-join
   echo.photoDirPath = path.resolve(__dirname, '..', path.join('public','outbound'))
   echo.photoUrl = req.body.photoUrl
+  echo.caption = req.body.caption || ''
 
   // http://bit.ly/node-path-basename
   echo.photoName = path.basename(req.body.photoUrl)
@@ -75,21 +100,26 @@ exports.smoke = function(req, res){
         echo.hasError = true
         echo.errorMessage = "Unable to verify your photo " + echo.photoName + " was written to disk, brochacho."
       }
-      // So now we just echo it back. Ideally you want to redirect
-      // it to another service...see below.
-      res.json(echo)
       
       /******************** PUT PLUGIN HOOKS BELOW HERE **********************/
       
-      // For example, to pipe to Bazaarvoice, include it from plugins directory
-      // var bv = require(path.resolve(__dirname, '..', 'plugins/bazaarvoice/bv.js'))
-      
-      // Now, just pipe the echo object and be sure to pass the
-      // response object as well.
-      // bv.pipeToBv(echo, res)
+      if(type === 'facebook'){
 
-      // IMPORTANT: Since we are passing the 'res' object here, you need
-      // to comment it out or remove it above (the res.json(echo) line).
+        var fb = require(path.resolve(__dirname, '..', 'plugins/facebook/facebook.js')).Facebook
+
+        fb.pipePhotoToFb(echo, req, res)
+        
+      }else if(type === 'bazaarvoice'){
+
+        var bv = require(path.resolve(__dirname, '..', 'plugins/bazaarvoice/bv.js'))
+
+        // Now, just pipe the echo object and be sure to pass the
+        // response object as well.
+        bv.pipeToBv(echo, res)
+        
+      }else if(type === 'echo'){
+        res.json(echo)
+      }
 
 
       /******************** PUT PLUGIN HOOKS ABOVE HERE **********************/

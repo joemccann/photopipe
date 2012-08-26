@@ -13,9 +13,15 @@
   </head>
   <body>
     <div id="main">
-      <h1>Photo<span class="cool">Pipe</span></h1>
-			<p>Connect your Instagram account by signing in.</p>
-      <a class="button-signing-instagram" href="<%- auth_url %>"></a>
+      <nav>
+        <h1>Photo<span class="cool">Pipe</span></h1>
+        <div id="spin"></div>
+        <hr />
+      </nav>
+      <section class="oauth-page">
+        <p class="steps-copy">Connect with Instagram</p>
+        <p><a class="button-connect-instagram" href="<%- auth_url %>"></a></p>
+      </section>
     </div>
   </body>
 </html>

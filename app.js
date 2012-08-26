@@ -43,6 +43,8 @@ var instagram_routes = require('./routes/instagram')
 
 app.get('/instagram', instagram_routes.instagram)
 
+app.get('/instagram/get_user_recent_photos', instagram_routes.instagram_get_user_recent_photos)
+
 app.get('/oauth/instagram', instagram_routes.instagram_oauth)
 
 

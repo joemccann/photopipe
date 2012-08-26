@@ -25,39 +25,21 @@ exports.instagram = function(req, res){
       display: 'touch'
     })
 
-    res.render('instagram', { 
+    return res.render('instagram', { 
         title: 'PhotoPipe - Instagram OAuth'
       , auth_url: auth_url})
     
   }
-  else{
-
-    // Let's grab the user's recent photos from their feed.
-    Instagram.set('access_token', req.session.instagram.access_token)
-
-    Instagram.users.recent({ 
-      user_id: req.session.instagram.user.id, 
-      complete: function(data){
-        
-        // TODO: ADD PAGINATION
-        
-        res.render('instagram-user', { 
-            title: 'PhotoPipe - Hello '+ req.session.instagram.user.username,
-            username: req.session.instagram.user.username,
-            media: JSON.stringify(data)
-          })
-          
-          // unset access_token --> 
-          // this is probably pretty bad in practice actually (race conditions)
-          Instagram.set('access_token', null)
-          
-      } // end complete 
-    
-    }) // end recent
-
-  } // end else
 
 } // end instagram route
+
+exports.instagram_get_user_recent_photos = function(req,res){
+
+  if(!req.session.instagram) return res.redirect('/instagram')
+
+  Instagram.photopipe.getUserRecentPhotos(req,res)
+    
+}
 
 /*
  * GET instagram oauth page.
@@ -76,13 +58,13 @@ exports.instagram_oauth = function(req,res){
         
         // Head back to instagram page, but this time, we'll enter
         // the else block because we have an Instagram._user object
-        return res.redirect('/instagram')
+        return res.redirect('/')
 
       },
       error: function(errorMessage, errorObject, caller, response){
         // errorMessage is the raised error message
         // errorObject is either the object that caused the issue, or the nearest neighbor
-        res.redirect('/instagram?error=true')
+        res.redirect('/?error=true&type=instagram') 
       }
     })
     return null
