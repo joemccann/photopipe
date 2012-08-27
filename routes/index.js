@@ -51,12 +51,12 @@ exports.index = function(req, res){
 */
  
 exports.smoke = function(req, res){
+
+  console.log('\n\nSmoking my pipe...\n\n')
+
   // Check for a mufkcn photo url...
   if(!req.body.photoUrl) return res.json({error: true, message: "No photo URL in yer POST, brah."})
   
-  // Type of pipe
-  var type = req.body.type || 'echo'   
-
   // Echo back all the things.
   var echo = {}
   
@@ -65,6 +65,7 @@ exports.smoke = function(req, res){
   echo.photoDirPath = path.resolve(__dirname, '..', path.join('public','outbound'))
   echo.photoUrl = req.body.photoUrl
   echo.caption = req.body.caption || ''
+  echo.type = req.body.type || 'echo'   
 
   // http://bit.ly/node-path-basename
   echo.photoName = path.basename(req.body.photoUrl)
@@ -77,6 +78,8 @@ exports.smoke = function(req, res){
   }
   
   echo.fullPhotoPath = path.join(echo.photoDirPath, echo.photoName)
+  
+  // console.dir(echo)
   
   // http://bit.ly/node-createWriteStream 
   var ws = fs.createWriteStream( echo.fullPhotoPath ) 
@@ -103,7 +106,7 @@ exports.smoke = function(req, res){
       
       /******************** PUT PLUGIN HOOKS BELOW HERE **********************/
       
-      if(type === 'facebook'){
+      if(echo.type === 'facebook'){
         // TODO: Not sure if this check goes here or in pipePhotoToFb() in facebook.js plugin 
         if(!req.session.facebook || !req.session.facebook.access_token){
           res.type('text/plain')
@@ -114,7 +117,7 @@ exports.smoke = function(req, res){
 
         fb.pipePhotoToFb(echo, req, res)
         
-      }else if(type === 'bazaarvoice'){
+      }else if(echo.type === 'bazaarvoice'){
 
         var bv = require(path.resolve(__dirname, '..', 'plugins/bazaarvoice/bv.js'))
 
@@ -122,7 +125,7 @@ exports.smoke = function(req, res){
         // response object as well.
         bv.pipeToBv(echo, res)
         
-      }else if(type === 'echo'){
+      }else if(echo.type === 'echo' || echo.type === 'download'){
         res.json(echo)
       }
 
@@ -145,3 +148,22 @@ exports.smoke = function(req, res){
   
 } // end inbound route
 
+/*
+ * GET download file.
+ */
+
+exports.download_file = function(req,res){
+
+  var filename = req.query.filePath
+  
+  res.download(filename, function(err){
+    if(err) res.status(500).send(err) 
+    else{
+      // Delete the file after download
+      fs.unlink(filename, function(err, data){
+        if(err) console.error(err)
+      })
+    }
+  })
+
+}

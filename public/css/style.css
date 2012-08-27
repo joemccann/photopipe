@@ -522,6 +522,7 @@ a:visited {
   padding: 0 3%;
   font-size: 2em;
   line-height: 2.4;
+  width: 90%;
 }
 #debug {
   display: none;

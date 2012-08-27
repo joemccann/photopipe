@@ -35,6 +35,7 @@ app.get('/', routes.index)
 /* POST routes */
 app.post('/smoke', routes.smoke)
 
+app.get('/download/file', routes.download_file)
 
 /************************** Instagram Support **************************/
 

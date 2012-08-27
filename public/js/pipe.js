@@ -84,6 +84,7 @@ $(function(){
     , $instagram = $('#instagram')
     , $twitterDestination = $('.twitter-destination')
     , $facebookDestination = $('.facebook-destination')
+    , $downloadDestination = $('.download-destination')
     , $stepOne = $('#step-one')
     , $stepTwo = $('#step-two')
     , $stepThree = $('#step-three')
@@ -139,6 +140,8 @@ $(function(){
 
     $twitter.isAuthenticated && $twitterDestination.bind('click', twitterDestinationClickHandler)
     $facebook.isAuthenticated && $facebookDestination.bind('click', facebookDestinationClickHandler)
+    
+    $downloadDestination.bind('click', downloadDestinationClickHandler )
     
   }
 
@@ -257,15 +260,13 @@ $(function(){
       
       $spin.hide()
       
-      console.dir(d)
+      // console.dir(d)
       
       // IMPORTANT: The last item in the array is the 
       // pagination object. We must pop it off
       var pageObj = d.pop()
       var nextPageUrl = pageObj.next_url
-      
-      console.log(nextPageUrl + ' is hte next page url')
-
+     
       // Let's update the pagination button with the next 
       // page's URL
       updatePaginationButton($instagramLoadMore, nextPageUrl)
@@ -385,34 +386,6 @@ $(function(){
     // /instagram/get_photos_from_album_id?id='+id
     
     return false
-  }
-  
-  // Step #3 twitter destination
-  function twitterDestinationClickHandler(){
-
-    _photoDestination = 'twitter'
-    showCaptionForm(_photoDestination)
-    
-    console.log(e.target + " is the target")
-
-    toggleEnableChoice(e.target)
-    
-    return false
-  }
-    
-  // Step #4 facebook destination
-  function facebookDestinationClickHandler(e){
-
-    _photoDestination = 'facebook'
-
-    showCaptionForm(_photoDestination)
-
-    console.log(e.target + " is the target")
-
-    toggleEnableChoice(e.target)
-    
-    return false
-    
   }
 
   // Method that extracts the one up size image to be piped
@@ -651,6 +624,59 @@ $(function(){
     
   }
   
+  // Method to remove current photos in picker view
+  // Used during pagination calls
+  function appendPhotosFromPagination(imgs){
+    
+    $gallery
+      .find('img:last')
+      .after(imgs)
+  }
+  
+  // Step #3 twitter destination
+  function twitterDestinationClickHandler(){
+
+    _photoDestination = 'twitter'
+    showCaptionForm(_photoDestination)
+    
+    // console.log(e.target + " is the target")
+
+    toggleEnableChoice(e.target)
+    
+    return false
+  }
+    
+  // Step #4 facebook destination
+  function facebookDestinationClickHandler(e){
+
+    _photoDestination = 'facebook'
+
+    showCaptionForm(_photoDestination)
+
+    // console.log(e.target + " is the target")
+
+    toggleEnableChoice(e.target)
+    
+    return false
+    
+  }
+
+  function downloadDestinationClickHandler(e){
+
+    _photoDestination = 'download'
+
+    // showCaptionForm(_photoDestination)
+
+    // console.log(e.target + " is the target")
+
+    toggleEnableChoice(e.target)
+    
+    pipePhotoPostHandler()
+    
+    return false
+    
+  }
+
   // Wire up the pipe submission form
   function wirePipeForm(){
     $photoPipeForm.bind('submit', pipePhotoPostHandler)
@@ -658,29 +684,27 @@ $(function(){
   
   // Post the actual photo and caption
   function pipePhotoPostHandler(){
-    /*
-    <form id="photoPipeForm" action="/smoke" enctype="application/x-www-form-urlencoded" method="post">
-      <fieldset>
-        <label for='photoUrl'>Caption (optional)</label>
-        <input type='hidden' name='type' value='echo'>
-        <input type='hidden' name='photoUrl' value=''>
-        <input type='text' name='caption' value='PhotoPipe'>
-        <input type='submit' value='Pipe It!'>
-      </fieldset>
-    </form>
-    
-    */
-    
+
     $
     .post("/smoke",{
       type: _photoDestination,
       photoUrl: _photoToUse,
-      caption: $('#caption').val()
+      caption: $('#caption').val() 
     })
-    .success(function(data) { 
+    .success(function(data){ 
+
       $spin.hide()
-      console.dir(data)
-      alert('Success!')
+
+      if(_photoDestination === 'download'){
+        // console.dir(data)
+        downloadFile(data)
+      }
+      else{
+        // console.dir(data)
+        alert('Success!')
+        window.location = "/"
+      }
+
     })
     .error(function(e) {
       $spin.hide()
@@ -702,16 +726,8 @@ $(function(){
     return false
     
   }
-  
-  // Method to remove current photos in picker view
-  // Used during pagination calls
-  function appendPhotosFromPagination(imgs){
-    
-    $gallery
-      .find('img:last')
-      .after(imgs)
-  }
-  
+
+
   // Some basic AJAX setup things...
   function ajaxSetup(){
     $.ajaxPrefilter( function( options, originalOptions, jqXHR ){
@@ -719,6 +735,12 @@ $(function(){
     })
   }
   
+  // To be called on AJAX request
+  function downloadFile(data){
+    
+    document.getElementById('downloader').src = '/download/file?filePath=' + data.fullPhotoPath
+    toggleEnableChoice()
+  }
   
   
   /******************************* UI STUFF *******************************/
@@ -765,8 +787,11 @@ $(function(){
   // Visual cue that item has been picked (source or destination)
   function toggleEnableChoice(el){
     
-    $('.selected-destination').removeClass('selectedDestination')
+    $('.selected-destination')
+      .removeClass('selected-destination')
 
+    if(!el) return $('#photo-to-pipe li a').removeClass('disabled')
+  
     $(el).addClass('selected-destination')
     
     $('#photo-to-pipe li a')
@@ -778,14 +803,14 @@ $(function(){
   // TODO: Method that watches position of spinner and will reposition
   // based on scroll. We need it to show up when we scroll down
   function spinnerWatcher(){
-    console.warn("spinnerWatcher() Not implemented yet.")
+    return console.warn("spinnerWatcher() Not implemented yet.")
   }
 
   // TODO: Method that pages thru photos in one up view.
   // Left arrow button/left swipe goes back
   // Right arrow button/right swip goes forward
   function photoPager(){
-    console.warn("photoPager() Not implemented yet.")
+    return console.warn("photoPager() Not implemented yet.")
   }
   
   // Show/modify form based on incoming type
@@ -832,7 +857,6 @@ $(function(){
     wirePipeForm()
 
     spinner()
-    spinnerWatcher()
     ajaxSetup()
     
   })()

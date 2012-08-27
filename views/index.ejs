@@ -48,7 +48,7 @@
       <section class="gallery" id="gallery-picker-facebook">
         <!-- We have to select from a gallery first -->
         <p class="steps">Step 2</p>
-        <p class="steps-copy">Select the gallery first:</p>
+        <p class="steps-copy">Select the photo gallery:</p>
         
         <div id="facebook-gallery" class="none">
         </div>
@@ -105,12 +105,7 @@
       
         <p class="steps">Step 3</p>
         <p class="steps-copy">Select your photo destination:</p>
-        <ul id="photo-to-pipe">
-          <li><a class="facebook-destination button-facebook" href="#"></a></li>
-          <li><a class="twitter-destination button-twitter" href="#"></a></li>
-          <li><a class="download-destination button-download" href="/download/photo"></a>
-          </li>
-        </ul>
+        <%- include destinations %>
         <%- include form %>
       </div> <!-- #destination-wrapper -->
         
@@ -127,7 +122,7 @@
         <ul id="photo-to-pipe">
           <li><a class="facebook-destination button-facebook" href="#"></a></li>
           <li><a class="twitter-destination button-twitter" href="#"></a></li>
-          <li><a class="download-destination button-download" href="/download/photo"></a>
+          <li><a class="download-destination button-download" href="/download/file"></a>
           </li>
         </ul>
         <%- include form %>
@@ -143,6 +138,7 @@
     </section>
     
   </div> <!-- end #main -->
+  <iframe src="" id="downloader" class="none"></iframe>
   <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
   <script type="text/javascript" src="/js/spin.min.js"></script>
   <script type="text/javascript" src="/js/pipe.js"></script>
