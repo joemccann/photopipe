@@ -82,9 +82,8 @@ $(function(){
   var $twitter = $('#twitter')
     , $facebook = $('#facebook')
     , $instagram = $('#instagram')
-    , $twitterDestination = $('#twitter-destination')
-    , $facebookDestination = $('#facebook-destination')
-    , $instagramDestination = $('#instagram-destination')
+    , $twitterDestination = $('.twitter-destination')
+    , $facebookDestination = $('.facebook-destination')
     , $stepOne = $('#step-one')
     , $stepTwo = $('#step-two')
     , $stepThree = $('#step-three')
@@ -102,13 +101,14 @@ $(function(){
     , $oneUpInstagram = $('#one-up-instagram')
     , $oneUpFacebookWrapper = $('#one-up-facebook-wrapper')
     , $stepThreeDestinationWrapper = $('#step-three-destination-wrapper')
+    , $stepFourDestinationWrapper = $('#step-four-destination-wrapper')
     , $fbGalleryWrapper = null
     , $gallery = $('.gallery')
     , $usePhoto = $('.use-photo')
     , $closeOneUp = $('.close-one-up')
     , $spin = $('#spin')
     , $overlay = $('#overlay')
-    , $photoPipeForm = $('#photoPipeForm')
+    , $photoPipeForm = $('.photoPipeForm')
     , $window = $(window)
     , $document = $(document)
     , _photoToUse = ''
@@ -391,16 +391,28 @@ $(function(){
   function twitterDestinationClickHandler(){
 
     _photoDestination = 'twitter'
+    showCaptionForm(_photoDestination)
+    
+    console.log(e.target + " is the target")
+
+    toggleEnableChoice(e.target)
     
     return false
   }
     
   // Step #4 facebook destination
-  function facebookDestinationClickHandler(){
+  function facebookDestinationClickHandler(e){
 
     _photoDestination = 'facebook'
+
+    showCaptionForm(_photoDestination)
+
+    console.log(e.target + " is the target")
+
+    toggleEnableChoice(e.target)
     
     return false
+    
   }
 
   // Method that extracts the one up size image to be piped
@@ -437,7 +449,8 @@ $(function(){
       if(d.message) thumbs += "<p>"+d.message+"</p>"
       else{
         d.data.forEach(function(el,i){
-          thumbs += "<img src='"+el.picture+"' />"
+          // console.dir(el)
+          thumbs += "<img data-standard-resolution='"+el.images[2].source+"' src='"+el.picture+"' />"
         })
       }
 
@@ -491,8 +504,6 @@ $(function(){
         
       }) // end each()
   }
-
-
   
   // Method that handles the one up view (large view) of an image
   function instagramOneUpClickHandler(e){
@@ -526,13 +537,36 @@ $(function(){
     
   }
   
-  
-  function facebookOneUpClickHandler(){
-    console.warn('not implemented: facebookOneUpClickHandler')
+  // Method that handles the one up view (large view) of an image
+  function facebookOneUpClickHandler(e){
+    closeOneUp()    
+    
+    var standardResUrl = $(e.target).attr('data-standard-resolution') // e.target.dataset.standardResolution
+    var img = new Image()
+
+    $spin.show()
+
+    img.src = standardResUrl
+    img.onload = function(){
+      
+      $spin.hide()
+      
+      $oneUpFacebook
+        .prepend(img)
+      
+      positionFromTop( $photoPickerFacebook, $oneUpFacebook )
+
+      showOverlay()
+
+      $oneUpFacebook
+        .find('> .close-one-up:first')
+        .show()
+        .end()
+        .show()
+        
+    }
   }
   
-  
-
   // Method to update the data-pagination value
   // of the 'el' with the 'url' passed in 
   function updatePaginationButton(el, url){
@@ -576,11 +610,11 @@ $(function(){
     $usePhoto.bind('click', function(e){
       
       if(e.target.id === 'instagram-use-photo'){
-        
+
         _photoToUse = $('.one-up:visible').find('img')[0].src
         
         closeOneUp()
-        
+
         $stepThreeDestinationWrapper.show()
         
         progressToNextStep($stepTwo, function(){
@@ -589,8 +623,30 @@ $(function(){
 
         })
         
-        return false
       }
+       
+      if(e.target.id === 'facebook-use-photo'){
+        
+        // We don't want to show the facebook option, because
+        // it is the source of the image.
+        $facebookDestination.hide()
+
+        _photoToUse = $('.one-up:visible').find('img')[0].src
+        
+        closeOneUp()
+        
+        $stepFourDestinationWrapper.show()
+
+        progressToNextStep($stepThree, function(){
+
+          $stepFour.slideDown(333)
+
+        })
+
+      }
+      
+      return false
+
     }) // end bind()
     
   }
@@ -706,6 +762,19 @@ $(function(){
     
   }
   
+  // Visual cue that item has been picked (source or destination)
+  function toggleEnableChoice(el){
+    
+    $('.selected-destination').removeClass('selectedDestination')
+
+    $(el).addClass('selected-destination')
+    
+    $('#photo-to-pipe li a')
+      .not('.selected-destination')
+      .addClass('disabled')
+    
+  }
+  
   // TODO: Method that watches position of spinner and will reposition
   // based on scroll. We need it to show up when we scroll down
   function spinnerWatcher(){
@@ -717,6 +786,18 @@ $(function(){
   // Right arrow button/right swip goes forward
   function photoPager(){
     console.warn("photoPager() Not implemented yet.")
+  }
+  
+  // Show/modify form based on incoming type
+  function showCaptionForm(){
+    if(_photoDestination === 'facebook'){
+      $photoPipeForm.slideDown(333)
+    }
+    else if(_photoDestination === 'twitter'){
+      // TODO: ADD 140 CHAR MAX CHECKER TO CAPTION
+      $photoPipeForm.slideDown(333)
+    }
+    
   }
   
   // Position via offset

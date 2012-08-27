@@ -114,6 +114,9 @@ a:visited
 .gallery
   position relative
 
+.disabled
+  normOpacity(33)
+
 .gallery > img,
 .fb-gallery-wrapper
   border 3px solid #CCC
@@ -152,9 +155,12 @@ a:visited
 #photo-to-pipe li a
   margin 0
   padding 0
-
+  borderRadius(10px)
+  
+.button-twitter
 .button-instagram,
-.button-facebook
+.button-facebook,
+.button-download
   display inline-block
   width 200px
   height 200px
@@ -165,6 +171,12 @@ a:visited
 
 .button-facebook
   background transparent url('/img/facebook-200x200.png') no-repeat scroll top left
+
+.button-twitter
+  background transparent url('/img/twitter-200x200.png') no-repeat scroll top left
+
+.button-download
+  background transparent url('/img/download-200x200.png') no-repeat scroll top left
 
 .button-connect-instagram
   display inline-block
@@ -177,6 +189,7 @@ a:visited
   width 210px
   height 36px
   background transparent url('/img/button-signin-facebook-210x36.png') no-repeat scroll top left
+
 
 .none
 #step-two, 
@@ -238,8 +251,18 @@ a:visited
 .oauth-page
   margin-top 3%
 
+.photoPipeForm
+  margin-top 6%
+  display none
+
+#caption
+  padding 0 3%
+  font-size 2em
+  line-height 2.4
+  90%
+
 #debug
-  display block
+  display none
 
 #debug p
   font-size 1.2em

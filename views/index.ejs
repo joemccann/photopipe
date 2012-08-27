@@ -17,9 +17,8 @@
       <p class="steps">Step 1</p>
       <p class="steps-copy">Select your photo source:</p>
       <ul id="photo-to-pipe">
-        <li><a id="facebook" data-auth="<%= isInstagramAuth %>" href="/facebook/get_photo_albums" class="button-facebook"></a></li>
-        <li><a id="instagram" data-auth="<%= isInstagramAuth %>" href="/instagram/get_user_recent_photos" class="button-instagram"></a></li>
-        <!--<li><a id="twitter" data-auth="<%= isTwitterAuth %>" href="/twitter/get_user_recent_photos" class="button-connect-twitter"></a></li> -->
+        <li><a id="facebook" data-auth="<%= isFacebookAuth %>" href="/facebook/get_photo_albums" class="button-facebook"></a></li>
+        <li><a id="instagram" data-auth="<%= isInstagramAuth %>" href="/instagram/get_user_recent_photos" class="button-instagram"></a></li>        <!--<li><a id="twitter" data-auth="<%= isTwitterAuth %>" href="/twitter/get_user_recent_photos" class="button-connect-twitter"></a></li> -->
       </ul>  
     </section>
     
@@ -107,19 +106,12 @@
         <p class="steps">Step 3</p>
         <p class="steps-copy">Select your photo destination:</p>
         <ul id="photo-to-pipe">
-          <li><a id="facebook-destination" data-auth="<%= isInstagramAuth %>" href="/facebook/get_photo_album_cover" class="button-facebook"></a></li>
-          <li><a id="twitter-destination" data-auth="<%= isTwitterAuth %>" href="/twitter/get_user_recent_photos" class="button-connect-twitter"></a></li>
+          <li><a class="facebook-destination button-facebook" href="#"></a></li>
+          <li><a class="twitter-destination button-twitter" href="#"></a></li>
+          <li><a class="download-destination button-download" href="/download/photo"></a>
+          </li>
         </ul>
-        <form id="photoPipeForm" action="/smoke" enctype="application/x-www-form-urlencoded" method="post">
-          <fieldset>
-            <label for='photoUrl'>Caption (optional)</label>
-            <input type='hidden' name='type' value='echo'>
-            <input type='hidden' name='photoUrl' value=''>
-            <input type='text' name='caption' id="caption" value='PhotoPipe'>
-            <input type='submit' value='Pipe It!'>
-          </fieldset>
-        </form>
-      
+        <%- include form %>
       </div> <!-- #destination-wrapper -->
         
     </section>
@@ -133,18 +125,12 @@
         <p class="steps">Step 4</p>
         <p class="steps-copy">Select your photo destination:</p>
         <ul id="photo-to-pipe">
-          <li><a id="facebook-destination" data-auth="<%= isInstagramAuth %>" href="/facebook/get_photo_album_cover" class="button-facebook"></a></li>
-          <li><a id="twitter-destination" data-auth="<%= isTwitterAuth %>" href="/twitter/get_user_recent_photos" class="button-connect-twitter"></a></li>
+          <li><a class="facebook-destination button-facebook" href="#"></a></li>
+          <li><a class="twitter-destination button-twitter" href="#"></a></li>
+          <li><a class="download-destination button-download" href="/download/photo"></a>
+          </li>
         </ul>
-        <form id="photoPipeForm" action="/smoke" enctype="application/x-www-form-urlencoded" method="post">
-          <fieldset>
-            <input type='hidden' name='type' value='echo'>
-            <input type='hidden' name='photoUrl' value=''>
-            <label for='photoUrl'>Caption (optional)</label>
-            <input type='text' name='caption' id="caption" value='PhotoPipe'>
-            <input type='submit' value='Pipe It!'>
-          </fieldset>
-        </form>
+        <%- include form %>
       
       </div> <!-- #destination-wrapper -->
         

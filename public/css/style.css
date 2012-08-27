@@ -247,6 +247,10 @@ table {
   border-radius: 0.15em 0 0 0.15em;
   pointer-events: none;
 }
+.pipe {
+  display: block;
+  margin: 3% auto 0%;
+}
 .add:before {
   content: "\271A";
 }
@@ -366,6 +370,11 @@ a:visited {
 .gallery {
   position: relative;
 }
+.disabled {
+  -khtml-opacity: 0.33;
+  -moz-opacity: 0.33;
+  opacity: 0.33;
+}
 .gallery > img,
 .fb-gallery-wrapper {
   border: 3px solid #ccc;
@@ -406,9 +415,14 @@ a:visited {
 #photo-to-pipe li a {
   margin: 0;
   padding: 0;
+  -webkit-border-radius: 10px;
+  -moz-border-radius: 10px;
+  border-radius: 10px;
 }
+.button-twitter,
 .button-instagram,
-.button-facebook {
+.button-facebook,
+.button-download {
   display: inline-block;
   width: 200px;
   height: 200px;
@@ -419,6 +433,12 @@ a:visited {
 }
 .button-facebook {
   background: transparent url("/img/facebook-200x200.png") no-repeat scroll top left;
+}
+.button-twitter {
+  background: transparent url("/img/twitter-200x200.png") no-repeat scroll top left;
+}
+.button-download {
+  background: transparent url("/img/download-200x200.png") no-repeat scroll top left;
 }
 .button-connect-instagram {
   display: inline-block;
@@ -494,8 +514,17 @@ a:visited {
 .oauth-page {
   margin-top: 3%;
 }
+.photoPipeForm {
+  margin-top: 6%;
+  display: none;
+}
+#caption {
+  padding: 0 3%;
+  font-size: 2em;
+  line-height: 2.4;
+}
 #debug {
-  display: block;
+  display: none;
 }
 #debug p {
   font-size: 1.2em;
