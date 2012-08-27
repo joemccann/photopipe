@@ -22,6 +22,8 @@ Instagram.photopipe = {
       user_id: req.session.instagram.user.id,
       error: function(errorMessage, errorObject, caller, response){
        var err = JSON.parse(errorObject)
+       // Revoke the sessions if code === 400
+       if(err.meta.code === 400) req.session.instagram = null
        return res.status(err.meta.code).send(err.error_message)
       },
       complete: function(data,page){
