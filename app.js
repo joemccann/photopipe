@@ -32,10 +32,22 @@ app.configure('development', function(){
 /* GET routes */
 app.get('/', routes.index)
 
+/* GET routes */
+app.get('/not-implemented', routes['not-implemented'])
+
 /* POST routes */
 app.post('/smoke', routes.smoke)
 
 app.get('/download/file', routes.download_file)
+
+/************************** Twitter Support **************************/
+
+// Remove or comment below if you don't want Facebook support
+var twitter_routes = require('./routes/twitter')
+
+app.get('/twitter', twitter_routes.twitter)
+
+app.get('/oauth/twitter', twitter_routes.twitter_oauth)
 
 /************************** Instagram Support **************************/
 

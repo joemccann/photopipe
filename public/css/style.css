@@ -448,9 +448,15 @@ a:visited {
 }
 .button-connect-facebook {
   display: inline-block;
-  width: 210px;
-  height: 36px;
-  background: transparent url("/img/button-signin-facebook-210x36.png") no-repeat scroll top left;
+  width: 234px;
+  height: 37px;
+  background: transparent url("/img/button-signin-facebook-234x37.png") no-repeat scroll top left;
+}
+.button-connect-twitter {
+  display: inline-block;
+  width: 234px;
+  height: 37px;
+  background: transparent url("/img/button-signin-twitter-234x37.png") no-repeat scroll top left;
 }
 .none,
 #step-two,

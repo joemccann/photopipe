@@ -38,7 +38,8 @@
     "ejs": "*",
     "stylus": "*",
     "request": ">=2.9.203",
-    "instagram-node-lib": ">=0.0.9"
+    "instagram-node-lib": ">=0.0.9",
+    "ntwitter": ">=0.4.1"
   },
   "subdomain": "photopipe",
   "domains": [

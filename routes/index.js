@@ -167,3 +167,12 @@ exports.download_file = function(req,res){
   })
 
 }
+
+/*
+ * GET not implemented page.
+ */
+
+exports['not-implemented'] = function(req, res){
+  
+  res.render('not-implemented', {title: 'PhotoPipe - Put Your Image URL In and Smoke It!'})
+}
