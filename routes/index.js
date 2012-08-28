@@ -40,6 +40,15 @@ exports.index = function(req, res){
 }
 
 /*
+ * GET not implemented page.
+ */
+
+exports.wtf = function(req, res){
+  
+  res.render('wtf', {title: 'PhotoPipe - Put Your Image URL In and Smoke It!'})
+}
+
+/*
  * POST inbound photo url.
 
   -- API Interface --

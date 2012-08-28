@@ -32,7 +32,8 @@ app.configure('development', function(){
 /* GET routes */
 app.get('/', routes.index)
 
-/* GET routes */
+app.get('/wtf', routes.wtf)
+
 app.get('/not-implemented', routes['not-implemented'])
 
 /* POST routes */

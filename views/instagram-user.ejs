@@ -4,20 +4,23 @@
 <body>
 	
   <div id="main">
-    <h1>Hi <span class="cool"><%= username %></span></h1>
 
-  <div id="images"></div>
-  <div id="overlay"></div>
+    <%- include nav %>
 
-  <div id="one-up">
-    <div id="one-up-relative">
-        <div id="one-up-controls-wrapper">
-          <button id="one-up-controls-cancel">Cancel</button>
-          <button id="one-up-controls-use">Use</button>
+    <div id="images"></div>
+    <div id="overlay"></div>
+
+    <div id="one-up">
+      <div id="one-up-relative">
+          <div id="one-up-controls-wrapper">
+            <button id="one-up-controls-cancel">Cancel</button>
+            <button id="one-up-controls-use">Use</button>
+          </div>
         </div>
       </div>
-    </div>
-  </div> <!-- end #one-up -->
+    </div> <!-- end #one-up -->
+  
+  </div> <!-- end #main -->
   
 <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
 

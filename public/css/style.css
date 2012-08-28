@@ -317,11 +317,19 @@ li {
 img {
   max-width: 100%;
 }
+nav > a {
+  float: right;
+  margin-top: 1.75%;
+}
 a {
   text-decoration: none;
-  color: #3b3b3b;
+  color: #3f729b;
 }
 a:visited {
+  color: #3f729b;
+}
+h1 > a,
+h1 > a:visited {
   color: #3b3b3b;
 }
 #main {
@@ -533,6 +541,15 @@ a:visited {
   line-height: 2.4;
   width: 90%;
 }
+#wtf > p {
+  margin: 3% auto;
+  line-height: 1.4;
+  color: #626262;
+}
+#wtf > .steps {
+  line-height: 1;
+  color: #3b3b3b;
+}
 #debug {
   display: none;
 }
@@ -555,6 +572,9 @@ a:visited {
   }
   h1 {
     font-size: 2.4em;
+  }
+  nav > a {
+    margin-top: 3%;
   }
   #photo-to-pipe li,
   #photo-to-pipe li:first-child,

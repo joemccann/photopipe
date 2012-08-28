@@ -61,11 +61,18 @@ li
 img
   max-width 100%
 
+nav > a
+  float right
+  margin-top: 1.75%
+
 a
   text-decoration none
-  color textColor
+  color mainColor
   
 a:visited
+  color mainColor
+
+h1 > a, h1 > a:visited
   color textColor
 
 #main
@@ -269,6 +276,15 @@ a:visited
   font-size 2em
   line-height 2.4
   width 90%
+
+#wtf > p
+  margin 3% auto
+  line-height 1.4
+  color lighten(textColor,20%)
+
+#wtf > .steps
+  line-height 1
+  color textColor
 
 #debug
   display none
