@@ -74,7 +74,7 @@
 
     </section>
     
-    <!-- Step 3 Pick a destination or a photo (in fb case) -->
+    <!-- Step 3 Pick a destination or a photo (in facebook case) -->
     
     <section id="step-three">
       
@@ -128,11 +128,7 @@
         
     </section>
     
-    <section id="debug">
-      <p>Is Instagram Authenticated? <%- isInstagramAuth ? "<span class='cool'>yes</span>" : "no" %> </p>
-      <p>Is Facebook Authenticated? <%- isFacebookAuth ? "<span class='cool'>yes</span>" : "no" %> </p>
-      <p>Is Twitter Authenticated? <%- isTwitterAuth ? "<span class='cool'>yes</span>" : "no" %> </p>
-    </section>
+    <%- include debug %>
     
   </div> <!-- end #main -->
   <iframe src="" id="downloader" class="none"></iframe>

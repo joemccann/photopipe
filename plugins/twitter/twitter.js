@@ -35,7 +35,7 @@ exports.Twitter = {
     
     if(!req.session.twitter.oauth) return res.status(403).send('User not authorized. Please reauthenticate with twitter.')
     
-    console.log('We have a session so lets get timeline')
+    // console.log('We have a session so lets get media timeline')
     // var url = 'http://api.twitter.com/1/statuses/user_timeline.json?'
     var url = 'http://api.twitter.com/1/statuses/media_timeline.json?'
       , params = 
@@ -51,8 +51,6 @@ exports.Twitter = {
       
     // console.dir(perm_token)
     
-    // remove instagram from result set?
-
     url += qs.stringify(params)
     
     // console.dir(req.session.twitter.oauth)
@@ -60,9 +58,47 @@ exports.Twitter = {
     request.get({url:url, oauth: req.session.twitter.oauth, json:true}, function (e, r, data) {
       if(e) return console.error(e)
       // console.dir(data)
-      res.json(data)
+      return res.json(data)
     })
 
+  },
+  pipeToTwitter: function(echo, req, res){
+    // TODO: Not sure if this check goes here or in pipePhotoToTwiter() in twitter.js plugin 
+    if(!req.session.twitter.oauth){
+      res.type('text/plain')
+      return res.status(403).send("You are not authenticated with Facebook.")
+    } 
+    
+    // TODO: EVENTUALLY WE WILL NEED TO CHECK THE 
+    // https://api.twitter.com/1/help/configuration.json
+    // RESPONSE THAT CONTAINS SHORT URL CHARS AND MAX MEDIA UPLOADS
+    // SEE https://dev.twitter.com/docs/api/1/get/help/configuration
+    
+    var url = 'https://upload.twitter.com/1/statuses/update_with_media.json?'
+      , params = 
+        { status: echo.caption
+        , media: [echo.fullPhotoPath]
+        }
+    
+    url += qs.stringify(params)
+    
+    // console.dir(req.session.twitter.oauth)
+
+    request.post({url:url, oauth: req.session.twitter.oauth, json:true}, function (e, r, data) {
+      if(e) return console.error(e)
+
+      console.dir(data)
+
+      if(data.error){
+        return res.status(404).send(data.error)
+      }
+      // NOTE:  If the user tries to exceed the number of updates allowed, 
+      // this method will also return an HTTP 403 error, similar to POST statuses/update.
+      // TODO: CHECK FOR THIS!!
+      return res.json(data)
+    })
+    
+    
   }
 } // end exports.Twitter
 

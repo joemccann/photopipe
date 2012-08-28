@@ -40,7 +40,7 @@ exports.index = function(req, res){
 }
 
 /*
- * GET not implemented page.
+ * GET wtf (about) page.
  */
 
 exports.wtf = function(req, res){
@@ -125,6 +125,13 @@ exports.smoke = function(req, res){
         var fb = require(path.resolve(__dirname, '..', 'plugins/facebook/facebook.js')).Facebook
 
         fb.pipePhotoToFb(echo, req, res)
+      }else if(echo.type === 'twitter'){
+
+        var twit = require(path.resolve(__dirname, '..', 'plugins/twitter/twitter.js')).Twitter
+
+        // Now, just pipe the echo object and be sure to pass the
+        // request and response objects as well.
+        twit.pipeToTwitter(echo, req, res)
         
       }else if(echo.type === 'bazaarvoice'){
 

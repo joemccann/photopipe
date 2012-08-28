@@ -762,7 +762,7 @@ $(function(){
   }
   
   // Step #3 twitter destination
-  function twitterDestinationClickHandler(){
+  function twitterDestinationClickHandler(e){
 
     _photoDestination = 'twitter'
     showCaptionForm(_photoDestination)
