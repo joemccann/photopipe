@@ -154,16 +154,33 @@ exports.smoke = function(req, res){
 
 exports.download_file = function(req,res){
 
-  var filename = req.query.filePath
+  var filePath = req.query.filePath
+    , fileName = req.query.fileName || "photopipe_download"
+    
+  var fileExtension = (/\.(gif|jpg|jpeg|png|bmp)/gi.exec(filePath))[0]
+
+  fileName += fileExtension
   
-  res.download(filename, function(err){
-    if(err) res.status(500).send(err) 
-    else{
-      // Delete the file after download
-      fs.unlink(filename, function(err, data){
-        if(err) console.error(err)
-      })
+  res.download(filePath, fileName, function(err){
+    if(err) {
+      console.error(err)
+      res.status(err.status).send(err.code) 
     }
+    else{
+
+      // Delete the file after download
+      setTimeout(function(){
+
+        fs.unlink(filePath, function(err, data){
+          if(err) return console.error(err)
+          console.log(filePath + " was unlinked")
+
+        },15000) // end unlink
+
+      }) // end nextTick
+
+    } // end else
+
   })
 
 }

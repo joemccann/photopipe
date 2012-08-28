@@ -47,6 +47,8 @@ var twitter_routes = require('./routes/twitter')
 
 app.get('/twitter', twitter_routes.twitter)
 
+app.get('/twitter/get_media_timeline', twitter_routes.twitter_get_media_timeline)
+
 app.get('/oauth/twitter', twitter_routes.twitter_oauth)
 
 /************************** Instagram Support **************************/

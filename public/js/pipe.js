@@ -109,6 +109,7 @@ $(function(){
     , $closeOneUp = $('.close-one-up')
     , $spin = $('#spin')
     , $overlay = $('#overlay')
+    , $caption = $('#caption')
     , $photoPipeForm = $('.photoPipeForm')
     , $window = $(window)
     , $document = $(document)
@@ -158,7 +159,69 @@ $(function(){
 
   // Step #1 twitter connection
   function twitterClickHandler(){
-    return console.warn('Not Implemented Yet.')
+    
+    var url = $twitter.attr('href') 
+    
+    $
+    .get(url)
+    .success(function(data){ 
+      
+      $spin.hide()
+      
+      console.dir(data)
+      
+      var sorted = []
+      var thumbs = ""
+      
+      $.each(data,function(i,el){
+        console.dir(el)
+        if(el.entities.media && el.entities.media.length) {
+
+          var goodObj = el.entities.media[0]
+           
+          thumbs += "<img data-standard-resolution='"
+                    + goodObj.media_url+":large"
+                    +"' src='"+ goodObj.media_url+":thumb" +"' />"
+
+        }
+        
+      }) // end $.each()
+      
+      // Add to photoPicker div
+      $oneUpTwitter
+        .before(thumbs)
+
+      // Show the photo picker fb section
+      $photoPickerTwitter
+        .show()
+
+      // Wire up the events to the images...
+      wireTwitterGalleryPicker()
+
+      // Progress to Step 2
+      progressToNextStep($stepOne, function(){
+
+        $stepTwo.slideDown(333)
+
+      })
+      
+      return console.dir(sorted)
+      
+    })
+    .error(function(e,b){
+      $spin.hide()
+      if(e.status === 400) alert(e.responseText || 'Bad request.')
+      if(e.status === 401) alert(e.responseText || 'Unauthorized request.')
+      if(e.status === 402) alert(e.responseText || 'Forbidden request.')
+      if(e.status === 403) alert(e.responseText || 'Forbidden request.')
+      if(e.status === 404) alert(e.responseText || 'Images were not found.')
+      if(e.status === 405) alert(e.responseText || 'That method is not allowed.')
+      if(e.status === 408) alert(e.responseText || 'The request timed out. Try again.')
+      if(e.status === 500) alert(e.responseText || 'Something went really wrong.')
+    })
+    
+    return false
+    
   }
     
   // Step #1 facebook connection
@@ -187,7 +250,7 @@ $(function(){
         .get('/facebook/get_photo_album_cover?cover_photo='+el.cover_photo)
         .success(function(data){ 
 
-          thumbs += "<div class='inline-block fb-gallery-wrapper'>"+
+          thumbs += "<div class='inline-block gallery-wrapper'>"+
                       "<img data-album-id='"+el.id+"' src='"+data+"'/>"+
                       "<span class='fb-gallery-label'>"+el.name+"</span>"+
                     "</div>"
@@ -392,7 +455,7 @@ $(function(){
   function wireFacebookGalleryGroups(){
     
     // stash for later, may need them
-    $fbGalleryWrapper = $('.fb-gallery-wrapper') 
+    $fbGalleryWrapper = $('.gallery-wrapper') 
     
     $fbGalleryWrapper
       .each(function(i,el){
@@ -465,6 +528,20 @@ $(function(){
         
       }) // end each()
   }
+  
+  function wireTwitterGalleryPicker(){
+    
+    $photoPickerTwitter
+      .find('img')
+      .each(function(i,el){
+        
+        console.dir(el)
+        
+        $(el).bind('click', twitterOneUpClickHandler)
+        
+      }) // end each()
+    
+  }
 
   // Method that extracts the one up size fb image to be piped
   function wireFacebookGalleryPicker(){
@@ -476,6 +553,37 @@ $(function(){
         $(el).bind('click', facebookOneUpClickHandler)
         
       }) // end each()
+  }
+  
+  function twitterOneUpClickHandler(e){
+
+    closeOneUp()    
+    
+    var standardResUrl = $(e.target).attr('data-standard-resolution') // e.target.dataset.standardResolution
+    var img = new Image()
+
+    $spin.show()
+
+    img.src = standardResUrl
+    img.onload = function(){
+      
+      $spin.hide()
+      
+      $oneUpTwitter
+        .prepend(img)
+      
+      positionFromTop( $photoPickerTwitter, $oneUpTwitter )
+
+      showOverlay()
+
+      $oneUpTwitter
+        .find('> .close-one-up:first')
+        .show()
+        .end()
+        .show()
+        
+    }
+    
   }
   
   // Method that handles the one up view (large view) of an image
@@ -617,6 +725,26 @@ $(function(){
         })
 
       }
+
+      if(e.target.id === 'twitter-use-photo'){
+        
+        // We don't want to show the facebook option, because
+        // it is the source of the image.
+        $twitterDestination.hide()
+        
+        _photoToUse = $('.one-up:visible').find('img')[0].src
+        
+        closeOneUp()
+
+        $stepThreeDestinationWrapper.show()
+        
+        progressToNextStep($stepTwo, function(){
+
+          $stepThree.slideDown(333)
+
+        })
+
+      }
       
       return false
 
@@ -661,6 +789,7 @@ $(function(){
     
   }
 
+  // Download the file
   function downloadDestinationClickHandler(e){
 
     _photoDestination = 'download'
@@ -689,7 +818,7 @@ $(function(){
     .post("/smoke",{
       type: _photoDestination,
       photoUrl: _photoToUse,
-      caption: $('#caption').val() 
+      caption: $caption.val() 
     })
     .success(function(data){ 
 
@@ -726,7 +855,6 @@ $(function(){
     return false
     
   }
-
 
   // Some basic AJAX setup things...
   function ajaxSetup(){
@@ -820,6 +948,7 @@ $(function(){
     }
     else if(_photoDestination === 'twitter'){
       // TODO: ADD 140 CHAR MAX CHECKER TO CAPTION
+      $caption.attr('maxlength', '140')
       $photoPipeForm.slideDown(333)
     }
     

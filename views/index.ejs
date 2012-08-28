@@ -17,8 +17,9 @@
       <p class="steps">Step 1</p>
       <p class="steps-copy">Select your photo source:</p>
       <ul id="photo-to-pipe">
+        <li><a id="twitter" data-auth="<%= isTwitterAuth %>" href="/twitter/get_media_timeline" class="button-twitter"></a></li>
         <li><a id="facebook" data-auth="<%= isFacebookAuth %>" href="/facebook/get_photo_albums" class="button-facebook"></a></li>
-        <li><a id="instagram" data-auth="<%= isInstagramAuth %>" href="/instagram/get_user_recent_photos" class="button-instagram"></a></li>        <!--<li><a id="twitter" data-auth="<%= isTwitterAuth %>" href="/twitter/get_user_recent_photos" class="button-connect-twitter"></a></li> -->
+        <li><a id="instagram" data-auth="<%= isInstagramAuth %>" href="/instagram/get_user_recent_photos" class="button-instagram"></a></li>    
       </ul>  
     </section>
     
@@ -34,12 +35,12 @@
           <span class="close-one-up" data-icon="&#x2297;"></span>
 
           <div class="use-photo-container">
-            <a class="button save" id="twitter-use-photo">Click To Pipe This Photo</a>
+            <a class="button save use-photo" id="twitter-use-photo">Click To Pipe This Photo</a>
           </div>
 
         </div>
         <div class="load-more">
-          <a class="button add" id="twitter-load-more">Load More Photos</a>
+          <a class="button add" id="twitter-load-more">LOAD MORE PHOTOS</a>
         </div>
 
         

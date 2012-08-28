@@ -263,7 +263,7 @@ exports.facebook_oauth = function(req,res){
     return res.render('error', {
       type: 'facebook', 
       title: 'PhotoPipe - Error!',
-      fb_error:{
+      error:{
           error_reason: req.query.error_reason,
           error: req.query.error,
           error_description: req.query.error_description
