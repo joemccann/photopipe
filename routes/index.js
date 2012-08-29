@@ -27,6 +27,14 @@ exports.index = function(req, res){
     })
   }
   
+  // For debugging
+  if(req.session.twitter) {
+    
+    var Twitter = require(path.resolve(__dirname, '..', 'plugins/twitter/twitter.js')).Twitter
+    
+    Twitter.logOAuthData(req)
+  }
+  
   // Some flags to be set for client-side logic.
   var auths = {
     isTwitterAuth: !!req.session.twitter,

@@ -33,7 +33,7 @@ exports.twitter = function(req, res){
     }) // end generateAuthUrl()
     
   }
-  
+
   // We are actually auth'd so no reason to be here.
   res.redirect('/')
 
