@@ -120,8 +120,7 @@ $(function(){
     , $document = $(document)
     , _photoToUse = ''
     , _photoDestination = ''
-    
-  
+      
   // Set some flags for later to see if we are 
   // auth'd for said service or not.
   function checkForAuths(){
@@ -603,10 +602,12 @@ $(function(){
       
       $oneUpTwitter
         .prepend(img)
+        
+        console.dir($photoPickerTwitter)
 
-      var $photoPickerTwitter = $photoPickerTwitter.find('.one-up-wrapper')
+      var $oneUpContainer = $photoPickerTwitter.find('.one-up-wrapper')
 
-      positionFromTop( $photoPickerInstagram, $oneUpContainer )
+      positionFromTop( $photoPickerTwitter, $oneUpContainer )
 
       showOverlay()
 
