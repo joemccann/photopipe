@@ -2,3 +2,4 @@ User-agent: *
 Disallow: /instagram/get_user_recent_photos
 Disallow: /twitter/get_media_timeline
 Disallow: /facebook/get_photo_albums
+Disallow: /download/file
