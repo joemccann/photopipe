@@ -427,6 +427,7 @@ h1 > a:visited {
   opacity: 0.33;
 }
 .gallery > img,
+.one-up-wrapper > img,
 .gallery-wrapper {
   border: 3px solid #ccc;
   -webkit-border-radius: 4px;
@@ -471,8 +472,14 @@ h1 > a:visited {
 #photo-picker-twitter,
 #photo-picker-facebook,
 #photo-picker-instagram,
+#photo-picker-url,
 #gallery-picker-facebook {
   display: none;
+}
+.one-up-wrapper {
+  position: absolute;
+  width: 100%;
+  top: 0;
 }
 .one-up {
   display: none;
@@ -482,9 +489,9 @@ h1 > a:visited {
   border-radius: 4px;
   background: #ccc;
   z-index: 2;
-  position: absolute;
-  top: 0;
-  left: 3.5%;
+  max-width: 630px;
+  margin: 0 auto;
+  position: relative;
 }
 #one-up-relative {
   position: relative;

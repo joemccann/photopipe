@@ -2,7 +2,6 @@
 <html>
 <%- include head %>
 <body>
-  <div id="overlay"></div>
   <div id="main">
     
     <%- include nav %>
@@ -29,14 +28,19 @@
         <p class="steps">Step 2</p>
         <p class="steps-copy">Select the photo you want to pipe:</p>
         
-        <div id="one-up-twitter" class="one-up">
-          <span class="close-one-up" data-icon="&#x2297;"></span>
+				<div class="one-up-wrapper" id="one-up-twitter-wrapper">
 
-          <div class="use-photo-container">
-            <a class="button save use-photo" id="twitter-use-photo">Click To Pipe This Photo</a>
-          </div>
+	        <div id="one-up-twitter" class="one-up">
+	          <span class="close-one-up" data-icon="&#x2297;"></span>
 
-        </div>
+	          <div class="use-photo-container">
+	            <a class="button save use-photo" id="twitter-use-photo">Click To Pipe This Photo</a>
+	          </div>
+
+	        </div>
+
+				</div> <!-- one-up-twitter-wrapper -->
+
         <div class="load-more">
           <a class="button add" id="twitter-load-more">LOAD MORE PHOTOS</a>
         </div>
@@ -60,14 +64,18 @@
         <p class="steps">Step 2</p>
         <p class="steps-copy">Select the photo you want to pipe:</p>
         
-        <div id="one-up-instagram" class="one-up">
-          <span class="close-one-up" data-icon="&#x2297;"></span>
+				<div class="one-up-wrapper" id="one-up-instagram-wrapper">
+					
+	        <div id="one-up-instagram" class="one-up">
+	          <span class="close-one-up" data-icon="&#x2297;"></span>
 
-          <div class="use-photo-container">
-            <a class="button save use-photo" id="instagram-use-photo">This One!</a>
-          </div>
+	          <div class="use-photo-container">
+	            <a class="button save use-photo" id="instagram-use-photo">This One!</a>
+	          </div>
 
-        </div>
+	        </div>
+	
+				</div> <!-- end .one-up-wrapper -->
 
         <div class="load-more">
           <a class="button add" data-pagination="" id="instagram-load-more" href="/instagram/get_next_page_user_recent_photos">LOAD MORE PHOTOS</a>
@@ -102,21 +110,25 @@
         <p class="steps">Step 3</p>
         <p class="steps-copy">Select the photo you want to pipe:</p>
         
-        <div id="one-up-facebook" class="one-up">
+				<div class="one-up-wrapper" id="one-up-facebook-wrapper">
+
+	        <div id="one-up-facebook" class="one-up">
           
-          <span class="close-one-up" data-icon="&#x2297;"></span>
+	          <span class="close-one-up" data-icon="&#x2297;"></span>
 
-          <div class="use-photo-container">
-            <a class="button save use-photo" id="facebook-use-photo">This One!</a>
-          </div>
+	          <div class="use-photo-container">
+	            <a class="button save use-photo" id="facebook-use-photo">This One!</a>
+	          </div>
 
-        </div>
+	        </div>
+
+				</div> <!-- end #one-up-facebook-wrapper -->
 
         <div class="load-more">
           <a class="button add" data-pagination="" id="facebook-load-more" href="/facebook/get_next_page_user_photos">LOAD MORE PHOTOS</a>
         </div>
-      
-      </div> <!-- end #one-up-facebook-wrapper -->
+
+      </div> <!-- end  #photo-picker-facebook -->
       
       <div id="step-three-destination-wrapper" class="none">
       
@@ -158,6 +170,8 @@
   </div> <!-- end #main -->
   
   <iframe src="" id="downloader" class="none"></iframe>
+  
+	<div id="overlay"></div>
   
   <%- include scripts %>
 </body>

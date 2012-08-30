@@ -103,7 +103,9 @@ $(function(){
     , $oneUpTwitter = $('#one-up-twitter')
     , $oneUpFacebook = $('#one-up-facebook')
     , $oneUpInstagram = $('#one-up-instagram')
+    , $oneUpTwitterWrapper = $('#one-up-twitter-wrapper')
     , $oneUpFacebookWrapper = $('#one-up-facebook-wrapper')
+    , $oneUpInstagramWrapper = $('#one-up-instagram-wrapper')
     , $stepThreeDestinationWrapper = $('#step-three-destination-wrapper')
     , $stepFourDestinationWrapper = $('#step-four-destination-wrapper')
     , $fbGalleryWrapper = null
@@ -161,7 +163,6 @@ $(function(){
     
   }
 
-
   // Step #1 twitter connection
   function twitterClickHandler(){
     
@@ -173,13 +174,14 @@ $(function(){
       
       $spin.hide()
       
-      console.dir(data)
+      // console.dir(data)
       
       var sorted = []
       var thumbs = ""
       
       $.each(data,function(i,el){
-        console.dir(el)
+        // console.dir(el)
+        
         if(el.entities.media && el.entities.media.length) {
 
           var goodObj = el.entities.media[0]
@@ -193,7 +195,7 @@ $(function(){
       }) // end $.each()
       
       // Add to photoPicker div
-      $oneUpTwitter
+      $oneUpTwitterWrapper
         .before(thumbs)
 
       // Show the photo picker fb section
@@ -210,7 +212,7 @@ $(function(){
 
       })
       
-      return console.dir(sorted)
+      // console.dir(sorted)
       
     })
     .error(function(e,b){
@@ -314,6 +316,52 @@ $(function(){
     
   }
 
+  // Initial fetch of fb galleries
+  function fetchImagesForFbGallery(id){
+
+    $
+    .get('/facebook/get_photos_from_album_id?id='+id)
+    .success(function(d, resp, x){ 
+
+      console.dir(d)
+
+      var thumbs = ""
+
+      if(d.message) thumbs += "<p>"+d.message+"</p>"
+      else{
+        d.data.forEach(function(el,i){
+          // console.dir(el)
+          thumbs += "<img data-standard-resolution='"+el.images[2].source+"' src='"+el.picture+"' />"
+        })
+      }
+
+      $oneUpFacebookWrapper
+        .before(thumbs)
+      
+      $photoPickerFacebook
+        .show()
+
+      $spin
+        .hide()
+        
+      // wire up the images int the fb gallery
+      wireFacebookGalleryPicker()  
+
+      progressToNextStep($stepTwo, function(){
+
+        $stepThree.slideDown(333)
+
+      })
+
+    })
+    .error(function(e){ 
+      if(e.status === 404) alert(e.responseText || 'Images were not found.')
+      if(e.status === 403) alert(e.responseText || 'That request was not allowed.')
+      if(e.status === 500) alert(e.responseText || 'Something went really wrong.')
+    })
+
+  }
+
   // Step #1 instagram connection
   function instagramClickHandler(){
     
@@ -349,7 +397,7 @@ $(function(){
       })
 
       // Add to photoPicker div
-      $oneUpInstagram
+      $oneUpInstagramWrapper
         .before(thumbs)
       
       $photoPickerInstagram
@@ -404,12 +452,14 @@ $(function(){
 
   // Twitter pagination handler
   function twitterPaginationClickHandler(){
-    return console.warn('Not Implemented Yet.')
+    console.warn('Not Implemented Yet.')
+    return false
   }
     
   // Facebook pagination handler
   function facebookPaginationClickHandler(){
-    return console.warn('Not Implemented Yet.')
+    console.warn('Not Implemented Yet.')
+    return false
   }
 
   // Instagram pagination handler
@@ -487,6 +537,7 @@ $(function(){
       }) // end each()
   }
 
+  // Method that fetches gallery id to fetch photos from
   function wireFacebookGalleryGroupClickHandler(){
     var albumId = $(this).find('img').attr('data-album-id')
     console.log(albumId + " is the albumId")
@@ -494,51 +545,6 @@ $(function(){
     // Fetch the images for said gallery
     fetchImagesForFbGallery(albumId)
     
-  }
-  
-  function fetchImagesForFbGallery(id){
-
-    $
-    .get('/facebook/get_photos_from_album_id?id='+id)
-    .success(function(d, resp, x){ 
-
-      console.dir(d)
-
-      var thumbs = ""
-
-      if(d.message) thumbs += "<p>"+d.message+"</p>"
-      else{
-        d.data.forEach(function(el,i){
-          // console.dir(el)
-          thumbs += "<img data-standard-resolution='"+el.images[2].source+"' src='"+el.picture+"' />"
-        })
-      }
-
-      $oneUpFacebook
-        .before(thumbs)
-      
-      $photoPickerFacebook
-        .show()
-
-      $spin
-        .hide()
-        
-      // wire up the images int the fb gallery
-      wireFacebookGalleryPicker()  
-
-      progressToNextStep($stepTwo, function(){
-
-        $stepThree.slideDown(333)
-
-      })
-
-    })
-    .error(function(e){ 
-      if(e.status === 404) alert(e.responseText || 'Images were not found.')
-      if(e.status === 403) alert(e.responseText || 'That request was not allowed.')
-      if(e.status === 500) alert(e.responseText || 'Something went really wrong.')
-    })
-
   }
   
   // Method that extracts the one up size instagram image to be piped
@@ -553,13 +559,14 @@ $(function(){
       }) // end each()
   }
 
+  // Method that extracts the one up size twitter image to be piped
   function wireTwitterGalleryPicker(){
     
     $photoPickerTwitter
       .find('img')
       .each(function(i,el){
         
-        console.dir(el)
+        // console.dir(el)
         
         $(el).bind('click', twitterOneUpClickHandler)
         
@@ -579,6 +586,7 @@ $(function(){
       }) // end each()
   }
   
+  // Fetch twitter image and show in one up
   function twitterOneUpClickHandler(e){
 
     closeOneUp()    
@@ -595,8 +603,10 @@ $(function(){
       
       $oneUpTwitter
         .prepend(img)
-      
-      positionFromTop( $photoPickerTwitter, $oneUpTwitter )
+
+      var $photoPickerTwitter = $photoPickerTwitter.find('.one-up-wrapper')
+
+      positionFromTop( $photoPickerInstagram, $oneUpContainer )
 
       showOverlay()
 
@@ -628,7 +638,9 @@ $(function(){
       $oneUpInstagram
         .prepend(img)
       
-      positionFromTop( $photoPickerInstagram, $oneUpInstagram )
+      var $oneUpContainer = $photoPickerInstagram.find('.one-up-wrapper')
+      
+      positionFromTop( $photoPickerInstagram, $oneUpContainer )
 
       showOverlay()
 
@@ -658,8 +670,10 @@ $(function(){
       
       $oneUpFacebook
         .prepend(img)
+
+      var $oneUpContainer = $photoPickerFacebook.find('.one-up-wrapper')
       
-      positionFromTop( $photoPickerFacebook, $oneUpFacebook )
+      positionFromTop( $photoPickerFacebook, $oneUpContainer )
 
       showOverlay()
 
