@@ -26,7 +26,7 @@ exports.twitter = function(req, res){
       }
       
       res.render('twitter',{
-          title: 'PhotoPipe - Twitter Authentication',
+          title: 'PhotoPipe - Twitter Connect',
           auth_url: body
         })
       

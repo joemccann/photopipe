@@ -20,6 +20,9 @@ app.configure(function(){
   app.use(app.router)
   app.use(require('stylus').middleware(__dirname + '/public'))
   app.use(express.static(path.join(__dirname, 'public')))
+  // Setup local variables to be available in the views.
+  app.locals.title = "PhotoPipe - Download Instagram Photos, Download Facebook Galleries, Post to Twitter and More!"
+  app.locals.description = "PhotoPipe is a free service so you can download Instagram Photos, download Facebook galleries, Post to photos to Twitter and More!"
 })
 
 app.configure('development', function(){

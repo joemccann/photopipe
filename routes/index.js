@@ -22,8 +22,7 @@ exports.index = function(req, res){
   
   if(req.query.error){
     return res.render('error', {
-      type: req.query.type, 
-      title: 'PhotoPipe - Put Your Image URL In and Smoke It!'
+      type: req.query.type
     })
   }
   
@@ -34,9 +33,7 @@ exports.index = function(req, res){
     isInstagramAuth: !!req.session.instagram
   }
   
-  var locals = _mergeObj( auths, {title: 'PhotoPipe - Put Your Image URL In and Smoke It!'})
-  
-  res.render('index', locals)
+  res.render('index', auths)
 }
 
 /*
@@ -45,7 +42,9 @@ exports.index = function(req, res){
 
 exports.wtf = function(req, res){
   
-  res.render('wtf', {title: 'PhotoPipe - Put Your Image URL In and Smoke It!'})
+  res.render('wtf', {
+    title: 'PhotoPipe is a way to take photos from one social network and post them to another.',
+    description: 'PhotoPipe is a way to take photos from one social network and post them to another.'})
 }
 
 /*
@@ -207,5 +206,5 @@ exports.download_file = function(req,res){
 
 exports['not-implemented'] = function(req, res){
   
-  res.render('not-implemented', {title: 'PhotoPipe - Put Your Image URL In and Smoke It!'})
+  res.render('not-implemented')
 }

@@ -26,7 +26,7 @@ exports.instagram = function(req, res){
     })
 
     return res.render('instagram', { 
-        title: 'PhotoPipe - Instagram OAuth'
+        title: 'PhotoPipe - Instagram Connect'
       , auth_url: auth_url})
     
   }

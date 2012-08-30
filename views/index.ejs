@@ -38,7 +38,6 @@
         <div class="load-more">
           <a class="button add" id="twitter-load-more">LOAD MORE PHOTOS</a>
         </div>
-
         
       </section>
 
@@ -84,6 +83,7 @@
         <p class="steps-copy">Select the photo you want to pipe:</p>
         
         <div id="one-up-facebook" class="one-up">
+          
           <span class="close-one-up" data-icon="&#x2297;"></span>
 
           <div class="use-photo-container">
@@ -104,6 +104,7 @@
         <p class="steps-copy">Select your photo destination:</p>
         <%- include destinations %>
         <%- include form %>
+      
       </div> <!-- #destination-wrapper -->
         
     </section>
@@ -116,12 +117,16 @@
       
         <p class="steps">Step 4</p>
         <p class="steps-copy">Select your photo destination:</p>
+        
         <ul id="photo-to-pipe">
+        
           <li><a class="facebook-destination button-facebook" href="#"></a></li>
           <li><a class="twitter-destination button-twitter" href="#"></a></li>
           <li><a class="download-destination button-download" href="/download/file"></a>
           </li>
+        
         </ul>
+        
         <%- include form %>
       
       </div> <!-- #destination-wrapper -->
@@ -131,7 +136,9 @@
     <%- include debug %>
     
   </div> <!-- end #main -->
+  
   <iframe src="" id="downloader" class="none"></iframe>
+  
   <%- include scripts %>
 </body>
 </html>

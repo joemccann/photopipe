@@ -26,7 +26,7 @@ exports.facebook = function(req, res){
     // below is required for PhotoPipe
 
     res.render('facebook', {
-      title: 'PhotoPipe - Facebook OAuth',
+      title: 'PhotoPipe - Facebook Connect',
       auth_url: 'https://www.facebook.com/dialog/oauth?client_id='+Facebook.config.client_id
                 +'&redirect_uri='+Facebook.config.redirect_uri
                 +'&scope=user_photos,photo_upload,publish_stream'
