@@ -142,9 +142,9 @@ exports.Twitter = {
       oauth: req.session.twitter.oauth,
       uri: uri,
       callback: function(e,r,data){
-        if(err) {
-          console.error(err)
-          return res.json(err)
+        if(e) {
+          console.error(e)
+          return res.json(e)
         }
         if(data) {
           // NOTE:  If the user tries to exceed the number of updates allowed, 
