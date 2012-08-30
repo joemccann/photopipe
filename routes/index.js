@@ -2,11 +2,7 @@ var path = require('path')
   , request = require('request')
   , fs = require('fs')
   , qs = require('querystring')
-
-function _mergeObj(obj1,obj2){
-  for (var key in obj2) { obj1[key] = obj2[key] }
-  return obj1
-}
+  , validator = require( path.resolve(__dirname, '..', 'utils/validation.js') ) 
 
 /****************************************************************
 
@@ -76,9 +72,11 @@ exports.smoke = function(req, res){
   echo.type = req.body.type || 'echo'   
 
   // http://bit.ly/node-path-basename
-  echo.photoName = path.basename(req.body.photoUrl)
+  // Also, clean it up a bit
+  echo.photoName = validator.getImageNameWithoutQueryStringOrHash( path.basename(req.body.photoUrl) )
     
   // Verify it's a mufckn image (png, jpg, etc.)
+  // TODO: CHECK FOR MIME TYPE?
   if( !(/\.(?=gif|jpg|jpeg|png|bmp)/gi).test(echo.photoName) ){
     echo.hasError = true
     echo.message = "Looks like the url "+echo.photoUrl+" is not an image, breaux."
