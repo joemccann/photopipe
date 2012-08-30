@@ -334,7 +334,7 @@ h1 > a:visited {
 }
 #main {
   width: 98%;
-  max-width: 720px;
+  max-width: 920px;
   margin: 1% auto 0;
   text-align: center;
 }
@@ -558,12 +558,20 @@ h1 > a:visited {
   line-height: 2;
   color: #f00;
 }
+@media only screen and (min-width: 45em) and (max-width: 57.5em) {
+  body {
+    padding: 2% 1%;
+  }
+  h1 {
+    font-size: 2.3em;
+  }
+}
 @media only screen and (min-width: 30em) and (max-width: 45em) {
   body {
     padding: 2% 1%;
   }
   h1 {
-    font-size: 2.6em;
+    font-size: 2.2em;
   }
 }
 @media only screen and (min-width: 20em) and (max-width: 29.9999em) {
@@ -571,7 +579,7 @@ h1 > a:visited {
     padding: 3% 1%;
   }
   h1 {
-    font-size: 2.4em;
+    font-size: 2.1em;
   }
   nav > a {
     margin-top: 3%;
