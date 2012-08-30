@@ -16,6 +16,7 @@
         <li><a id="instagram" data-auth="<%= isInstagramAuth %>" href="/instagram/get_user_recent_photos" class="button-instagram"></a></li>    
         <li><a id="twitter" data-auth="<%= isTwitterAuth %>" href="/twitter/get_media_timeline" class="button-twitter"></a></li>
         <li><a id="facebook" data-auth="<%= isFacebookAuth %>" href="/facebook/get_photo_albums" class="button-facebook"></a></li>
+        <li><a id="url" data-auth="true" href="/url" class="button-url"></a></li>
       </ul>  
     </section>
     
@@ -23,6 +24,7 @@
     
     <section id="step-two">
 
+      <!-- Pick a photo from Twitter -->
       <section class="gallery" id="photo-picker-twitter">
         <p class="steps">Step 2</p>
         <p class="steps-copy">Select the photo you want to pipe:</p>
@@ -41,6 +43,7 @@
         
       </section>
 
+      <!-- Pick a gallery from Twitter -->
       <section class="gallery" id="gallery-picker-facebook">
         <!-- We have to select from a gallery first -->
         <p class="steps">Step 2</p>
@@ -51,6 +54,7 @@
         
       </section>
 
+      <!-- Pick a photo from Instagram -->
       <section class="gallery" id="photo-picker-instagram">
         
         <p class="steps">Step 2</p>
@@ -70,6 +74,21 @@
         </div>
 
       </section>
+      
+      <!-- "Pick" (paste) a photo from an URL -->
+      <section class="gallery" id="photo-picker-url">
+        
+        <p class="steps">Step 2</p>
+        <p class="steps-copy">Type or paste in your photo's URL:</p>
+        
+        <fieldset>
+          <label for='photoFromUrl'>Caption (optional)</label>
+          <input type='text' class="big-text-field" name='photoFromUrl' id="photoFromUrl" value='' placeholder="http://photopi.pe/pipe.jpg">
+          <input class="button save use-photo" type='submit' id="url-use-photo" value='Ok!'>
+        </fieldset>
+
+      </section>
+
 
     </section>
     
@@ -77,6 +96,7 @@
     
     <section id="step-three">
       
+      <!-- Pick a photo from Facebook -->
       <div id="photo-picker-facebook" class="gallery">
         
         <p class="steps">Step 3</p>

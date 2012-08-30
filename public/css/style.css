@@ -262,6 +262,49 @@ table {
   content: attr(data-icon);
   speak: none;
 }
+.button-twitter,
+.button-instagram,
+.button-facebook,
+.button-download,
+.button-url {
+  display: inline-block;
+  width: 200px;
+  height: 200px;
+  padding: 2%;
+}
+.button-instagram {
+  background: transparent url("/img/instagram-200x200.png") no-repeat scroll top left;
+}
+.button-facebook {
+  background: transparent url("/img/facebook-200x200.png") no-repeat scroll top left;
+}
+.button-twitter {
+  background: transparent url("/img/twitter-200x200.png") no-repeat scroll top left;
+}
+.button-download {
+  background: transparent url("/img/download-200x200.png") no-repeat scroll top left;
+}
+.button-url {
+  background: transparent url("/img/url-200x200.png") no-repeat scroll top left;
+}
+.button-connect-instagram {
+  display: inline-block;
+  width: 186px;
+  height: 38px;
+  background: transparent url("/img/button-signin-instagram-186x36.png") no-repeat scroll top left;
+}
+.button-connect-facebook {
+  display: inline-block;
+  width: 234px;
+  height: 37px;
+  background: transparent url("/img/button-signin-facebook-234x37.png") no-repeat scroll top left;
+}
+.button-connect-twitter {
+  display: inline-block;
+  width: 234px;
+  height: 37px;
+  background: transparent url("/img/button-signin-twitter-234x37.png") no-repeat scroll top left;
+}
 @font-face {
   font-family: 'icons';
   src: url("/font/IcoMoon.eot?#") format('eot'), url("/font/IcoMoon.woff") format('woff'), url("/font/IcoMoon.ttf") format('truetype');
@@ -410,15 +453,9 @@ h1 > a:visited {
   width: auto;
 }
 #photo-to-pipe li {
-  margin: 0;
+  margin: 1% 1.4%;
   display: inline-block;
   padding: 0;
-}
-#photo-to-pipe li:first-child {
-  margin: 0 5% 0 0;
-}
-#photo-to-pipe li:last-child {
-  margin: 0 0 0 5%;
 }
 #photo-to-pipe li a {
   margin: 0;
@@ -426,45 +463,6 @@ h1 > a:visited {
   -webkit-border-radius: 10px;
   -moz-border-radius: 10px;
   border-radius: 10px;
-}
-.button-twitter,
-.button-instagram,
-.button-facebook,
-.button-download {
-  display: inline-block;
-  width: 200px;
-  height: 200px;
-  padding: 2%;
-}
-.button-instagram {
-  background: transparent url("/img/instagram-200x200.png") no-repeat scroll top left;
-}
-.button-facebook {
-  background: transparent url("/img/facebook-200x200.png") no-repeat scroll top left;
-}
-.button-twitter {
-  background: transparent url("/img/twitter-200x200.png") no-repeat scroll top left;
-}
-.button-download {
-  background: transparent url("/img/download-200x200.png") no-repeat scroll top left;
-}
-.button-connect-instagram {
-  display: inline-block;
-  width: 186px;
-  height: 38px;
-  background: transparent url("/img/button-signin-instagram-186x36.png") no-repeat scroll top left;
-}
-.button-connect-facebook {
-  display: inline-block;
-  width: 234px;
-  height: 37px;
-  background: transparent url("/img/button-signin-facebook-234x37.png") no-repeat scroll top left;
-}
-.button-connect-twitter {
-  display: inline-block;
-  width: 234px;
-  height: 37px;
-  background: transparent url("/img/button-signin-twitter-234x37.png") no-repeat scroll top left;
 }
 .none,
 #step-two,
@@ -535,7 +533,7 @@ h1 > a:visited {
 .error_redirect {
   margin-top: 6%;
 }
-#caption {
+.big-text-field {
   padding: 0 3%;
   font-size: 2em;
   line-height: 2.4;

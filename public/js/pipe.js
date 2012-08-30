@@ -82,6 +82,7 @@ $(function(){
   var $twitter = $('#twitter')
     , $facebook = $('#facebook')
     , $instagram = $('#instagram')
+    , $url = $('#url')
     , $twitterDestination = $('.twitter-destination')
     , $facebookDestination = $('.facebook-destination')
     , $downloadDestination = $('.download-destination')
@@ -93,6 +94,8 @@ $(function(){
     , $photoPickerFacebook = $('#photo-picker-facebook')
     , $galleryPickerFacebook = $('#gallery-picker-facebook')
     , $photoPickerInstagram = $('#photo-picker-instagram')
+    , $photoPickerUrl = $('#photo-picker-url')
+    , $photoFromUrl = $('#photoFromUrl')
     , $twitterLoadMore = $('#twitter-load-more')
     , $facebookLoadMore = $('#facebook-load-more')
     , $instagramLoadMore = $('#instagram-load-more')
@@ -133,6 +136,8 @@ $(function(){
     $twitter.isAuthenticated && $twitter.bind('click', twitterClickHandler)
     $facebook.isAuthenticated && $facebook.bind('click', facebookClickHandler)
     $instagram.isAuthenticated && $instagram.bind('click', instagramClickHandler)
+
+    $url.bind('click', urlClickHandler)
     
   }
 
@@ -377,7 +382,26 @@ $(function(){
     
     return false
   }
-  
+
+  // Step #1 photo by URL
+  function urlClickHandler(){
+    
+    $photoPickerUrl
+      .show()
+
+    // Event is wired because of .use-photo class on submit button
+
+
+    // Progress to Step 2
+    progressToNextStep($stepOne, function(){
+
+      $stepTwo.slideDown(333)
+
+    })
+    
+    return false
+  }
+
   // Twitter pagination handler
   function twitterPaginationClickHandler(){
     return console.warn('Not Implemented Yet.')
@@ -528,7 +552,7 @@ $(function(){
         
       }) // end each()
   }
-  
+
   function wireTwitterGalleryPicker(){
     
     $photoPickerTwitter
@@ -617,7 +641,7 @@ $(function(){
     }
     
   }
-  
+
   // Method that handles the one up view (large view) of an image
   function facebookOneUpClickHandler(e){
     closeOneUp()    
@@ -688,7 +712,7 @@ $(function(){
   // when a user selects the photo they want to pipe
   function wireUsePhotoHandlers(){
     
-    $usePhoto.bind('click', function(e){
+    $usePhoto.bind('click submit', function(e){
       
       if(e.target.id === 'instagram-use-photo'){
 
@@ -745,6 +769,22 @@ $(function(){
         })
 
       }
+
+
+      if(e.target.id === 'url-use-photo'){
+        
+        _photoToUse = $photoFromUrl.val()
+        
+        $stepThreeDestinationWrapper.show()
+        
+        progressToNextStep($stepTwo, function(){
+
+          $stepThree.slideDown(333)
+
+        })
+
+      }
+
       
       return false
 
