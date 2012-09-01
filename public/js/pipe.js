@@ -57,23 +57,26 @@ $(function(){
     $instagram.isAuthenticated = $instagram.attr('data-auth') === 'true' ? true : false
     
   }  
+
+  // Add/remove certain DOM elements based on browser capabilities
+  function initDisplayFromBrowserCapabilities(){
+    if(!Photopipe.hasFileSystem){
+      $downloadDestination.parent('li').remove()
+    } 
+  }
   
   // Attach click handlers to respective elements.
   function wireSourceClickHandlers(){
 
     $twitter.isAuthenticated && $twitter.bind('click', twitterClickHandler)
     $facebook.isAuthenticated && $facebook.bind('click', facebookClickHandler)
-    $instagram.isAuthenticated && $instagram.bind('click', instagramClickHandler)
+    $instagram.isAuthenticated && $instagram.bind('click', function(){
+      instagramClickHandler()
+      return false
+    })
 
     $url.bind('click', urlClickHandler)
     
-  }
-  
-  // Add/remove certain DOM elements based on browser capabilities
-  function initDisplayFromBrowserCapabilities(){
-    if(!Photopipe.hasFileSystem){
-      $downloadDestination.parent('li').remove()
-    } 
   }
 
   // Attach click handlers to respective elements.
@@ -91,8 +94,10 @@ $(function(){
 
     $twitter.isAuthenticated && $twitterLoadMore.bind('click', twitterPaginationClickHandler)
     $facebook.isAuthenticated && $facebookLoadMore.bind('click', facebookPaginationClickHandler)
-    $instagram.isAuthenticated && $instagramLoadMore.bind('click', instagramPaginationClickHandler)
-    
+    $instagram.isAuthenticated && $instagramLoadMore.bind('click', function(){
+      instagramClickHandler(true)
+      return false
+    })
     
   }
 
@@ -296,12 +301,22 @@ $(function(){
   }
 
   // Step #1 instagram connection
-  function instagramClickHandler(){
+  // isPaging is a boolean flag for pagination of images
+  function instagramClickHandler(isPaging){
     
-    // This method will only get called if we are auth'd
-    // Fetch photos from instagram
-    
-    var url = $instagram.attr('href') // /instagram/get_user_recent_photos
+    // NOTE: this method will only get called if we are auth'd
+    var url = ''
+
+    // In case it is in view
+    closeOneUp()    
+
+    if(isPaging){
+      var nextPageUrl = $instagramLoadMore.attr('data-pagination') 
+      url = $instagramLoadMore.attr('href') + "?next_page_url=" + encodeURIComponent(nextPageUrl)
+    }
+    else{
+      url = $instagram.attr('href') // /instagram/get_user_recent_photos
+    }
     
     $
     .get(url)
@@ -340,11 +355,13 @@ $(function(){
       wireInstagramGalleryPicker()
 
       // Progress to Step 2
-      progressToNextStep($stepOne, function(){
+      if(!isPaging){
+        progressToNextStep($stepOne, function(){
 
-        $stepTwo.slideDown(333)
+          $stepTwo.slideDown(333)
 
-      })
+        })
+      }
 
     })
     .error(function(e,b){
@@ -361,7 +378,6 @@ $(function(){
     
     // /instagram/get_photos_from_album_id?id='+id
     
-    return false
   }
 
   // Step #1 photo by URL
@@ -395,69 +411,6 @@ $(function(){
     return false
   }
 
-  // Instagram pagination handler
-  // TODO: REFACTOR THIS WITH 'instagramClickHandler' TO BE DRY
-  function instagramPaginationClickHandler(){
-    
-    // In case it is in view
-    closeOneUp()    
-
-    var nextPageUrl = $instagramLoadMore.attr('data-pagination') 
-    var url = $instagramLoadMore.attr('href') + "?next_page_url=" + encodeURIComponent(nextPageUrl)
-    
-    $
-    .get(url)
-    .success(function(d, resp){ 
-      
-      $spin.hide()
-
-      // console.dir(d)
-      
-      // IMPORTANT: The last item in the array is the 
-      // pagination object. We must pop it off
-      var pageObj = d.pop()
-      var nextPageUrl = pageObj.next_url
-      
-      // Let's update the pagination button with the next 
-      // page's URL
-      updatePaginationButton($instagramLoadMore, nextPageUrl)
-
-      var thumbs = ""
-
-      // Iterate over the images and add to thumbs string
-      d.forEach(function(el,i){
-        thumbs += "<img data-standard-resolution='"
-                  + el.images.standard_resolution.url
-                  +"' src='"+ el.images.thumbnail.url +"' />"
-      })
-      
-      // Add moar photos...
-      appendPhotosFromPagination(thumbs)
-      
-      $photoPickerInstagram
-        .show()
-
-      // Wire up the events to the images...
-      wireInstagramGalleryPicker()
-
-    })
-    .error(function(e){
-      $spin.hide()
-      if(e.status === 400) alert(e.responseText || 'Bad request.')
-      if(e.status === 401) alert(e.responseText || 'Unauthorized request.')
-      if(e.status === 402) alert(e.responseText || 'Forbidden request.')
-      if(e.status === 403) alert(e.responseText || 'Forbidden request.')
-      if(e.status === 404) alert(e.responseText || 'Images were not found.')
-      if(e.status === 405) alert(e.responseText || 'That method is not allowed.')
-      if(e.status === 408) alert(e.responseText || 'The request timed out. Try again.')
-      if(e.status === 500) alert(e.responseText || 'Something went really wrong.')
-    })
-    
-    // /instagram/get_photos_from_album_id?id='+id
-    
-    return false
-  }
-
   // Method that extracts the one up size image to be piped
   function wireFacebookGalleryGroups(){
     
@@ -466,14 +419,15 @@ $(function(){
     
     $fbGalleryWrapper
       .each(function(i,el){
-        $(el).bind('click', wireFacebookGalleryGroupClickHandler)
+        $(el)
+          .unbind('click')
+          .bind('click', wireFacebookGalleryGroupClickHandler)
       }) // end each()
   }
 
   // Method that fetches gallery id to fetch photos from
   function wireFacebookGalleryGroupClickHandler(){
     var albumId = $(this).find('img').attr('data-album-id')
-    console.log(albumId + " is the albumId")
 
     // Fetch the images for said gallery
     fetchImagesForFbGallery(albumId)
@@ -486,8 +440,10 @@ $(function(){
     $photoPickerInstagram
       .find('img')
       .each(function(i,el){
-        
-        $(el).bind('click', instagramOneUpClickHandler)
+        // Because of pagination, we need to unbind then rebind all.
+        $(el)
+          .unbind('click')
+          .bind('click', instagramOneUpClickHandler)
         
       }) // end each()
   }
@@ -498,10 +454,10 @@ $(function(){
     $photoPickerTwitter
       .find('img')
       .each(function(i,el){
-        
-        // console.dir(el)
-        
-        $(el).bind('click', twitterOneUpClickHandler)
+
+        $(el)
+          .unbind('click')
+          .bind('click', twitterOneUpClickHandler)
         
       }) // end each()
     
@@ -514,7 +470,9 @@ $(function(){
       .find('img')
       .each(function(i,el){
         
-        $(el).bind('click', facebookOneUpClickHandler)
+        $(el)
+          .unbind('click')
+          .bind('click', facebookOneUpClickHandler)
         
       }) // end each()
   }
