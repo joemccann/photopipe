@@ -23,6 +23,7 @@ app.configure(function(){
   // Setup local variables to be available in the views.
   app.locals.title = "PhotoPipe - Download Instagram Photos, Download Facebook Galleries, Post to Twitter and More!"
   app.locals.description = "PhotoPipe is a free service so you can download Instagram Photos, download Facebook galleries, Post to photos to Twitter and More!"
+  app.locals.node_version = process.version
 })
 
 app.configure('development', function(){
