@@ -932,8 +932,11 @@ $(function(){
     window.Photopipe.hasMediaCapture = !!navigator.getUserMedia || 
                                       !!navigator.webkitGetUserMedia || 
                                       !!navigator.mozGetUserMedia || 
-                                      !!navigator.msGetUserMedia  
-  }
+                                      !!navigator.msGetUserMedia
+                          
+    // Check if client has the download attribute for anchor tags 
+    window.Photopipe.hasDownloadAttribute = ("download" in document.createElement("a"))                                  
+    }
   
   // Initialize...
   (function init(){
