@@ -20,9 +20,16 @@ function isTwitterOverCapacity(){
   return false
 }
 
+// A comparison of the current media item with the
+// first cached item to determine when to stop iterating
+// through the set of aggregate media items.
+function isItemFirstCacheItem(item, cached_item){
+  return item === cached_item
+}
+
 // Let's normalize the response of media data to only include
 // the photos we want.
-function normalizeTwitterData(data,req, res){
+function normalizeTwitterData(data,req,res){
   
   var normalized = {
     error: false,
@@ -30,24 +37,35 @@ function normalizeTwitterData(data,req, res){
     media: []
   }
   
+  // console.dir(req.session.twitter)
+  
   if( isTwitterOverCapacity() ){
     normalized.error = true
     normalized.error_message = "It appears Twitter is over capacity. Try again." 
   }
   else{
     
-    var cache
-    // Do we have a cache in session?
-    if(req.session.twitter.media_cache){
-      cache = req.session.twitter.media_cache
-    }
-    else{
-      cache = {}
-    }
-    
-    // console.dir(data,24)
-    
-    data.forEach(function(el,i){
+    // We use a for loop so we can break out if
+    // the cache is met
+    for(i=0, len = data.length; i<len; i++){
+      
+      var el = data[i]
+
+      // console.dir(el)
+      // Session won't stash this much data so switch this logic to pull from redis.
+      if( req.session.media_cache && isItemFirstCacheItem(el.id, req.session.media_cache.latest_id ) ){
+        console.log('\n\ncache is same so we are breaking...\n\n')
+        // update latest_id in cache
+        normalized.latest_id = el.id
+        // Now process the the response with new updated normalized data
+        processNormalizedResponse(normalized, req, res)
+        break
+      }
+      
+      // The first time we run this, we need to stash the latest_id
+      if( i === len-1 ){
+        normalized.latest_id = data[0].id
+      }
       
       // In the case of just pic.twitter.com....
       if(el.entities.media && el.entities.media.length){
@@ -165,19 +183,23 @@ function normalizeTwitterData(data,req, res){
                   }
                   */
                   
-                  // if(r.statusCode === 412 || b.error) return console.error(b.error)
-                  // 
-                  // normalized.media.push(item)          
-                  // delay = false
-                  // 
-                  // processNormalizedResponse(normalized, req, res)
+                  if(r.statusCode === 412 || b.error) {
+                    console.error(b.error)
+                  }
+                  else{
+                    normalized.media.push(item)          
+                  }
+                  
+                  delay = false
+                  
+                  processNormalizedResponse(normalized, req, res)
                   
                 } // end inner request callback
               }) // end request()
             } // end outer request callback
           }) // end request()
           
-          // if(!delay) delay = true
+          if(!delay) delay = true
           
         }
         if(url.indexOf('yfrog.com') > -1){
@@ -210,7 +232,7 @@ function normalizeTwitterData(data,req, res){
       
       } // end if el.entities.url
 
-    }) // end forEach()
+    } // end forloop
     
   } // end else capacity
   
@@ -223,7 +245,9 @@ function normalizeTwitterData(data,req, res){
 function processNormalizedResponse(normalized, req, res){
   if(!delay){
     // stash normalized in cache and return normalized
-    req.session.twitter.media_cache = normalized
+    // console.log('\n\nDone!\n\n')
+    // if(!req.session.media_cache) req.session.media_cache = normalized
+    // console.dir(req.session.media_cache)
     return res.json(normalized)
   }
   else{
@@ -237,25 +261,6 @@ function processNormalizedResponse(normalized, req, res){
 // Twitter OAuth
 exports.Twitter = {
   config: twitter_config,
-  logOAuthData: function(req){
-    // useful for debuggin oauth nightmare
-    
-    var oauth = req.session.twitter.oauth
-    var uri = 'https://upload.twitter.com/1/statuses/update_with_media.json'
-    var method = 'POST'
-    
-    var authHeaders = createAuthHeaders(oauth, uri, method )
-    console.log('\n\n')
-    console.log('\n\n')
-    console.dir(authHeaders)
-    
-    var command = 'curl --request \'POST\' \'https://upload.twitter.com/1/statuses/update_with_media.json\' '+
-                  '--header \''+authHeaders+'\' -F "media[]=@/Users/joemccann/Documents/workspace/photopipe/public/outbound/pipe.jpg"'+
-                  ' -F "status=Test" --header "Expect: "'
-
-    console.log('\n\n'+command+'\n\n')
-    
-  },
   generateAuthUrl: function(req,res,cb){
     
     var url = twitter_config.request_token_URL
@@ -310,7 +315,6 @@ exports.Twitter = {
       // console.dir(data)
       
       return normalizeTwitterData(data, req, res)
-      
       
     })
 
