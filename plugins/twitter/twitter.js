@@ -2,48 +2,236 @@ var fs = require('fs')
   , path = require('path')
   , request = require('request')
   , qs = require('querystring')
+  , _ = require('lodash')
+  , urlUtil = require('url')
+  , delay = false 
+
+// delay is for For async requests to 3rd parties for photos, 
+// we will delay the overall response until delay is false again
+// A bit of a hack, but it works.
 
 var twitter_config = JSON.parse( fs.readFileSync( path.resolve(__dirname, 'twitter-config.json'), 'utf-8' ) )
 
-function createAuthHeaders(_oauth, uri, method){
+// Check the response mime type if it is
+// text/html and it contains "capacity" in
+// the response, then it is over capacity
+function isTwitterOverCapacity(){
+  console.warn('Not implemented: isTwitterOverCapatcity()')
+  return false
+}
 
-  var form = {}
-  var oa = {}
-  for (var i in form) oa[i] = form[i]
-  for (var i in _oauth) oa['oauth_'+i] = _oauth[i]
-  if (!oa.oauth_version) oa.oauth_version = '1.0'
-  if (!oa.oauth_timestamp) oa.oauth_timestamp = Math.floor( (new Date()).getTime() / 1000 ).toString()
-  if (!oa.oauth_nonce) oa.oauth_nonce = uuid().replace(/-/g, '')
+// Let's normalize the response of media data to only include
+// the photos we want.
+function normalizeTwitterData(data,req, res){
   
-  oa.oauth_signature_method = 'HMAC-SHA1'
-  
-  var consumer_secret = oa.oauth_consumer_secret
-  delete oa.oauth_consumer_secret
-  var token_secret = oa.oauth_token_secret
-  delete oa.oauth_token_secret
-  
-  var baseurl = uri.protocol + '//' + uri.host + uri.pathname
-  var signature = hmacsign(method, baseurl, oa, consumer_secret, token_secret)
-  
-  // oa.oauth_signature = signature
-  // Not used?
-  for (var i in form) {
-    console.log('i in form '+ i)
-    if ( i.slice(0, 'oauth_') in _oauth) {
-      // skip 
-      console.log('skipping')
-    } else {
-      delete oa['oauth_'+i]
-    }
+  var normalized = {
+    error: false,
+    error_message: '',
+    media: []
   }
-  var authorization = 
-    'Authorization: OAuth '+Object.keys(oa).sort().map(function (i) {return i+'="'+rfc3986(oa[i])+'"'}).join(', ')
-
-  authorization += ', oauth_signature="'+rfc3986(signature)+'"'
   
-  return authorization
+  if( isTwitterOverCapacity() ){
+    normalized.error = true
+    normalized.error_message = "It appears Twitter is over capacity. Try again." 
+  }
+  else{
+    
+    var cache
+    // Do we have a cache in session?
+    if(req.session.twitter.media_cache){
+      cache = req.session.twitter.media_cache
+    }
+    else{
+      cache = {}
+    }
+    
+    // console.dir(data,24)
+    
+    data.forEach(function(el,i){
+      
+      // In the case of just pic.twitter.com....
+      if(el.entities.media && el.entities.media.length){
 
+        var twitMediaObj = el.entities.media[0]
+
+        var item = {
+          full_url: twitMediaObj.media_url+":large",
+          thumb_url: twitMediaObj.media_url+":thumb",
+        }
+        
+        normalized.media.push(item)          
+
+      }
+      // Otherwise, we have 3rd part attributed providers.
+      else if(el.entities.urls.length && el.entities.urls[0].display_url){
+
+        var url = el.entities.urls[el.entities.urls.length-1].display_url
+
+        if(url.indexOf('instagr.am') > -1){
+
+          var item = {
+            full_url: "https://" + url + "/media/?size=l",
+            thumb_url: "https://" + url + "/media/?size=t",
+          }
+          
+          normalized.media.push(item)          
+        
+        }
+        if(url.indexOf('twimg.com') > -1){
+      
+        // https://p.twimg.com/A128d2CCIAAPt--.jpg:small
+        // https://p.twimg.com/A128d2CCIAAPt--.jpg:large
+        
+        }
+        if(url.indexOf('flickr.com') > -1){
+          /*
+        
+          <div class="thumbnail-wrapper" data-url="http://flickr.com/groups/dalekcakes">
+            <img class="scaled-image" src="//farm7.static.flickr.com/6140/5917491915_8e92c65aa8.jpg"></div>
+        
+          */
+        
+          // WILL NEED TO FIGURE OUT FLICKR RESPONSE
+        
+          // Requires API call via photo ID, or just use twitter:
+        
+          /*
+          https://widgets.platform.twitter.com/services/rest?jsoncallback=jQuery15205886323538143188_1346683837796&format=json&api_key=2a56884b56a00758525eaa2fee16a798&method=flickr.photos.getInfo&photo_id=7275880290&_=1346683837809
+          */
+        
+          console.dir(el)
+        }
+        if(url.indexOf('twitpic.com') > -1){
+      
+          // POP OFF ID OF END OF TWITPIC URL
+          // http://twitpic.com/9k68zj
+
+          var url_id = url.split('com')[1] // includes slash
+
+          var item = {
+            full_url: "https://twitpic.com/show/iphone" + url_id,
+            thumb_url: "https://twitpic.com/show/iphone" + url_id,
+          }
+
+          normalized.media.push(item)          
+      
+        }
+        // if(url.indexOf('etsy.am') > -1){}
+
+        if(url.indexOf('twitgoo.com') > -1){
+          // http://twitgoo.com/66akxy/img
+
+          var item = {
+            full_url: url + '/img',
+            thumb_url: url + '/img',
+          }
+
+          normalized.media.push(item)          
+
+        }
+        if(url.indexOf('dailybooth.com') > -1){
+          
+          request({
+            followRedirect: false,
+            uri: 'http://'+url,
+            callback: function(e,r,b){
+              if(e) console.error(e)
+
+              var id = r.headers.location.split('/').pop()
+              
+              request({
+                uri: "https://api.dailybooth.com/v1/picture/" + id + ".json",
+                json: true,
+                callback: function(e,r,b){
+                  if(e) return console.error(e)
+                  /*
+                  urls: 
+                    { tiny: 'http://d1oi94rh653f1l.cloudfront.net/15/pictures/tiny/78e4b486c80b29435504d94fdf626b7c_29230840.jpg',
+                      small: 'http://d1oi94rh653f1l.cloudfront.net/15/pictures/small/78e4b486c80b29435504d94fdf626b7c_29230840.jpg',
+                      medium: 'http://d1oi94rh653f1l.cloudfront.net/15/pictures/medium/78e4b486c80b29435504d94fdf626b7c_29230840.jpg',
+                      large: 'http://d1oi94rh653f1l.cloudfront.net/15/pictures/large/78e4b486c80b29435504d94fdf626b7c_29230840.jpg' 
+                    }
+                  */
+                  // console.dir(b)
+                  
+                  /*
+                  { error: 
+                     { error: 'rate_limit',
+                       error_description: 'Rate limit exceeded.',
+                       error_code: 412 } }
+                  var item = {
+                    full_url: b.urls.large + '/img',
+                    thumb_url: b.urls.small + '/img',
+                  }
+                  */
+                  
+                  // if(r.statusCode === 412 || b.error) return console.error(b.error)
+                  // 
+                  // normalized.media.push(item)          
+                  // delay = false
+                  // 
+                  // processNormalizedResponse(normalized, req, res)
+                  
+                } // end inner request callback
+              }) // end request()
+            } // end outer request callback
+          }) // end request()
+          
+          // if(!delay) delay = true
+          
+        }
+        if(url.indexOf('yfrog.com') > -1){
+          // console.dir(el)
+
+          var item = {
+            full_url: "https://" + url + ":tw1",
+            thumb_url: "https://" + url + ":tw1",
+          }
+
+          normalized.media.push(item)          
+        
+        }
+        // if(url.indexOf('lockerz.am') > -1){}
+        // if(url.indexOf('kiva.am') > -1){}
+
+        // if(url.indexOf('kickstarter.com') > -1){}
+        if(url.indexOf('dipdive.com') > -1){
+          isVideo = false || true; // could be photo
+        
+        }
+        // if(url.indexOf('photobucket.com') > -1){}
+        // if(url.indexOf('with.me') > -1){}
+        // if(url.indexOf('facebook.com') > -1){}
+        if(url.indexOf('deviantart.com') > -1 || url.indexOf('fav.me') > -1){
+        
+          // TODO: IMAGES DON'T SHOW UP?
+        
+        }
+      
+      } // end if el.entities.url
+
+    }) // end forEach()
+    
+  } // end else capacity
   
+  return processNormalizedResponse(normalized, req, res)
+  
+}
+
+// Process the response, cache the normalized data
+// TODO: Cache the response
+function processNormalizedResponse(normalized, req, res){
+  if(!delay){
+    // stash normalized in cache and return normalized
+    req.session.twitter.media_cache = normalized
+    return res.json(normalized)
+  }
+  else{
+    setTimeout(function(){
+      // We have to check again for delay due to race conditions.
+      if(delay) return processNormalizedResponse(normalized, req, res)
+    },10)
+  }
 }
 
 // Twitter OAuth
@@ -107,6 +295,7 @@ exports.Twitter = {
         , score: true
         , mode: 'photos'
         , filter: false
+        , is_event: false
         }
       
     // console.dir(perm_token)
@@ -117,8 +306,12 @@ exports.Twitter = {
 
     request.get({url:url, oauth: req.session.twitter.oauth, json:true}, function (e, r, data) {
       if(e) return console.error(e)
+
       // console.dir(data)
-      return res.json(data)
+      
+      return normalizeTwitterData(data, req, res)
+      
+      
     })
 
   },
@@ -163,4 +356,35 @@ exports.Twitter = {
   }
 } // end exports.Twitter
 
+/* These are videos:
 
+case "WhoSay": 
+case "Photozou": 
+case "Vimeo": 
+case "Ustream":
+case "Youtube": 
+case "Vevo": 
+case "TwitVid": 
+case "GoogleVideo": 
+case "JustinTV": 
+case "MTV": 
+case "WashingtonPost": 
+case "MSNBC": 
+case "CNN": 
+case "Apple": 
+case "Rdio": 
+case "SlideShare": 
+case "BlipTV": 
+case "Livestream": 
+case "WallStreetJournal": 
+case "Hulu": 
+case "NHL": 
+case "Meetup": 
+case "Plancast": 
+case "Gowalla": 
+case "Foursquare": 
+case "Amazon": 
+case "AolVideo": 
+case "WordPress": 
+case "Pepsi":
+*/

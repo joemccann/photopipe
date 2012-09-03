@@ -117,19 +117,18 @@ $(function(){
       var sorted = []
       var thumbs = ""
       
-      $.each(data,function(i,el){
-        // console.dir(el)
+      if(data.error){
+        console.dir(data.error)
+        alert(data.error_message)
+        return false
+      }
+      
+      $.each(data.media,function(i,el){
         
-        if(el.entities.media && el.entities.media.length) {
+        thumbs += "<img data-standard-resolution='"
+                  + el.full_url
+                  +"' src='"+ el.thumb_url+"' />"
 
-          var goodObj = el.entities.media[0]
-           
-          thumbs += "<img data-standard-resolution='"
-                    + goodObj.media_url+":large"
-                    +"' src='"+ goodObj.media_url+":thumb" +"' />"
-
-        }
-        
       }) // end $.each()
       
       // Add to photoPicker div
