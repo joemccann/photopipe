@@ -3,6 +3,7 @@ var fs = require('fs')
   , qs = require('querystring')
   , ur = require('url')
   , redis = require('redis')
+  , isInitComplete = false
 
 var redisConfig = JSON.parse( fs.readFileSync( path.resolve(__dirname, './redis-config.json'), 'utf-8' ) )
 
@@ -36,17 +37,28 @@ client.on('ready', function (err){
   } 
   console.log('redis is ready')
 
-  var keys = [{key:'totalPipedPhotos', initialValue: 0}]
-  
-  initializeKeys(keys)
+  if(!isInitComplete){
+
+    var keys = [{key:'totalPipedPhotos', initialValue: 0}]
+
+    initializeKeys(keys)
+    
+    isInitComplete = false
+    
+  }
   
 })
 
-client.on('error', function (e){ 
-  console.log('redis failed somehow')
-  console.error(e)
+client.on('error', function (err){ 
+  console.log('Redis errored out somehow...')
+  console.error(err)
 })
 
+// The reason we have a getter here is when the redis
+// client instance is required in other apps, it may not have
+// been connected, auth'd, etc.  So we need to return the 
+// current reference as opposed to the one that is simply created
+// upon requiring this file.
 function getClient(){
   return client
 }
