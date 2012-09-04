@@ -1,7 +1,7 @@
 {
   "name": "photopipe",
   "description": "Pipe yer photos all over the web and stuff.",
-  "version": "0.0.4-25",
+  "version": "0.0.4-26",
   "author": {
     "name": "Joe McCann",
     "email": "joe@subprint.com"
@@ -43,7 +43,9 @@
     "lodash": ">=0.6.1",
     "redis": ">=0.7.2"
   },
-  "bundleDependencies": ['redis'],
+  "bundleDependencies": [
+    "redis"
+  ],
   "subdomain": "photopipe",
   "domains": [
     "photopi.pe",
