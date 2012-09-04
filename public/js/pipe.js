@@ -494,8 +494,6 @@ $(function(){
       $oneUpTwitter
         .prepend(img)
         
-        console.dir($photoPickerTwitter)
-
       var $oneUpContainer = $photoPickerTwitter.find('.one-up-wrapper')
 
       positionFromTop( $photoPickerTwitter, $oneUpContainer )
