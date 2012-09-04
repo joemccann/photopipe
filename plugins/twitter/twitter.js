@@ -198,9 +198,9 @@ function normalizeTwitterData(data,req,res){
                   }
                   */
                   
-                  console.log(JSON.stringify( {type: log, message: "Status Code for Daily Booth request: " + r.statusCode} ))
+                  console.log(JSON.stringify( {type: "log", message: "Status Code for Daily Booth request: " + r.statusCode} ))
                   
-                  if(r.statusCode >== 400 || b.error) {
+                  if( (r.statusCode >= 400) || b.error) {
                     console.error(b.error)
                   }
                   else{
