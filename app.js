@@ -4,6 +4,7 @@ var express = require('express')
   , path = require('path')
   , request = require('request')
   , fs = require('fs')
+  , db_client 
 
 var app = express()
 
@@ -24,6 +25,10 @@ app.configure(function(){
   app.locals.title = "PhotoPipe - Download Instagram Photos, Download Facebook Galleries, Post to Twitter and More!"
   app.locals.description = "PhotoPipe is a free service so you can download Instagram Photos, download Facebook galleries, Post to photos to Twitter and More!"
   app.locals.node_version = process.version
+  
+  // For the user databases, if you don't want redis, remove this line
+  db_client = require( path.resolve(__dirname, "./database/redis-client.js") ).getClient
+  
 })
 
 app.configure('development', function(){

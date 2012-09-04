@@ -3,6 +3,20 @@ var path = require('path')
   , fs = require('fs')
   , qs = require('querystring')
   , validator = require( path.resolve(__dirname, '..', 'utils/validation.js') ) 
+  , db_client = require( path.resolve(__dirname, '..', 'database/redis-client.js') )
+  , redis = require('redis')
+  
+
+/****************************************************************
+
+Util methods...
+
+****************************************************************/
+
+function incrementPipedCount(){
+  db_client().incr( "totalPipedPhotos" , redis.print)
+}
+
 
 /****************************************************************
 
@@ -122,6 +136,9 @@ exports.smoke = function(req, res){
         var fb = require(path.resolve(__dirname, '..', 'plugins/facebook/facebook.js')).Facebook
 
         fb.pipePhotoToFb(echo, req, res)
+        
+        incrementPipedCount()
+        
       }else if(echo.type === 'twitter'){
 
         var twit = require(path.resolve(__dirname, '..', 'plugins/twitter/twitter.js')).Twitter
@@ -129,6 +146,8 @@ exports.smoke = function(req, res){
         // Now, just pipe the echo object and be sure to pass the
         // request and response objects as well.
         twit.pipeToTwitter(echo, req, res)
+        
+        incrementPipedCount()
         
       }else if(echo.type === 'bazaarvoice'){
 
@@ -138,10 +157,14 @@ exports.smoke = function(req, res){
         // response object as well.
         bv.pipeToBv(echo, res)
         
+        incrementPipedCount()
+        
       }else if(echo.type === 'echo' || echo.type === 'download'){
         res.json(echo)
+        
+        if(echo.type === 'download') incrementPipedCount()
+        
       }
-
 
       /******************** PUT PLUGIN HOOKS ABOVE HERE **********************/
 
