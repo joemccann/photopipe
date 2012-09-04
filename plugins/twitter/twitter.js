@@ -184,10 +184,7 @@ function normalizeTwitterData(data,req,res){
                       medium: 'http://d1oi94rh653f1l.cloudfront.net/15/pictures/medium/78e4b486c80b29435504d94fdf626b7c_29230840.jpg',
                       large: 'http://d1oi94rh653f1l.cloudfront.net/15/pictures/large/78e4b486c80b29435504d94fdf626b7c_29230840.jpg' 
                     }
-                  */
-                  // console.dir(b)
                   
-                  /*
                   { error: 
                      { error: 'rate_limit',
                        error_description: 'Rate limit exceeded.',
