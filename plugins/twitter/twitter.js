@@ -157,7 +157,22 @@ function normalizeTwitterData(data,req,res){
 
               var id = r.headers.location.split('/').pop()
               
+              // A bit hacky, but works at the moment.
+              var headers = {
+                "Accept":"text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+                "Accept-Charset":"ISO-8859-1,utf-8;q=0.7,*;q=0.3",
+                "Accept-Encoding":"gzip,deflate,sdch",
+                "Accept-Language":"en-US,en;q=0.8",
+                "Cache-Control":"no-cache",
+                "Connection":"keep-alive",
+                "Cookie":"PHPSESSID=fab929a3d1a870b14213aff6471fe3e3; user_id=a1c32f36aa2c156a21101b58de24a4ed2f32cde8~1981669; user_session=777c423dfb8aebd553768525c6a1a927e37eb01c~9dd1d68d889b071c9229ff291c517460; mp_super_properties={\"all\": {\"$initial_referrer\": \"http://www.google.com/url?sa=t&rct=j&q=&esrc=s&source=web&cd=1&sqi=2&ved=0CB4QFjAA&url=http%3A%2F%2Fdailybooth.com%2F&ei=CsVEUMuwOIOi9QTEqYCgCQ&usg=AFQjCNFTVwdld-HDcWkHANtOVwb_1pYiMw&sig2=P2_eEU6xsvXiWx-3_z4q5Q&kb=1\",\"$initial_referring_domain\": \"www.google.com\"},\"events\": {},\"funnels\": {}}; __utma=77070464.705069496.1346684179.1346684179.1346691703.2; __utmc=77070464; __utmz=77070464.1346691703.2.2.utmcsr=photopi.pe|utmccn=(referral)|utmcmd=referral|utmcct=/twitter/get_media_timeline",
+                "Host":"api.dailybooth.com",
+                "Pragma":"no-cache",
+                "User-Agent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_7_4) AppleWebKit/537.1 (KHTML, like Gecko) Chrome/21.0.1180.89 Safari/537.1"
+                }
+              
               request({
+                headers: headers,
                 uri: "https://api.dailybooth.com/v1/picture/" + id + ".json",
                 json: true,
                 callback: function(e,r,b){
@@ -183,10 +198,18 @@ function normalizeTwitterData(data,req,res){
                   }
                   */
                   
-                  if(r.statusCode === 412 || b.error) {
+                  console.log(JSON.stringify( {type: log, message: "Status Code for Daily Booth request: " + r.statusCode} ))
+                  
+                  if(r.statusCode >== 400 || b.error) {
                     console.error(b.error)
                   }
                   else{
+                    
+                    var item = {
+                      full_url: b.urls.large,
+                      thumb_url: b.urls.small,
+                    }
+                    
                     normalized.media.push(item)          
                   }
                   
@@ -199,6 +222,8 @@ function normalizeTwitterData(data,req,res){
             } // end outer request callback
           }) // end request()
           
+          // Because of the async nature of the above request() calls,
+          // we set the delay here and mark it false in the last callback
           if(!delay) delay = true
           
         }
