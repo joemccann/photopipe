@@ -68,7 +68,7 @@ function normalizeTwitterData(data,req,res){
       }
       
       // In the case of just pic.twitter.com....
-      if(el.entities.media && el.entities.media.length){
+      if(el.entities && el.entities.media && el.entities.media.length){
 
         var twitMediaObj = el.entities.media[0]
 
@@ -81,7 +81,7 @@ function normalizeTwitterData(data,req,res){
 
       }
       // Otherwise, we have 3rd part attributed providers.
-      else if(el.entities.urls.length && el.entities.urls[0].display_url){
+      else if(el.entities && el.entities.urls && el.entities.urls.length && el.entities.urls[0].display_url){
 
         var url = el.entities.urls[el.entities.urls.length-1].display_url
 
