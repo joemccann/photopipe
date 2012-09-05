@@ -14,7 +14,7 @@ Util methods...
 ****************************************************************/
 
 function incrementPipedCount(){
-  db_client().incr( "totalPipedPhotos" , redis.print)
+  db_client.getClient().incr( "totalPipedPhotos" , redis.print)
 }
 
 

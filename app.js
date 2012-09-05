@@ -12,22 +12,25 @@ app.configure(function(){
   app.set('port', process.env.PORT || 80)
   app.set('views', __dirname + '/views')
   app.set('view engine', 'ejs')
-  app.use(express.favicon(__dirname + '/public/favicon.ico'))
   app.use(express.logger('dev'))
+  app.use(express.favicon(__dirname + '/public/favicon.ico'))
   app.use(express.bodyParser())
   app.use(express.methodOverride())
+  app.use(express.compress())
   app.use(require('stylus').middleware(__dirname + '/public'))
   app.use(express.static(path.join(__dirname, 'public')))
   app.use(express.cookieParser('photopipe'))
   app.use(express.cookieSession())
   app.use(app.router)
+
   // Setup local variables to be available in the views.
   app.locals.title = "PhotoPipe - Download Instagram Photos, Download Facebook Galleries, Post to Twitter and More!"
   app.locals.description = "PhotoPipe is a free service so you can download Instagram Photos, download Facebook galleries, Post to photos to Twitter and More!"
   app.locals.node_version = process.version
   
   // For the user databases, if you don't want redis, remove this line
-  db_client = require( path.resolve(__dirname, "./database/redis-client.js") ).getClient
+  // and swap out for whatever you want
+  db_client = require( path.resolve(__dirname, "./database/redis-client.js") )
   
 })
 
