@@ -134,6 +134,7 @@ module.exports = (function(){
     },
     // Create a new user account in Redis
     createUserIdentityAccount: function(userObj, setname, hashPrefix, cb){
+      
       console.log("\nCreating new user account %s", userObj.network.username)
     /*  
       userObj = {
@@ -148,6 +149,8 @@ module.exports = (function(){
         oauth: {}
       }
       */
+      
+      // CHECK IF HASH EXISTS
 
       // Schema should be:
       var schema = 
