@@ -45,6 +45,13 @@ function normalizeTwitterData(data,req,res){
   }
   else{
     
+    // If the media response is empty...
+    if(!data.length){
+      normalized.error = true
+      normalized.error_message = "We were unable to fetch any images from your media timeline." 
+      return processNormalizedResponse(normalized, req, res)
+    }
+    
     // We use a for loop so we can break out if
     // the cache is met
     for(i=0, len = data.length; i<len; i++){
@@ -54,7 +61,7 @@ function normalizeTwitterData(data,req,res){
       // console.dir(el)
       // Session won't stash this much data so switch this logic to pull from redis.
       if( req.session.media_cache && isItemFirstCacheItem(el.id, req.session.media_cache.latest_id ) ){
-        console.log('\n\ncache is same so we are breaking...\n\n')
+        console.log('\n\nCache is same so we are breaking...\n\n')
         // update latest_id in cache
         normalized.latest_id = el.id
         // Now process the the response with new updated normalized data
@@ -345,7 +352,7 @@ exports.Twitter = {
     
     if(!req.session.twitter.oauth){
       res.type('text/plain')
-      return res.status(403).send("You are not authenticated with Facebook.")
+      return res.status(403).send("You are not authenticated with Twitter.")
     } 
     
     // TODO: EVENTUALLY WE WILL NEED TO CHECK THE 

@@ -919,7 +919,6 @@ $(function(){
 
   // Determine browser capabilities
   function featureDetector(){
-  
     // Check if client can access file sytem (from Modernizer)  
     var elem = document.createElement('input')
     elem.type = 'file'
@@ -933,8 +932,9 @@ $(function(){
                           
     // Check if client has the download attribute for anchor tags 
     window.Photopipe.hasDownloadAttribute = ("download" in document.createElement("a"))                                  
-    }
-  
+    
+  } // end feature detector
+      
   // Initialize...
   (function init(){
     

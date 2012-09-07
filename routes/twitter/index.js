@@ -33,10 +33,9 @@ exports.twitter = function(req, res){
     }) // end generateAuthUrl()
     
   }
-
+  
   // We are actually auth'd so no reason to be here.
   res.redirect('/')
-
   
 } // end twitter route
 
@@ -85,9 +84,10 @@ exports.twitter_oauth = function(req,res){
                                         error: e
                               })
       
-      // console.dir(body)
-      
       var perm_token = qs.parse(b)
+
+      console.dir(perm_token)
+
       
       // Create the twitter session object.
       req.session.twitter = {}
@@ -96,6 +96,12 @@ exports.twitter_oauth = function(req,res){
                                   , token: perm_token.oauth_token
                                   , token_secret: perm_token.oauth_token_secret
                                   }
+                                  
+      // Now, let's create the user's account in redis
+      var userObj = {
+        
+      }
+      console.dir(req.session.twitter)
 
       return res.redirect('/')                         
 
