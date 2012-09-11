@@ -154,6 +154,9 @@ exports.Dropbox = (function(){
                     }
                   })
     }, // end getAccountInfo()
+    searchForPhotos: function(req,res){
+      res.send('Sorry, not implemented yet. :(')
+    },
     searchForMdFiles: function(cb){
 
       // *sigh* http://forums.dropbox.com/topic.php?id=50266&replies=1
