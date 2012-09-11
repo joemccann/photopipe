@@ -10,7 +10,7 @@ exports.dropbox = function(req, res){
     return res.render('error', {type: 'dropbox', title: 'PhotoPipe - Error!'})
   }
   
-  if(!req.session.dropbox){
+  if(!req.session.dropbox.sync){
     
     return Dropbox.forceNewRequestToken(function(err,body){
 
@@ -70,8 +70,6 @@ exports.dropbox = function(req, res){
       }) // end generateAuthUrl()
 */
     }
-
-    
     
     // We need to generate the authUrl and then show the
     // view with the auth_url as a button.
@@ -121,11 +119,7 @@ exports.dropbox_oauth = function(req,res){
   
   
   // id=409429&oauth_token=15usk7o67ckg644
-  
   if(req.query && req.query.oauth_token){
-    
-    console.log('req.query inside dropbox_oauth')
-    console.dir(req.query)
     
     // Create dropbox session object and stash for later.
     req.session.dropbox.oauth.request_token = req.query.oauth_token
@@ -134,7 +128,9 @@ exports.dropbox_oauth = function(req,res){
   
     // We are now fetching the actual access token and stash in
     // session object values in callback.
-    Dropbox.getRemoteAccessToken( req.session.dropbox.oauth.request_token, req.session.dropbox.oauth.request_token_secret,
+    Dropbox.getRemoteAccessToken( 
+      req.session.dropbox.oauth.request_token, 
+      req.session.dropbox.oauth.request_token_secret,
       function(err, data){
         if(err){
           console.error(err)
@@ -142,15 +138,13 @@ exports.dropbox_oauth = function(req,res){
         }
         else{
           // console.dir(data)
-          /*
-        
-          { 
-            oauth_token_secret: 't7enjtftcji6esn'
-          , oauth_token: 'kqjyvtk6oh5xrc1'
-          , uid: '409429' 
-          }
-        
-          */
+          /***
+                { 
+                  oauth_token_secret: 't7enjtftcji6esn'
+                , oauth_token: 'kqjyvtk6oh5xrc1'
+                , uid: '409429' 
+                }
+          ***/
           req.session.dropbox.oauth.access_token_secret = data.oauth_token_secret,
           req.session.dropbox.oauth.access_token = data.oauth_token
           req.session.dropbox.uid = data.uid
@@ -162,8 +156,6 @@ exports.dropbox_oauth = function(req,res){
             console.log('Got account info: ')
             console.dir(data)
           })
-
-          
         
           // Now go back to home page with session data in tact.
           res.redirect('/')
