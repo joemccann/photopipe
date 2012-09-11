@@ -49,7 +49,7 @@ exports.Dropbox = (function(){
                   function(err, data, res){
                     if (err) return cb(err)
                     else {
-                      var d = querystring.parse(data)
+                      var d = qs.parse(data)
                       _access_token_secret = d.oauth_token_secret
                       _access_token = d.oauth_token
                       cb(null, d)
@@ -83,10 +83,8 @@ exports.Dropbox = (function(){
   
 })()
 */
-var querystring = require('querystring')
-  , fs = require('fs')
-  , OAuth = require('oauth').OAuth
-  , request = require('request')
+
+var OAuth = require('oauth').OAuth
 
 var config = dropbox_config
 
@@ -103,25 +101,6 @@ exports.Dropbox = (function(){
     , FILES_GET_URI = 'https://api-content.dropbox.com/1/files'
     , FILES_PUT_URI = 'https://api-content.dropbox.com/1/files_put'
 
-
-  // Fetch request token and request secret from dropbox.
-  function _getRequestToken(cb){
-
-    _oauth.get( REQUEST_TOKEN_URI, null, null, function(err, data, res){
-      if (err) {
-        console.error(err)
-        cb(err)
-      }
-      else {
-        var d = querystring.parse(data)
-        // console.dir(d)
-        cb(null, data)
-      }
-
-    })  // end _oauth.get()
-
-  } // end _getRequestToken()
-
   // Constructor...
   !function(){
 
@@ -136,39 +115,33 @@ exports.Dropbox = (function(){
   // Public API Object
   return {
     config: config,
-    forceNewRequestToken: function(cb){
-      _getRequestToken(cb)
+    getNewRequestToken: function(cb){
+
+      _oauth.get( REQUEST_TOKEN_URI, null, null, function(err, data, res){
+        if (err) {
+          console.error(err)
+          cb(err)
+        }
+        else {
+          var d = qs.parse(data)
+          cb(null, data)
+        }
+
+      })  // end _oauth.get()
     },
     getRemoteAccessToken: function(access_token, request_token_secret, cb){
-      console.log('oauth token here: ' + access_token)
       _oauth.get( 
                   ACCESS_TOKEN_URI, 
                   access_token, 
                   request_token_secret, 
                   function(err, data, res){
+                    
                     if (err) return cb(err)
-                    else {
-                      var d = querystring.parse(data)
-                      cb(null, d)
-                  }
-      }) // end _oauth.get()
-    }, // end getAccessToken()
-    getOauthCallback: function(){
-      return config.callback_url
-    },
-    getMetadata: function(cb){
 
-      _oauth.get( METADATA_URI + "/dropbox/"
-                  , _access_token
-                  , _access_token_secret
-                  , function(err, data, res) {
-                      if(err) return cb(err)
-                      else{
-                        cb(null, data)
-                      }
-                  })
-      
-    }, // end getMetadata()
+                    var d = qs.parse(data)
+                    cb(null, d)
+                  }) // end _oauth.get()
+    }, // end getRemoteAccessToken()
     getAccountInfo: function(dropbox_obj, cb){
       
       _oauth.get( ACCOUNT_INFO_URI
@@ -215,7 +188,7 @@ exports.Dropbox = (function(){
       
       // https://www.dropbox.com/developers/reference/api#files_put
       
-      var params = querystring.stringify({overwrite: 'true'})
+      var params = qs.stringify({overwrite: 'true'})
       _oauth.put( FILES_PUT_URI + "/dropbox" + pathToFile + "?" + params
                   , _access_token
                   , _access_token_secret

@@ -10,9 +10,9 @@ exports.dropbox = function(req, res){
     return res.render('error', {type: 'dropbox', title: 'PhotoPipe - Error!'})
   }
   
-  if(!req.session.dropbox.sync){
+  if(!req.session.dropbox || !req.session.dropbox.sync){
     
-    return Dropbox.forceNewRequestToken(function(err,body){
+    return Dropbox.getNewRequestToken(function(err,body){
 
       if(err){
         return res.render('error',{
@@ -21,16 +21,12 @@ exports.dropbox = function(req, res){
             db_error: err
           }) // end res.render
       }
-      console.dir(body)
-      console.dir(typeof body)
-      var q = qs.parse(body)
-      var request_token = q.oauth_token //Dropbox.getRequestToken()
-      var request_token_secret = q.oauth_token_secret //Dropbox.getRequestToken()
-      var oauth_callback = Dropbox.config.callback_url  
-      
-      var auth_url = Dropbox.config.auth_url + "?oauth_token=" + request_token + "&oauth_callback="+ oauth_callback
 
-      console.log(auth_url + " is the auth_url for dropbox")      
+      var q = qs.parse(body)
+      
+      var auth_url = Dropbox.config.auth_url + "?oauth_token=" + q.oauth_token + "&oauth_callback="+ Dropbox.config.callback_url
+
+      console.log(auth_url + " is the auth_url for dropbox.")      
       
       // Create dropbox session object and stash for later.
       req.session.dropbox = {}
@@ -105,7 +101,7 @@ exports.search_for_photos = function(req,res){
   
   // https://api.dropbox.com/1/statuses/home_timeline.json?include_entities=true
   
-  if(!req.session.dropbox || !req.session.dropbox.oauth) return res.redirect('/dropbox')
+  if(!req.session.dropbox || !req.session.dropbox.sync) return res.redirect('/dropbox')
   
   Dropbox.searchForPhotos(req,res)
   
