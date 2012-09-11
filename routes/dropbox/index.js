@@ -11,40 +11,7 @@ exports.dropbox = function(req, res){
   }
   
   if(!req.session.dropbox || !req.session.dropbox.sync){
-  /*  
-    return Dropbox.getNewRequestToken(function(err,body){
 
-      if(err){
-        return res.render('error',{
-            type: 'dropbox', 
-            title: 'PhotoPipe - Error!',
-            db_error: err
-          }) // end res.render
-      }
-
-      var q = qs.parse(body)
-      
-      var auth_url = Dropbox.config.auth_url + "?oauth_token=" + q.oauth_token + "&oauth_callback="+ Dropbox.config.callback_url
-
-      console.log(auth_url + " is the auth_url for dropbox.")      
-      
-      // Create dropbox session object and stash for later.
-      req.session.dropbox = {}
-      req.session.dropbox.sync = false
-      req.session.dropbox.oauth = {
-        request_token: null,
-        request_token_secret: q.oauth_token_secret,
-        access_token_secret: null,
-        access_token: null
-      }
-      
-      res.render('dropbox',{
-          title: 'PhotoPipe - Dropbox Connect',
-          auth_url: auth_url
-        })
-
-    }) // end generateAuthUrl())
-*/
       // We need to generate the authUrl and then show the
       // view with the auth_url as a button.
       
@@ -58,11 +25,12 @@ exports.dropbox = function(req, res){
             }) // end res.render
         }
         
-        console.dir(body)
-        
-        var auth_url = Dropbox.config.auth_url + "?" + qs.stringify(body) + "&oauth_callback="+ Dropbox.config.callback_url
+        var auth_url = Dropbox.config.auth_url + 
+                        "?" + qs.stringify(body) + 
+                        "&oauth_callback=" + 
+                        Dropbox.config.callback_url
 
-        console.log(auth_url + " is the auth_url for dropbox")      
+        // console.log(auth_url + " is the auth_url for dropbox")      
         
         // Create dropbox session object and stash for later.
         req.session.dropbox = {}
@@ -81,7 +49,7 @@ exports.dropbox = function(req, res){
 
       }) // end generateAuthUrl()
 
-    }
+    } // end if no session
     
   // We are actually auth'd so no reason to be here.
   res.redirect('/')
@@ -128,7 +96,7 @@ exports.dropbox_oauth = function(req,res){
           res.redirect('/')
         }
         else{
-          console.dir(data)
+          // console.dir(data)
           /***
                 { 
                   oauth_token_secret: 't7enjtftcji6esn'
@@ -144,8 +112,9 @@ exports.dropbox_oauth = function(req,res){
           // Check to see it works by fetching account info
           Dropbox.getAccountInfo(req.session.dropbox,function(err,data){
             if(err) return console.error(err)
-            console.log('Got account info: ')
-            console.dir(data)
+            console.log('Got account info!')
+            var d = JSON.parse(data)
+            console.log("User %s is now authenticated.", d.display_name )
           })
         
           // Now go back to home page with session data in tact.

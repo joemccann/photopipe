@@ -2,11 +2,18 @@ var fs = require('fs')
   , path = require('path')
   , request = require('request')
   , qs = require('querystring')
-  , Oauth = require('oauth').OAuth
 
 var dropbox_config = JSON.parse( fs.readFileSync( path.resolve(__dirname, 'dropbox-config.json'), 'utf-8' ) )
 
 exports.Dropbox = (function(){
+  
+  var ACCOUNT_INFO_URI = 'https://api.dropbox.com/1/account/info'
+    , API_URI = 'https://api.dropbox.com/1'
+    , CONTENT_API_URI = 'https://api-content.dropbox.com/1'
+    , METADATA_URI = 'https://api.dropbox.com/1/metadata'
+    , SEARCH_URI = 'https://api.dropbox.com/1/search'
+    , FILES_GET_URI = 'https://api-content.dropbox.com/1/files'
+    , FILES_PUT_URI = 'https://api-content.dropbox.com/1/files_put'
   
   return {
     config: dropbox_config,
@@ -29,21 +36,7 @@ exports.Dropbox = (function(){
 
     },
     getRemoteAccessToken: function(access_token, request_token_secret, cb){
-      
-      
-      // _oauth.get( 
-      //             ACCESS_TOKEN_URI, 
-      //             access_token, 
-      //             request_token_secret, 
-      //             function(err, data, res){
-      // 
-      //               if (err) return cb(err)
-      // 
-      //               var d = qs.parse(data)
-      //               cb(null, d)
-      //             }) // end _oauth.get()
-      
-      
+
       var url = dropbox_config.access_token_url
         , oauth = { 
                     consumer_key: dropbox_config.app_key
@@ -64,19 +57,18 @@ exports.Dropbox = (function(){
     }, // end getRemoteAccessToken()
     getAccountInfo: function(dropbox_obj, cb){
       
-      var url = 'https://api.dropbox.com/1/account/info'
-        , oauth = { 
+      var oauth = { 
                     consumer_key: dropbox_config.app_key
                   , consumer_secret: dropbox_config.app_secret
                   , token: dropbox_obj.oauth.access_token
                   , token_secret: dropbox_obj.oauth.access_token_secret
                   }
 
-      request.get({url:url, oauth:oauth}, function (e, r, b) {
+      request.get({url: ACCOUNT_INFO_URI, oauth:oauth}, function (e, r, b) {
 
         if(e) return cb(e,null)
 
-        return cb(null,qs.parse(b))
+        return cb(null,b)
 
       }) // end request.post()
 
@@ -109,132 +101,3 @@ exports.Dropbox = (function(){
   
 })()
 
-/*
-
-var OAuth = require('oauth').OAuth
-
-var config = dropbox_config
-
-exports.Dropbox = (function(){
-  
-  var _oauth
-    , API_URI = 'https://api.dropbox.com/1'
-    , CONTENT_API_URI = 'https://api-content.dropbox.com/1'
-    , REQUEST_TOKEN_URI = 'https://api.dropbox.com/1/oauth/request_token'
-    , ACCESS_TOKEN_URI = 'https://api.dropbox.com/1/oauth/access_token'
-    , METADATA_URI = 'https://api.dropbox.com/1/metadata'
-    , ACCOUNT_INFO_URI = 'https://api.dropbox.com/1/account/info'
-    , SEARCH_URI = 'https://api.dropbox.com/1/search'
-    , FILES_GET_URI = 'https://api-content.dropbox.com/1/files'
-    , FILES_PUT_URI = 'https://api-content.dropbox.com/1/files_put'
-
-  // Constructor...
-  !function(){
-
-    // Create OAuth client.
-    _oauth = new OAuth(API_URI + '/oauth/request_token'
-                              , API_URI + '/oauth/access_token'
-                              , config.app_key, config.app_secret
-                              , '1.0', null, 'HMAC-SHA1')
-                              
-  }()
-  
-  // Public API Object
-  return {
-    config: config,
-    getNewRequestToken: function(cb){
-
-      _oauth.get( REQUEST_TOKEN_URI, null, null, function(err, data, res){
-        if (err) {
-          console.error(err)
-          cb(err)
-        }
-        else {
-          var d = qs.parse(data)
-          cb(null, data)
-        }
-
-      })  // end _oauth.get()
-    },
-    getRemoteAccessToken: function(access_token, request_token_secret, cb){
-      _oauth.get( 
-                  ACCESS_TOKEN_URI, 
-                  access_token, 
-                  request_token_secret, 
-                  function(err, data, res){
-                    
-                    if (err) return cb(err)
-
-                    var d = qs.parse(data)
-                    cb(null, d)
-                  }) // end _oauth.get()
-    }, // end getRemoteAccessToken()
-    getAccountInfo: function(dropbox_obj, cb){
-      
-      _oauth.get( ACCOUNT_INFO_URI
-                  , dropbox_obj.oauth.access_token
-                  , dropbox_obj.oauth.access_token_secret
-                  , function(err, data, res){
-                    if(err) return cb(err)
-                    else{
-                      cb(null, data)
-                    }
-                  })
-    }, // end getAccountInfo()
-    searchForPhotos: function(req,res){
-      res.send('Sorry, not implemented yet. :(')
-    },
-    searchForMdFiles: function(cb){
-
-      // *sigh* http://forums.dropbox.com/topic.php?id=50266&replies=1
-      _oauth.get( SEARCH_URI + "/dropbox/?query=.md&file_limit=500"
-                  , _access_token
-                  , _access_token_secret
-                  , function(err, data, res) {
-                      if(err) return cb(err)
-                      else{
-                        cb(null, data)
-                      }
-                  })
-      
-    }, // searchForMdFiles
-    getMdFile: function(pathToFile, cb){
-
-      _oauth.get( FILES_GET_URI + "/dropbox" + pathToFile
-                  , _access_token
-                  , _access_token_secret
-                  , function(err, data, res) {
-                      if(err) return cb(err)
-                      else{
-                        cb(null, data)
-                      }
-                  })
-      
-    }, // getMdFile()
-    putMdFile: function(pathToFile, fileContents, cb){
-
-      // https://github.com/ciaranj/node-oauth/blob/master/lib/oauth.js#L472-474
-      // exports.OAuth.prototype.post= function(url, oauth_token, oauth_token_secret, post_body, post_content_type, callback)
-      
-      // https://www.dropbox.com/developers/reference/api#files_put
-      
-      var params = qs.stringify({overwrite: 'true'})
-      _oauth.put( FILES_PUT_URI + "/dropbox" + pathToFile + "?" + params
-                  , _access_token
-                  , _access_token_secret
-                  , fileContents
-                  , 'text/plain'
-                  , function(err, data, res) {
-                      if(err) return cb(err)
-                      else{
-                        cb(null, data)
-                      }
-                  })
-      
-    } // putMdFile()
-  
-  } // end public API object
-  
-})() // end Dropbox()
-
-*/
