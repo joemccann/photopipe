@@ -5,57 +5,83 @@ var fs = require('fs')
   , Oauth = require('oauth').OAuth
 
 var dropbox_config = JSON.parse( fs.readFileSync( path.resolve(__dirname, 'dropbox-config.json'), 'utf-8' ) )
-/*
+
 exports.Dropbox = (function(){
   
   return {
     config: dropbox_config,
-    generateAuthUrl: function(req,res,cb){
+    getNewRequestToken: function(req,res,cb){
 
       var url = dropbox_config.request_token_url
         , oauth = { 
-                    callback: encodeURI(dropbox_config.callback_url)
-                    , consumer_key: dropbox_config.app_key
-                    , consumer_secret: dropbox_config.app_secret
+                    consumer_key: dropbox_config.app_key
+                  , consumer_secret: dropbox_config.app_secret
                   }
 
       // Create your auth_url for the view   
-      request.post({url:url, oauth:oauth, proxy: 'http://127.0.0.1:8888'}, function (e, r, body) {
+      request.post({url:url, oauth:oauth}, function (e, r, body) {
 
         if(e) return cb(e,null)
-
-        var query = qs.parse(body)
-        console.dir(query)
-        // Set oauth_token_secret and oauth_token in config
-        dropbox_config.oauth_token_secret = query.oauth_token_secret
-        dropbox_config.oauth_token = query.oauth_token
-        console.dir(dropbox_config)
-
-        var auth_url = dropbox_config.auth_url + "?" + body + "&oauth_callback="+ dropbox_config.callback_url
-
-        console.log(auth_url + " is the auth_url for dropbox")      
-
-        cb(null,auth_url)
+        
+        return cb(null,qs.parse(body))
 
       }) // end request.post()
 
     },
-    getRemoteAccessToken: function(access_token, cb){
-      console.log('oauth token here: ' + access_token)
-      _oauth.get( 
-                  ACCESS_TOKEN_URI, 
-                  access_token, 
-                  _request_token_secret, 
-                  function(err, data, res){
-                    if (err) return cb(err)
-                    else {
-                      var d = qs.parse(data)
-                      _access_token_secret = d.oauth_token_secret
-                      _access_token = d.oauth_token
-                      cb(null, d)
+    getRemoteAccessToken: function(access_token, request_token_secret, cb){
+      
+      
+      // _oauth.get( 
+      //             ACCESS_TOKEN_URI, 
+      //             access_token, 
+      //             request_token_secret, 
+      //             function(err, data, res){
+      // 
+      //               if (err) return cb(err)
+      // 
+      //               var d = qs.parse(data)
+      //               cb(null, d)
+      //             }) // end _oauth.get()
+      
+      
+      var url = dropbox_config.access_token_url
+        , oauth = { 
+                    consumer_key: dropbox_config.app_key
+                  , consumer_secret: dropbox_config.app_secret
+                  , token: access_token
+                  , token_secret: request_token_secret
                   }
-      }) // end _oauth.get()
-    }, // end getAccessToken()
+
+      // Create your auth_url for the view   
+      request.get({url:url, oauth:oauth}, function (e, r, body) {
+
+        if(e) return cb(e,null)
+        
+        return cb(null,qs.parse(body))
+
+      }) // end request.get()
+      
+    }, // end getRemoteAccessToken()
+    getAccountInfo: function(dropbox_obj, cb){
+      
+      var url = 'https://api.dropbox.com/1/account/info'
+        , oauth = { 
+                    consumer_key: dropbox_config.app_key
+                  , consumer_secret: dropbox_config.app_secret
+                  , token: dropbox_obj.oauth.access_token
+                  , token_secret: dropbox_obj.oauth.access_token_secret
+                  }
+
+      request.get({url:url, oauth:oauth}, function (e, r, b) {
+
+        if(e) return cb(e,null)
+
+        return cb(null,qs.parse(b))
+
+      }) // end request.post()
+
+      
+    }, // end getAccountInfo()
     searchForPhotos: function(req,res){
       res.send('not implemented yet')
     },
@@ -82,7 +108,8 @@ exports.Dropbox = (function(){
   }
   
 })()
-*/
+
+/*
 
 var OAuth = require('oauth').OAuth
 
@@ -210,3 +237,4 @@ exports.Dropbox = (function(){
   
 })() // end Dropbox()
 
+*/

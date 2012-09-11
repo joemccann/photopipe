@@ -11,7 +11,7 @@ exports.dropbox = function(req, res){
   }
   
   if(!req.session.dropbox || !req.session.dropbox.sync){
-    
+  /*  
     return Dropbox.getNewRequestToken(function(err,body){
 
       if(err){
@@ -44,11 +44,11 @@ exports.dropbox = function(req, res){
         })
 
     }) // end generateAuthUrl())
-
+*/
       // We need to generate the authUrl and then show the
       // view with the auth_url as a button.
-      /*
-      return Dropbox.generateAuthUrl(req,res,function(err,body){
+      
+      return Dropbox.getNewRequestToken(req,res,function(err,body){
 
         if(err){
           return res.render('error',{
@@ -57,37 +57,32 @@ exports.dropbox = function(req, res){
               db_error: err
             }) // end res.render
         }
+        
+        console.dir(body)
+        
+        var auth_url = Dropbox.config.auth_url + "?" + qs.stringify(body) + "&oauth_callback="+ Dropbox.config.callback_url
 
+        console.log(auth_url + " is the auth_url for dropbox")      
+        
+        // Create dropbox session object and stash for later.
+        req.session.dropbox = {}
+        req.session.dropbox.sync = false
+        req.session.dropbox.oauth = {
+          request_token: null,
+          request_token_secret: body.oauth_token_secret,
+          access_token_secret: null,
+          access_token: null
+        }
+        
         res.render('dropbox',{
             title: 'PhotoPipe - Dropbox Connect',
-            auth_url: body
+            auth_url: auth_url
           })
 
       }) // end generateAuthUrl()
-*/
+
     }
     
-    // We need to generate the authUrl and then show the
-    // view with the auth_url as a button.
-  //   return Dropbox.generateAuthUrl(req,res,function(err,body){
-  // 
-  //     if(err){
-  //       return res.render('error',{
-  //           type: 'dropbox', 
-  //           title: 'PhotoPipe - Error!',
-  //           fb_error: err
-  //         }) // end res.render
-  //     }
-  //     
-  //     res.render('dropbox',{
-  //         title: 'PhotoPipe - Dropbox Connect',
-  //         auth_url: body
-  //       })
-  //     
-  //   }) // end generateAuthUrl()
-  //   
-  // }
-  
   // We are actually auth'd so no reason to be here.
   res.redirect('/')
   
@@ -133,7 +128,7 @@ exports.dropbox_oauth = function(req,res){
           res.redirect('/')
         }
         else{
-          // console.dir(data)
+          console.dir(data)
           /***
                 { 
                   oauth_token_secret: 't7enjtftcji6esn'
