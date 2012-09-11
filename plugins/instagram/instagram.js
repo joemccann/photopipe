@@ -10,9 +10,6 @@ Instagram.set('client_id', instagram_config.client_id)
 Instagram.set('client_secret', instagram_config.client_secret)
 Instagram.set('redirect_uri', instagram_config.redirect_uri)
 
-// to be set later after auth...
-Instagram._user = null
-
 Instagram.photopipe = {
   getUserRecentPhotos: function(req,res){
     // Let's grab the user's recent photos from their feed.

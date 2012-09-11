@@ -40,7 +40,8 @@ exports.index = function(req, res){
   var auths = {
     isTwitterAuth: !!req.session.twitter,
     isFacebookAuth: !!req.session.facebook,
-    isInstagramAuth: !!req.session.instagram
+    isInstagramAuth: !!req.session.instagram,
+    isDropboxAuth: !!req.session.dropbox
   }
   
   res.render('index', auths)

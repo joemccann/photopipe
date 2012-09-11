@@ -265,6 +265,7 @@ table {
 .button-twitter,
 .button-instagram,
 .button-facebook,
+.button-dropbox,
 .button-download,
 .button-url {
   display: inline-block;
@@ -280,6 +281,9 @@ table {
 }
 .button-twitter {
   background: transparent url("/img/twitter-200x200.png") no-repeat scroll top left;
+}
+.button-dropbox {
+  background: transparent url("/img/dropbox-200x200.png") no-repeat scroll top left;
 }
 .button-download {
   background: transparent url("/img/download-200x200.png") no-repeat scroll top left;
@@ -304,6 +308,12 @@ table {
   width: 234px;
   height: 37px;
   background: transparent url("/img/button-signin-twitter-234x37.png") no-repeat scroll top left;
+}
+.button-connect-dropbox {
+  display: inline-block;
+  width: 218px;
+  height: 54px;
+  background: transparent url("/img/button-signin-dropbox-218x54.png") no-repeat scroll top left;
 }
 @font-face {
   font-family: 'icons';

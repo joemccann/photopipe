@@ -73,7 +73,7 @@ exports.instagram_oauth = function(req,res){
         req.session.instagram = params
         
         // Head back to instagram page, but this time, we'll enter
-        // the else block because we have an Instagram._user object
+        // the else block
         return res.redirect('/')
 
       },

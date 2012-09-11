@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<%- include head %>
+<body>
+
+  <div id="main">
+
+    <%- include nav %>
+      <section class="oauth-page">
+        <p class="steps-copy">Connect Photo<span class="cool">Pipe</span> <br>with Dropbox</p>
+        <p><a class="button-connect-dropbox" href="<%- auth_url %>"></a></p>
+        <p class="permissions-copy">This will allow PhotoPipe to fetch your photos <em>and</em> post photos to your account.</p>
+      </section>
+    </div>
+  </body>
+</html>

@@ -1,7 +1,7 @@
 {
   "name": "photopipe",
   "description": "Pipe yer photos all over the web and stuff.",
-  "version": "0.0.4-38",
+  "version": "0.0.5",
   "author": {
     "name": "Joe McCann",
     "email": "joe@subprint.com"
@@ -42,7 +42,9 @@
     "mocha": ">=0.5.0",
     "lodash": ">=0.6.1",
     "redis": ">=0.7.2",
-    "colors": ">=0.6.0-1"
+    "colors": ">=0.6.0-1",
+    "dropbox": ">=0.3.3",
+    "oauth": "0.9.7"
   },
   "bundleDependencies": [
     "redis"
