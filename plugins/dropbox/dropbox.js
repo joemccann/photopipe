@@ -2,6 +2,7 @@ var fs = require('fs')
   , path = require('path')
   , request = require('request')
   , qs = require('querystring')
+  , _ = require('lodash')
 
 var dropbox_config = JSON.parse( fs.readFileSync( path.resolve(__dirname, 'dropbox-config.json'), 'utf-8' ) )
 
@@ -10,10 +11,12 @@ exports.Dropbox = (function(){
   var ACCOUNT_INFO_URI = 'https://api.dropbox.com/1/account/info'
     , API_URI = 'https://api.dropbox.com/1'
     , CONTENT_API_URI = 'https://api-content.dropbox.com/1'
-    , METADATA_URI = 'https://api.dropbox.com/1/metadata'
-    , SEARCH_URI = 'https://api.dropbox.com/1/search'
+    , METADATA_URI = 'https://api.dropbox.com/1/metadata/dropbox/Photos'
+    , SEARCH_URI = 'https://api.dropbox.com/1/search/dropbox'
     , FILES_GET_URI = 'https://api-content.dropbox.com/1/files'
     , FILES_PUT_URI = 'https://api-content.dropbox.com/1/files_put'
+    , THUMBNAILS_URI = 'https://api-content.dropbox.com/1/thumbnails/dropbox'
+    , DELTA_URI = 'https://api.dropbox.com/1/delta'
   
   return {
     config: dropbox_config,
@@ -74,8 +77,39 @@ exports.Dropbox = (function(){
 
       
     }, // end getAccountInfo()
-    searchForPhotos: function(req,res){
-      res.send('not implemented yet')
+    searchForPhotos: function(dropbox_obj,cb){
+      
+      var oauth = { 
+                    consumer_key: dropbox_config.app_key
+                  , consumer_secret: dropbox_config.app_secret
+                  , token: dropbox_obj.oauth.access_token
+                  , token_secret: dropbox_obj.oauth.access_token_secret
+                  }
+                  
+      var totalPhotoCalls = 4
+        , totalPhotoObj = {}
+      
+      function getPhoto(type){
+      
+        request.get({url: SEARCH_URI + "?query=."+type, oauth:oauth}, function (e, r, b) {
+
+          if(e) return cb(e,null)
+
+          totalPhotoCalls--
+          b = JSON.parse(b)
+          totalPhotoObj = _.merge(totalPhotoObj, b)
+      
+          if(!totalPhotoCalls) return cb(null,totalPhotoObj)
+
+        }) // end request.post()
+        
+      }
+
+      getPhoto('jpg')
+      getPhoto('png')
+      getPhoto('jpeg')
+      getPhoto('gif')
+      
     },
     getNextPageUserRecentPhotos: function(req,res){
       

@@ -66,7 +66,11 @@ exports.search_for_photos = function(req,res){
   
   if(!req.session.dropbox || !req.session.dropbox.sync) return res.redirect('/dropbox')
   
-  Dropbox.searchForPhotos(req,res)
+  Dropbox.searchForPhotos(req.session.dropbox,function(err,data){
+    if(err) return console.error(err)
+    console.log('Got search!')
+    res.json(data)
+  })
   
 }
 
