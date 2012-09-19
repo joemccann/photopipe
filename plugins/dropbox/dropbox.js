@@ -13,8 +13,8 @@ exports.Dropbox = (function(){
     , CONTENT_API_URI = 'https://api-content.dropbox.com/1'
     , METADATA_URI = 'https://api.dropbox.com/1/metadata/dropbox/Photos'
     , SEARCH_URI = 'https://api.dropbox.com/1/search/dropbox'
-    , FILES_GET_URI = 'https://api-content.dropbox.com/1/files'
-    , FILES_PUT_URI = 'https://api-content.dropbox.com/1/files_put'
+    , FILES_GET_URI = 'https://api-content.dropbox.com/1/files/dropbox'
+    , FILES_PUT_URI = 'https://api-content.dropbox.com/1/files_put/dropbox/PhotoPipe/'
     , THUMBNAILS_URI = 'https://api-content.dropbox.com/1/thumbnails/dropbox'
     , DELTA_URI = 'https://api.dropbox.com/1/delta'
   
@@ -111,26 +111,38 @@ exports.Dropbox = (function(){
       getPhoto('gif')
       
     },
-    getNextPageUserRecentPhotos: function(req,res){
-      
-      var url = req.query.next_page_url
+    pipeToDropbox: function(echo, req, res){
 
-      request({url: url}, function(e,r,b){
-        if(e) {
-          console.error(e)
-          return res.json(e)
+      if(!req.session.dropbox.oauth){
+        res.type('text/plain')
+        return res.status(403).send("You are not authenticated with Dropbox.")
+      } 
+
+      var oauth = { 
+                    consumer_key: dropbox_config.app_key
+                  , consumer_secret: dropbox_config.app_secret
+                  , token: req.session.dropbox.oauth.access_token
+                  , token_secret: req.session.dropbox.oauth.access_token_secret
+                  }
+
+      var file = fs.readFileSync(echo.fullPhotoPath)
+      
+      request.put({
+        oauth: oauth,
+        uri: FILES_PUT_URI + echo.photoName,
+        body: file, 
+        callback: function(e,r,data){
+          if(e) {
+            console.error(e)
+            return res.json(e)
+          }
+          if(data) {
+            return res.json(data)
+          }        
         }
-        var parsedBody = JSON.parse(b)
-        var respJson = parsedBody.data
-        // In order to keep the response from instagram API
-        // similar to the response that is sent back by the 
-        // instagram node module, we need to change it a bit
-        // by pushing this object on the end of the array.
-        respJson.push(parsedBody.pagination)
-        return res.json(respJson)
       })
 
-    }
+    } // end pipeToDropbox
   }
   
 })()

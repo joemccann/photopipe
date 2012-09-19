@@ -9,9 +9,11 @@ $(function(){
   var $twitter = $('#twitter')
     , $facebook = $('#facebook')
     , $instagram = $('#instagram')
+    , $dropbox = $('#dropbox')
     , $url = $('#url')
     , $twitterDestination = $('.twitter-destination')
     , $facebookDestination = $('.facebook-destination')
+    , $dropboxDestination = $('.dropbox-destination')
     , $downloadDestination = $('.download-destination')
     , $stepOne = $('#step-one')
     , $stepTwo = $('#step-two')
@@ -55,6 +57,7 @@ $(function(){
     $twitter.isAuthenticated = $twitter.attr('data-auth') === 'true' ? true : false
     $facebook.isAuthenticated = $facebook.attr('data-auth') === 'true' ? true : false
     $instagram.isAuthenticated = $instagram.attr('data-auth') === 'true' ? true : false
+    $dropbox.isAuthenticated = $dropbox.attr('data-auth') === 'true' ? true : false
     
   }  
 
@@ -84,6 +87,7 @@ $(function(){
 
     $twitter.isAuthenticated && $twitterDestination.bind('click', twitterDestinationClickHandler)
     $facebook.isAuthenticated && $facebookDestination.bind('click', facebookDestinationClickHandler)
+    $dropbox.isAuthenticated && $dropboxDestination.bind('click', dropboxDestinationClickHandler)
     
     $downloadDestination.bind('click', downloadDestinationClickHandler )
     
@@ -733,6 +737,21 @@ $(function(){
     
   }
 
+  // Step #3 dropbox destination
+  function dropboxDestinationClickHandler(e){
+    
+    _photoDestination = 'dropbox'
+
+    showCaptionForm(_photoDestination)
+
+    // console.log(e.target + " is the target")
+
+    toggleEnableChoice(e.target)
+    
+    return false
+    
+  }
+
   // Download the file
   function downloadDestinationClickHandler(e){
 
@@ -756,12 +775,20 @@ $(function(){
   }
   
   // Post the actual photo and caption
+  // This method is for ALL pipes (fb, twitter, db, etc.)
   function pipePhotoPostHandler(){
-
+    
+    var fn = $('#filename').val()
+    var fileExtension = (/\.(gif|jpg|jpeg|png|bmp)/gi.exec(_photoToUse))[0]
+    
+    if(fn) encodeURI( fn = (fn + fileExtension) )
+    else fn = _photoToUse
+    
     $
     .post("/smoke",{
       type: _photoDestination,
       photoUrl: _photoToUse,
+      filename: fn,
       caption: $caption.val() 
     })
     .success(function(data){ 
@@ -893,6 +920,16 @@ $(function(){
     else if(_photoDestination === 'twitter'){
       // TODO: ADD 140 CHAR MAX CHECKER TO CAPTION
       $caption.attr('maxlength', '140')
+      $photoPipeForm.slideDown(333)
+    }
+    else if(_photoDestination === 'dropbox'){
+      $photoPipeForm
+        .find('label[for="caption"]')
+        .remove()
+        .end()
+        .find('#caption')
+        .hide()
+        
       $photoPipeForm.slideDown(333)
     }
     

@@ -85,10 +85,10 @@ exports.smoke = function(req, res){
   echo.photoUrl = req.body.photoUrl
   echo.caption = req.body.caption || ''
   echo.type = req.body.type || 'echo'   
-
+  
   // http://bit.ly/node-path-basename
   // Also, clean it up a bit
-  echo.photoName = validator.getImageNameWithoutQueryStringOrHash( path.basename(req.body.photoUrl) )
+  echo.photoName = req.body.filename || validator.getImageNameWithoutQueryStringOrHash( path.basename(req.body.photoUrl) )
     
   // Verify it's a mufckn image (png, jpg, etc.)
   // TODO: CHECK FOR MIME TYPE?
@@ -147,6 +147,15 @@ exports.smoke = function(req, res){
         // Now, just pipe the echo object and be sure to pass the
         // request and response objects as well.
         twit.pipeToTwitter(echo, req, res)
+        
+        incrementPipedCount()
+      }else if(echo.type === 'dropbox'){
+
+        var dropbox = require(path.resolve(__dirname, '..', 'plugins/dropbox/dropbox.js')).Dropbox
+
+        // Now, just pipe the echo object and be sure to pass the
+        // request and response objects as well.
+        dropbox.pipeToDropbox(echo, req, res)
         
         incrementPipedCount()
         

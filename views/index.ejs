@@ -8,17 +8,7 @@
     
     <!-- Step 1: Pick a photo source. -->
     
-    <section id="step-one">
-      <p class="steps">Step 1</p>
-      <p class="steps-copy">Select your photo source:</p>
-      <ul id="photo-to-pipe">
-        <li><a id="instagram" data-auth="<%= isInstagramAuth %>" href="/instagram/get_user_recent_photos" class="button-instagram"></a></li>    
-        <li><a id="twitter" data-auth="<%= isTwitterAuth %>" href="/twitter/get_media_timeline" class="button-twitter"></a></li>
-        <li><a id="facebook" data-auth="<%= isFacebookAuth %>" href="/facebook/get_photo_albums" class="button-facebook"></a></li>
-        <li><a id="dropbox" data-auth="<%= isDropboxAuth %>" href="/dropbox/search_for_photos" class="button-dropbox"></a></li>
-        <li><a id="url" data-auth="true" href="/url" class="button-url"></a></li>
-      </ul>  
-    </section>
+    <%- include sources %>
     
     <!-- Step 2: Pick a photo or gallery (in facebook case). -->
     
@@ -101,7 +91,7 @@
 
     </section>
     
-    <!-- Step 3 Pick a destination or a photo (in facebook case) -->
+    <!-- Step 3 Pick a destination or a photo (in fb case) -->
     
     <section id="step-three">
       
@@ -151,15 +141,7 @@
         <p class="steps">Step 4</p>
         <p class="steps-copy">Select your photo destination:</p>
         
-        <ul id="photo-to-pipe">
-        
-          <li><a class="facebook-destination button-facebook" href="#"></a></li>
-          <li><a class="twitter-destination button-twitter" href="#"></a></li>
-          <li><a class="download-destination button-download" href="/download/file"></a>
-          </li>
-        
-        </ul>
-        
+        <%- include destinations %>
         <%- include form %>
       
       </div> <!-- #destination-wrapper -->
@@ -178,17 +160,17 @@
 </body>
 <!--
 
-	Oh hi, there.  You're viewing source so you're probably somewhat
-	nerdy, geeky or you got here by accident.
-	
-	Nonetheless, did you know that PhotoPipe is 100% open source?
-	Fuck yeah, it is.
-	
-	Go here:  github.com/joemccann/photopipe
-	
-	Don't see a service (like Flickr, 500px, etc.) on here?  Create
-	a plugin and contribute.  If you're not a dipshit, I'll merge
-	it in and host it here!	
+  Oh hi, there.  You're viewing source so you're probably somewhat
+  nerdy, geeky or you got here by accident.
+
+  Nonetheless, did you know that PhotoPipe is 100% open source?
+  Fuck yeah, it is.
+
+  Go here:  http://github.com/joemccann/photopipe
+
+  Don't see a service (like Flickr, 500px, etc.) on here?  Create
+  a plugin and contribute.  If it's cool and it works, I'll merge
+  it in and host it here!	
 
 -->
 </html>
