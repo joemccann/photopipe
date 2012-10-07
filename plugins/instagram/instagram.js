@@ -35,16 +35,14 @@ Instagram.photopipe = {
         // this is probably pretty bad in practice actually (race conditions)
         Instagram.set('access_token', null)
 
-        // TODO: ADD PAGINATION
         return res.json(data)
-          
           
       } // end complete 
     
     }) // end recent
     
   },
-  getNextPageUserRecentPhotos: function(req,res){
+  getNextPageOfInstagramPhotos: function(req,res){
 
     var url = req.query.next_page_url
     
@@ -63,6 +61,40 @@ Instagram.photopipe = {
       return res.json(respJson)
     })
     
+  },
+  executeSearch: function(req,res){
+
+    // Let's grab the user's recent photos from their feed.
+    Instagram.set('access_token', req.session.instagram.access_token)
+    
+    var query = req.body.search_query
+    
+    console.log(query + " is the search query.")
+
+    Instagram.tags.recent({ 
+      name: req.body.search_query,
+      error: function(errorMessage, errorObject, caller, response){
+       var err = JSON.parse(errorObject)
+       // Revoke the sessions if code === 400
+       if(err.meta.code === 400) req.session.instagram = null
+       return res.status(err.meta.code).send(err.error_message)
+      },
+      complete: function(data,page){
+        
+        // We are going to push the pagination object
+        // as the last item in the data array.
+        // IMPORTANT: Client side code should reflect this
+        data.push(page)
+        // console.dir(data,5)
+
+        // unset access_token --> 
+        // this is probably pretty bad in practice actually (race conditions)
+        Instagram.set('access_token', null)
+
+        return res.json(data)
+      } // end complete 
+    
+    }) // end recent    
   }
 }
 

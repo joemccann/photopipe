@@ -170,6 +170,7 @@ exports.smoke = function(req, res){
         incrementPipedCount()
         
       }else if(echo.type === 'echo' || echo.type === 'download'){
+        
         res.json(echo)
         
         if(echo.type === 'download') incrementPipedCount()

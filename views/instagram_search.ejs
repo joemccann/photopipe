@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<%- include head %>
+<body data-twitter-auth="<%= isTwitterAuth %>" data-facebook-auth="<%= isFacebookAuth %>" data-instagram-auth="<%= isInstagramAuth %>" data-dropbox-auth="<%= isDropboxAuth %>">
+  <div id="main">
+    
+    <%- include nav %>
+
+    <%- include search_form %>
+    
+    <section class="gallery" id="photo-picker-instagram">
+      
+      <p class="steps">Search Results</p>
+      <p class="steps-copy">Select the photo you want to pipe:</p>
+      
+      <div class="one-up-wrapper" id="one-up-instagram-wrapper">
+
+        <div id="one-up-instagram" class="one-up">
+
+          <span class="close-one-up" data-icon="&#x2297;"></span>
+
+          <div class="use-photo-container">
+            <a class="button save use-photo" id="instagram-use-photo">This One!</a>
+          </div>
+
+        </div>
+
+      </div> <!-- end .one-up-wrapper -->    
+      
+      <div class="load-more">
+        <a class="button add" data-pagination="" id="instagram-load-more" href="/instagram/get_next_page_of_instagram_photos">LOAD MORE PHOTOS</a>
+      </div>
+
+    </section>
+
+    <%- include debug %>
+    
+  </div> <!-- end #main -->
+  
+  <iframe src="" id="downloader" class="none"></iframe>
+  
+	<div id="overlay"></div>
+  
+  <%- include scripts %>
+</body>
+<!--
+
+  Oh hi, there.  You're viewing source so you're probably somewhat
+  nerdy, geeky or you got here by accident.
+
+  Nonetheless, did you know that PhotoPipe is 100% open source?
+  Fuck yeah, it is.
+
+  Go here:  http://github.com/joemccann/photopipe
+
+  Don't see a service (like Flickr, 500px, etc.) on here?  Create
+  a plugin and contribute.  If it's cool and it works, I'll merge
+  it in and host it here!	
+
+-->
+</html>

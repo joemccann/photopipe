@@ -47,6 +47,7 @@ $(function(){
     , $photoPipeForm = $('.photoPipeForm')
     , $window = $(window)
     , $document = $(document)
+    , $body = $('body')
     , _photoToUse = ''
     , _photoDestination = ''
       
@@ -54,10 +55,10 @@ $(function(){
   // auth'd for said service or not.
   function checkForAuths(){
 
-    $twitter.isAuthenticated = $twitter.attr('data-auth') === 'true' ? true : false
-    $facebook.isAuthenticated = $facebook.attr('data-auth') === 'true' ? true : false
-    $instagram.isAuthenticated = $instagram.attr('data-auth') === 'true' ? true : false
-    $dropbox.isAuthenticated = $dropbox.attr('data-auth') === 'true' ? true : false
+    $twitter.isAuthenticated = $body.attr('data-twitter-auth') === 'true' ? true : false
+    $facebook.isAuthenticated = $body.attr('data-facebook-auth') === 'true' ? true : false
+    $instagram.isAuthenticated = $body.attr('data-instagram-auth') === 'true' ? true : false
+    $dropbox.isAuthenticated = $body.attr('data-dropbox-auth') === 'true' ? true : false
     
   }  
 
@@ -95,7 +96,7 @@ $(function(){
 
   // Attach click handlers to respective elements.
   function wirePaginationButtons(){
-
+    
     $twitter.isAuthenticated && $twitterLoadMore.bind('click', twitterPaginationClickHandler)
     $facebook.isAuthenticated && $facebookLoadMore.bind('click', facebookPaginationClickHandler)
     $instagram.isAuthenticated && $instagramLoadMore.bind('click', function(){
@@ -329,14 +330,7 @@ $(function(){
       
       // console.dir(d)
       
-      // IMPORTANT: The last item in the array is the 
-      // pagination object. We must pop it off
-      var pageObj = d.pop()
-      var nextPageUrl = pageObj.next_url
-     
-      // Let's update the pagination button with the next 
-      // page's URL
-      updatePaginationButton($instagramLoadMore, nextPageUrl)
+      Instagram.updatePaginationButton($instagramLoadMore, d)
 
       var thumbs = ""
 
@@ -355,9 +349,10 @@ $(function(){
         .show()
 
       // Wire up the events to the images...
-      wireInstagramGalleryPicker()
+      wireInstagramGalleryPicker( $photoPickerInstagram )
 
-      // Progress to Step 2
+      // Progress to Step 2 
+      // TODO: NEED TO MAKE THIS MORE MODULAR, LIKE A CB OR SOMETHING          
       if(!isPaging){
         progressToNextStep($stepOne, function(){
 
@@ -390,7 +385,6 @@ $(function(){
       .show()
 
     // Event is wired because of .use-photo class on submit button
-
 
     // Progress to Step 2
     progressToNextStep($stepOne, function(){
@@ -438,17 +432,20 @@ $(function(){
   }
   
   // Method that extracts the one up size instagram image to be piped
-  function wireInstagramGalleryPicker(){
-    
-    $photoPickerInstagram
+  function wireInstagramGalleryPicker($el,doShow){
+    $el
       .find('img')
       .each(function(i,el){
         // Because of pagination, we need to unbind then rebind all.
         $(el)
           .unbind('click')
-          .bind('click', instagramOneUpClickHandler)
+          .bind('click', function(e){
+            instagramOneUpClickHandler(e)
+          })
         
       }) // end each()
+      
+      if(doShow) $el.show()
   }
 
   // Method that extracts the one up size twitter image to be piped
@@ -534,7 +531,8 @@ $(function(){
       
       var $oneUpContainer = $photoPickerInstagram.find('.one-up-wrapper')
       
-      positionFromTop( $photoPickerInstagram, $oneUpContainer )
+      // The images' container is the e.target's parent
+      positionFromTop( $(e.target).parent() , $oneUpContainer )
 
       showOverlay()
 
@@ -778,17 +776,17 @@ $(function(){
   // This method is for ALL pipes (fb, twitter, db, etc.)
   function pipePhotoPostHandler(){
     
-    var fn = $('#filename').val()
+    var fileNameValue = $('#filename').val()
     var fileExtension = (/\.(gif|jpg|jpeg|png|bmp)/gi.exec(_photoToUse))[0]
     
-    if(fn) encodeURI( fn = (fn + fileExtension) )
-    else fn = _photoToUse
+    if(fileNameValue) encodeURI( fileNameValue = (fileNameValue + fileExtension) )
+    else fileNameValue = _photoToUse.split('/').pop()
     
     $
     .post("/smoke",{
       type: _photoDestination,
       photoUrl: _photoToUse,
-      filename: fn,
+      filename: fileNameValue,
       caption: $caption.val() 
     })
     .success(function(data){ 
@@ -840,6 +838,112 @@ $(function(){
     document.getElementById('downloader').src = '/download/file?filePath=' + data.fullPhotoPath
     toggleEnableChoice()
   }
+
+
+  /******************************* Instagram Module *******************************/
+
+  var Instagram = (function(){
+    
+    function _appendPhotosToGallery(photos, cb){
+      // Iterate over the images and add to thumbs string
+      var images = ''
+      
+      photos.forEach(function(el,i){
+        if(i===photos.length-1) return // page element of array
+        images += "<img data-standard-resolution='"
+                  + el.images.standard_resolution.url
+                  +"' src='"+ el.images.thumbnail.url +"' />"
+      })
+      
+      $oneUpInstagramWrapper
+        .before(images)
+      
+      $spin.hide()
+      
+      cb & cb()
+      
+    }
+    
+    function _clearPhotos($el){
+      $el
+        .find('img')
+        .remove()
+        .end()
+        .hide()
+    }
+    
+    function _executeSearch(){
+      
+      var query = $('#search_query').val()
+      
+      function _beforeSendHandler(){
+        // console.log('Searching Instagram for %s', query)
+        _clearPhotos($gallery)        
+      }
+
+      function _doneHandler(a, b, response){
+        a = b = null // JS hint barks...
+        response = JSON.parse(response.responseText)
+        
+        // console.log('\nSearch query complete.')
+        // console.dir(response)
+        
+        _updatePaginationButton($instagramLoadMore, response)
+
+        _appendPhotosToGallery(response, function(){
+          wireInstagramGalleryPicker( $gallery, true )
+        })
+
+      } // end done handler
+
+      function _failHandler(){
+        alert("Roh-roh. Something went wrong. :(")
+      }
+
+      var config = {
+                      type: 'POST',
+                      dataType: 'json',
+                      data: 'search_query=' + encodeURI(query),
+                      url: '/instagram/search',
+                      beforeSend: _beforeSendHandler,
+                      error: _failHandler,
+                      success: _doneHandler
+                    }
+
+      $.ajax(config)
+      
+      return false
+      
+    }
+    
+    function _updatePaginationButton($el,data){
+      // IMPORTANT: The last item in the array is the 
+      // pagination object. We must pop it off
+      var pageObj = data.pop()
+      var nextPageUrl = pageObj.next_url
+
+      // Let's update the pagination button with the next 
+      // page's URL
+      $el.attr('data-pagination', nextPageUrl)
+      
+    }
+    
+    !(function(){
+      
+      $('#instagram_search_form').bind('submit', _executeSearch)
+      
+    })()
+    
+    return {
+      updatePaginationButton: _updatePaginationButton,
+      executeSearch: _executeSearch
+    }
+  })()
+
+
+  /******************************* End Instagram Module ***************************/
+
+
   
   
   /******************************* UI STUFF *******************************/

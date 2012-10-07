@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <%- include head %>
-<body>
+<body data-twitter-auth="<%= isTwitterAuth %>" data-facebook-auth="<%= isFacebookAuth %>" data-instagram-auth="<%= isInstagramAuth %>" data-dropbox-auth="<%= isDropboxAuth %>">
   <div id="main">
     
     <%- include nav %>
@@ -69,7 +69,7 @@
 				</div> <!-- end .one-up-wrapper -->
 
         <div class="load-more">
-          <a class="button add" data-pagination="" id="instagram-load-more" href="/instagram/get_next_page_user_recent_photos">LOAD MORE PHOTOS</a>
+          <a class="button add" data-pagination="" id="instagram-load-more" href="/instagram/get_next_page_of_instagram_photos">LOAD MORE PHOTOS</a>
         </div>
 
       </section>

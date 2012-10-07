@@ -86,9 +86,13 @@ app.get('/instagram', instagram_routes.instagram)
 
 app.get('/instagram/get_user_recent_photos', instagram_routes.instagram_get_user_recent_photos)
 
-app.get('/instagram/get_next_page_user_recent_photos', instagram_routes.instagram_get_next_page_user_recent_photos)
+app.get('/instagram/get_next_page_of_instagram_photos', instagram_routes.instagram_get_next_page_of_instagram_photos)
 
 app.get('/oauth/instagram', instagram_routes.instagram_oauth)
+
+app.get('/instagram/search', instagram_routes.instagram_search)
+
+app.post('/instagram/search', instagram_routes.instagram_search_post)
 
 
 /************************** Facebook Support **************************/

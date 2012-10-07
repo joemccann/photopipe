@@ -44,7 +44,7 @@ exports.instagram_get_user_recent_photos = function(req,res){
     
 }
 
-exports.instagram_get_next_page_user_recent_photos = function(req,res){
+exports.instagram_get_next_page_of_instagram_photos = function(req,res){
 
   if(!req.session.instagram) return res.redirect('/instagram')
 
@@ -53,9 +53,39 @@ exports.instagram_get_next_page_user_recent_photos = function(req,res){
     return res.status(403).send("Bad Request. Missing next_page_url param")
   }
   
-  Instagram.photopipe.getNextPageUserRecentPhotos(req,res)
+  Instagram.photopipe.getNextPageOfInstagramPhotos(req,res)
   
 }
+
+exports.instagram_search = function(req,res){
+
+  if(!req.session.instagram) return res.redirect('/instagram')
+
+  // Some flags to be set for client-side logic.
+  var auths = {
+    isTwitterAuth: !!req.session.twitter,
+    isFacebookAuth: !!req.session.facebook,
+    isInstagramAuth: !!req.session.instagram,
+    isDropboxAuth: !!req.session.dropbox
+  }
+  
+  res.render('instagram_search', auths)
+
+}
+
+exports.instagram_search_post = function(req,res){
+
+  if(!req.session.instagram) return res.redirect('/instagram')
+
+  if(!req.body.search_query) {
+    res.type('text/plain')
+    return res.status(403).send("Bad Request. You need to send a search query.")
+  }
+  
+  Instagram.photopipe.executeSearch(req,res)
+  
+}
+
 
 /*
  * GET instagram oauth page.
