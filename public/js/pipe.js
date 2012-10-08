@@ -896,8 +896,18 @@ $(function(){
 
       } // end done handler
 
-      function _failHandler(){
-        alert("Roh-roh. Something went wrong. :(")
+      function _failHandler(e){
+        $spin.hide()
+
+        if(e.status === 400) alert(e.responseText || 'Bad request.')
+        if(e.status === 401) alert(e.responseText || 'Unauthorized request.')
+        if(e.status === 402) alert(e.responseText || 'Forbidden request.')
+        if(e.status === 403) alert(e.responseText || 'Forbidden request.')
+        if(e.status === 404) alert(e.responseText || 'Images were not found.')
+        if(e.status === 405) alert(e.responseText || 'That method is not allowed.')
+        if(e.status === 408) alert(e.responseText || 'The request timed out. Try again.')
+        if(e.status === 500) alert(e.responseText || 'Something went really wrong.')
+
       }
 
       var config = {

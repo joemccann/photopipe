@@ -74,10 +74,9 @@ Instagram.photopipe = {
     Instagram.tags.recent({ 
       name: req.body.search_query,
       error: function(errorMessage, errorObject, caller, response){
-       var err = JSON.parse(errorObject)
-       // Revoke the sessions if code === 400
-       if(err.meta.code === 400) req.session.instagram = null
-       return res.status(err.meta.code).send(err.error_message)
+        var err = JSON.parse(errorObject).meta
+        console.error(err.error_message)
+        return res.status(err.code).send(err.error_message)
       },
       complete: function(data,page){
         
