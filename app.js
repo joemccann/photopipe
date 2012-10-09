@@ -31,6 +31,14 @@ app.configure(function(){
   // For the user databases, if you don't want redis, remove this line
   // and swap out for whatever you want
   db_client = require( path.resolve(__dirname, "./database/redis-client.js") )
+
+  // We check on every request if user is logged in.
+  app.use(function(req, res, next){
+    if(!req.session.isLoggedIn){
+      return res.redirect('/')
+    }
+    else next()
+  })
   
 })
 
