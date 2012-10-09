@@ -7,7 +7,8 @@
     <section id="login">
     
       <header>
-        <h1>Login or Signup for PhotoPipe</h1>
+        <h1>Forgot your Password?</h1>
+        <p class="login-copy">Please enter your email <br>address and we'll have a look.</p>
       </header>
       
       <% if(hasErrors){ %>
@@ -15,22 +16,11 @@
         <p class="error-copy"><%- error_message %></p>
       <% }%>
     
-      <form action="/account/login" enctype="application/x-www-form-urlencoded" method="post">
+      <form action="/account/forgot" enctype="application/x-www-form-urlencoded" method="post">
         <fieldset>
-          <label for='login-email-address'>Email Address</label>
-          <input type='email' class="login-form" name='login-email-address' id="login-email-address">
-          <label for='login-password'>Password</label>
-          <input type='password' class="login-form" name='login-password' id="login-password" value=''>
-          <input class="button pipe" type='submit' value='Login'>
-          <div class="login-copy">
-            <p>Or if you don't have <br>an account, create one.<br> It's free!</p>
-          </div>
-          <input class="button pipe" type='submit' value='Create My Account'>
-
-          <div class="login-copy">
-            <a href="/account/forgot">Forgot your password? &rarr;</a>
-          </div>
-
+          <label for='forgot-email-address'>Email Address</label>
+          <input type='email' class="login-form" name='forgot-email-address' id="forgot-email-address">
+          <input class="button pipe" type='submit' value='Find It!'>
         </fieldset>
         
       </form>

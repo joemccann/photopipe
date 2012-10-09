@@ -5,6 +5,23 @@ var path = require('path')
   , validator = require( path.resolve(__dirname, '..', 'utils/validation.js') ) 
   , db_client = require( path.resolve(__dirname, '..', 'database/redis-client.js') )
   , redis = require('redis')
+
+
+/****************************************************************
+
+Account Management Module
+
+****************************************************************/
+var Account = (function(){
+  
+  return{
+    loginUser: function(email,password){
+      
+    }
+  }
+  
+})()
+
   
 
 /****************************************************************
@@ -17,6 +34,17 @@ function incrementPipedCount(){
   db_client.getClient().incr( "totalPipedPhotos" , redis.print)
 }
 
+function emailHashStore(email,isExistent){
+
+  this._hash = this._hash || {}
+  
+  if(isExistent){
+    return !!(this._hash[email])
+  }
+  return this._hash[email] = true
+  
+  
+}
 
 /****************************************************************
 
@@ -36,22 +64,27 @@ exports.index = function(req, res){
     })
   }
   
-  // Some flags to be set for client-side logic.
-  var auths = {
-    isTwitterAuth: !!req.session.twitter,
-    isFacebookAuth: !!req.session.facebook,
-    isInstagramAuth: !!req.session.instagram,
-    isDropboxAuth: !!req.session.dropbox
+  res.render('index', auths)
+}
+
+/*
+ * GET login/create account page.
+ */
+
+exports.login = function(req, res, next){
+  
+  var config = {
+    hasErrors: false
   }
   
-  res.render('index', auths)
+  res.render('login', config)
 }
 
 /*
  * GET wtf (about) page.
  */
 
-exports.wtf = function(req, res){
+exports.wtf = function(req, res, next){
   
   res.render('wtf', {
     title: 'PhotoPipe is a way to take photos from one social network and post them to another.',
@@ -231,6 +264,65 @@ exports.download_file = function(req,res){
   })
 
 }
+
+
+/*
+ * POST account creation or account login.
+ */
+
+exports.account_login = function(req,res){
+
+  var email_address = req.body['login-email-address']
+    , password = req.body['login-password']
+
+  // TODO: VALIDATE EMAIL ADDRESS
+  if(!email_address || !'change-this-to-a-validator'){
+    return res.render('login', {hasErrors: true, error_message: "That's an invalid email address."})
+  }
+  // TODO: VALIDATE PASSWORD
+  if(!password || !'change-this-to-a-validator'){
+    return res.render('login', {hasErrors: true, error_message: "That's an invalid password."})
+  }
+  
+  // TODO: CHECK TO SEE IF EMAIL EXISTS
+  if( emailHashStore(email_address, true) ){
+    // Try to login
+    console.log('Email exists in hash')
+    res.send('exists')
+  }  
+  else{
+    // Otherwise, store it in the hash (maybe after we add the account?)
+    emailHashStore(email_address)
+    res.redirect('/')
+  }
+
+}
+
+/*
+ * GET forgot account page
+ */
+
+exports.account_forgot = function(req,res,next){
+  
+  var config = {
+    hasErrors: false
+  }
+  
+  res.render('account_forgot', config)
+  
+}
+
+
+/*
+ * POST forgot account page
+ */
+ 
+exports.account_forgot_find = function(req,res,next){
+  
+  res.render('not-implemented')
+  
+}
+
 
 /*
  * GET not implemented page.

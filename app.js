@@ -9,6 +9,7 @@ var express = require('express')
 var app = express()
 
 app.configure(function(){
+  
   app.set('port', process.env.PORT || 80)
   app.set('views', __dirname + '/views')
   app.set('view engine', 'ejs')
@@ -21,6 +22,17 @@ app.configure(function(){
   app.use(express.static(path.join(__dirname, 'public')))
   app.use(express.cookieParser('photopipe'))
   app.use(express.cookieSession())
+
+  // Expose session'd accounts to every request as a
+  // local variable available in the view.
+  app.use(function(req,res,next){
+    app.locals.isTwitterAuth = !!req.session.twitter
+    app.locals.isFacebookAuth = !!req.session.facebook
+    app.locals.isInstagramAuth = !!req.session.instagram
+    app.locals.isDropboxAuth = !!req.session.dropbox
+    return next()
+  })
+
   app.use(app.router)
 
   // Setup local variables to be available in the views.
@@ -32,13 +44,6 @@ app.configure(function(){
   // and swap out for whatever you want
   db_client = require( path.resolve(__dirname, "./database/redis-client.js") )
 
-  // We check on every request if user is logged in.
-  app.use(function(req, res, next){
-    if(!req.session.isLoggedIn){
-      return res.redirect('/')
-    }
-    else next()
-  })
   
 })
 
@@ -50,7 +55,7 @@ app.configure('development', function(){
 /************************** PhotoPipe Main **************************/
 
 /* GET routes */
-app.get('/', routes.index)
+app.get('/', routes.login)
 
 app.get('/wtf', routes.wtf)
 
@@ -60,6 +65,14 @@ app.get('/not-implemented', routes['not-implemented'])
 app.post('/smoke', routes.smoke)
 
 app.get('/download/file', routes.download_file)
+
+app.post('/account/login', routes.account_login)
+
+app.post('/account/error', routes.account_error)
+
+app.get('/account/forgot', routes.account_forgot)
+
+app.post('/account/forgot', routes.account_forgot_find)
 
 
 /************************** Dropbox Support **************************/
