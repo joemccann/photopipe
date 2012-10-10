@@ -1,7 +1,7 @@
 {
   "name": "photopipe",
   "description": "Pipe yer photos all over the web and stuff.",
-  "version": "0.0.5-5",
+  "version": "0.0.5-9",
   "author": {
     "name": "Joe McCann",
     "email": "joe@subprint.com"
@@ -37,7 +37,7 @@
     "express": "3.0.0rc3",
     "ejs": "*",
     "stylus": "*",
-    "request": ">=2.11.0",
+    "request": ">=2.10.0",
     "instagram-node-lib": ">=0.0.9",
     "mocha": ">=0.5.0",
     "lodash": ">=0.6.1",
