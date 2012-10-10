@@ -573,6 +573,9 @@ h1 > a:visited {
   line-height: 2;
   color: #f00;
 }
+#instagram_search_form {
+  margin: 3% auto;
+}
 @media only screen and (min-width: 45em) and (max-width: 57.5em) {
   body {
     padding: 2% 1%;

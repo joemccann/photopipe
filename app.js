@@ -54,7 +54,7 @@ app.post('/smoke', routes.smoke)
 app.get('/download/file', routes.download_file)
 
 
-/************************** Dropbox Support **************************/
+/************************** Dropbox Support **************************
 
 // Remove or comment below if you don't want Dropbox support
 var dropbox_routes = require('./routes/dropbox')
@@ -66,7 +66,7 @@ app.get('/dropbox/search_for_photos', dropbox_routes.search_for_photos)
 app.get('/oauth/dropbox', dropbox_routes.dropbox_oauth)
 
 
-/************************** Twitter Support **************************/
+************************** Twitter Support **************************/
 
 // Remove or comment below if you don't want Twitter support
 var twitter_routes = require('./routes/twitter')
