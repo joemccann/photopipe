@@ -919,9 +919,9 @@ $(function(){
           wireInstagramGalleryPicker( $gallery, true )
         })
         
-        // rest the postData
+        // rest the postData, postUrl
         
-        postData = ''
+        postData = postUrl = ''
         
         cb & cb()
 
@@ -1150,6 +1150,10 @@ $(function(){
 
   var EndlessScroll = (function(){
     
+    function _doImagesExist(){
+      return $gallery.find('img').length
+    }
+    
     !function(){
       
       var isScrollCbFired = false
@@ -1157,11 +1161,14 @@ $(function(){
       $window.scroll(function(){
         
         if( $window.scrollTop()+200 >= ( $document.height() - $(window).height() ) ){
-          if(isScrollCbFired) return
+          // if they do not exist, we are doing another search and we 
+          // forced a scrollTo event
+          if( isScrollCbFired || !_doImagesExist() ) return
           isScrollCbFired = true // prevents from firing more than once
           // get currentNetwork
           var currentNetwork = $body.attr('data-current-network')
           if(currentNetwork === 'instagram'){
+            console.log('scroll fired')
             Instagram.loadNextPageOfImages(function(){
               isScrollCbFired = false
             }) // end loadNextPageOfImages
