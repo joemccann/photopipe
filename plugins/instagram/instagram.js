@@ -1,6 +1,7 @@
 var fs = require('fs')
   , path = require('path')
   , request = require('request')
+  , _ = require('lodash')
 
 var instagram_config = JSON.parse( fs.readFileSync( path.resolve(__dirname, 'instagram-config.json'), 'utf-8' ) )
 
@@ -66,15 +67,18 @@ Instagram.photopipe = {
 
     // Let's grab the user's recent photos from their feed.
     Instagram.set('access_token', req.session.instagram.access_token)
-
-    // Instagram barks, only allows single words (i.e. a tag)
-    var query = req.body.search_query.replace(/\s/g, '').replace(/#/g, '') 
+    
+    var query = req.body.search_query
     
     console.log(query + " is the search query.")
 
     Instagram.tags.recent({ 
-      name: query,
+      name: req.body.search_query,
       error: function(errorMessage, errorObject, caller, response){
+        if( !_.isObject( errorObject) ){
+          console.dir(errorObject)
+          return res.status(500).send("Something weird with Instagram API. Try again.")
+        }
         var err = JSON.parse(errorObject).meta
         console.error(err.error_message)
         return res.status(err.code).send(err.error_message)
@@ -124,7 +128,7 @@ Instagram.photopipe = {
         // as the last item in the data array.
         // IMPORTANT: Client side code should reflect this
         data.push(page)
-        console.dir(data,5)
+        // console.dir(data,5)
 
         // unset access_token --> 
         // this is probably pretty bad in practice actually (race conditions)

@@ -1,17 +1,14 @@
 <!DOCTYPE html>
 <html>
 <%- include head %>
-<body data-twitter-auth="<%= isTwitterAuth %>" data-facebook-auth="<%= isFacebookAuth %>" data-instagram-auth="<%= isInstagramAuth %>" data-dropbox-auth="<%= isDropboxAuth %>">
+<body data-twitter-auth="<%= isTwitterAuth %>" data-facebook-auth="<%= isFacebookAuth %>" data-instagram-auth="<%= isInstagramAuth %>" data-dropbox-auth="<%= isDropboxAuth %>" data-current-network='<%= currentNetwork %>'>
   <div id="main">
     
     <%- include nav %>
 
     <%- include search_form %>
     
-    <section class="gallery" id="photo-picker-instagram">
-      
-      <p class="steps">Search Results</p>
-      <p class="steps-copy">Select the photo you want to pipe:</p>
+    <section class="gallery right-search-gallery" id="photo-picker-instagram">
       
       <div class="one-up-wrapper" id="one-up-instagram-wrapper">
 
@@ -27,7 +24,11 @@
 
       </div> <!-- end .one-up-wrapper -->    
       
-      <div class="load-more">
+      <div class="spin-container">
+        <div id="spin"></div>
+      </div>
+      
+      <div class="load-more hide">
         <a class="button add" data-pagination="" id="instagram-load-more" href="/instagram/get_next_page_of_instagram_photos">LOAD MORE PHOTOS</a>
       </div>
 

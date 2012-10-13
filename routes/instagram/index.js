@@ -62,7 +62,8 @@ exports.instagram_search = function(req,res){
   // if(!req.session.instagram) return res.redirect('/instagram')
 
   var config = {
-    searchType: 'tag'
+    searchType: 'tag',
+    currentNetwork: 'instagram'
   }
   
   res.render('instagram_search', config)
@@ -88,7 +89,8 @@ exports.instagram_search_geo = function(req,res){
   // if(!req.session.instagram) return res.redirect('/instagram')
 
   var config = {
-    searchType: 'geo'
+    searchType: 'geo',
+    currentNetwork: 'instagram'
   }
   
   res.render('instagram_search', config)

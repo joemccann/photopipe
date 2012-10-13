@@ -874,7 +874,7 @@ $(function(){
         .hide()
     }
     
-    function _executeSearch(type){
+    function _executeSearch(type,cb){
       
       if(type === 'geo'){
         
@@ -895,7 +895,8 @@ $(function(){
       
       function _beforeSendHandler(){
         // console.log('Searching Instagram for %s', query)
-        _clearPhotos($gallery)        
+        _clearPhotos($gallery)    
+        window.scrollTo(0,1)    
       }
 
       function _doneHandler(a, b, response){
@@ -905,7 +906,7 @@ $(function(){
         // console.log('\nSearch query complete.')
         // console.dir(response)
         
-        var pageObj = response.pop()
+        var pageObj = response[response.length-1]
 
         if(pageObj && pageObj.next_url){
           _updatePaginationButton($instagramLoadMore, response)
@@ -917,6 +918,12 @@ $(function(){
         _appendPhotosToGallery(response, function(){
           wireInstagramGalleryPicker( $gallery, true )
         })
+        
+        // rest the postData
+        
+        postData = ''
+        
+        cb & cb()
 
       } // end done handler
 
@@ -931,9 +938,11 @@ $(function(){
         if(e.status === 405) alert(e.responseText || 'That method is not allowed.')
         if(e.status === 408) alert(e.responseText || 'The request timed out. Try again.')
         if(e.status === 500) alert(e.responseText || 'Something went really wrong.')
+        
+        cb & cb()
 
       }
-
+      
       var config = {
                       type: 'POST',
                       dataType: 'json',
@@ -945,7 +954,7 @@ $(function(){
                     }
 
       $.ajax(config)
-      
+       
       return false
       
     }
@@ -965,7 +974,19 @@ $(function(){
     !(function(){
       
       $('#instagram_search_form').bind('submit', function(){
-        _executeSearch('tag')
+        
+        var $button = $(this).find(' .button')
+        
+        _executeSearch('tag', function(){
+          $button
+            .removeAttr('disabled')
+            .val('Search for Photos!')
+        })
+
+        $button
+          .attr('disabled', true)
+          .val('Searching...')
+
         return false
       })
 
@@ -978,10 +999,64 @@ $(function(){
     
     return {
       updatePaginationButton: _updatePaginationButton,
-      executeSearch: _executeSearch
+      executeSearch: _executeSearch,
+      loadNextPageOfImages: function(cb){
+        // NOTE: this method will only get called if we are auth'd
+        var url = ''
+
+        // In case it is in view
+        closeOneUp()    
+
+        var nextPageUrl = $instagramLoadMore.attr('data-pagination') 
+        url = $instagramLoadMore.attr('href') + "?next_page_url=" + encodeURIComponent(nextPageUrl)
+        
+        $
+        .ajax({url: url, type: 'GET', beforeSend: function(){
+          $spin.show()
+        } })
+        .done(function(){
+          cb && cb()
+        })
+        .success(function(d, resp){ 
+
+          $spin.hide()
+
+          // console.dir(d)
+
+          Instagram.updatePaginationButton($instagramLoadMore, d)
+
+          var thumbs = ""
+
+          // Iterate over the images and add to thumbs string
+          d.forEach(function(el,i){
+            thumbs += "<img data-standard-resolution='"
+                      + el.images.standard_resolution.url
+                      +"' src='"+ el.images.thumbnail.url +"' />"
+          })
+
+          // Add to photoPicker div
+          $oneUpInstagramWrapper
+            .before(thumbs)
+
+          // Wire up the events to the images...
+          wireInstagramGalleryPicker( $photoPickerInstagram )
+
+        })
+        .error(function(e,b){
+          $spin.hide()
+          if(e.status === 400) alert(e.responseText || 'Bad request.')
+          if(e.status === 401) alert(e.responseText || 'Unauthorized request.')
+          if(e.status === 402) alert(e.responseText || 'Forbidden request.')
+          if(e.status === 403) alert(e.responseText || 'Forbidden request.')
+          if(e.status === 404) alert(e.responseText || 'Images were not found.')
+          if(e.status === 405) alert(e.responseText || 'That method is not allowed.')
+          if(e.status === 408) alert(e.responseText || 'The request timed out. Try again.')
+          if(e.status === 500) alert(e.responseText || 'Something went really wrong.')
+        })
+
+      }
     }
   })()
-
 
   /******************************* End Instagram Module ***************************/
 
@@ -1068,9 +1143,41 @@ $(function(){
     }
   })()
 
-
   /******************************* End Login Module ***************************/
 
+
+  /******************************* EndLess Scroll Module ***************************/
+
+  var EndlessScroll = (function(){
+    
+    !function(){
+      
+      var isScrollCbFired = false
+
+      $window.scroll(function(){
+        
+        if( $window.scrollTop()+200 >= ( $document.height() - $(window).height() ) ){
+          if(isScrollCbFired) return
+          isScrollCbFired = true // prevents from firing more than once
+          // get currentNetwork
+          var currentNetwork = $body.attr('data-current-network')
+          if(currentNetwork === 'instagram'){
+            Instagram.loadNextPageOfImages(function(){
+              isScrollCbFired = false
+            }) // end loadNextPageOfImages
+          }
+          else if(currentNetwork === 'facebook'){
+            console.warn("not implemented yet for facebook")
+          }
+        } // end scroll position check
+        
+      }) // end scroll handler
+      
+    }()
+
+  })()
+
+  /******************************* End EndLess Scroll Module ***************************/
 
   
   

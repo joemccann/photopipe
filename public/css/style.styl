@@ -100,8 +100,6 @@ h1 > a, h1 > a:visited
 
 #spin
   display block
-  margin 1.25% 2.75% 0 0
-  float right
 
 .steps
   font-size 6em
@@ -131,6 +129,9 @@ h1 > a, h1 > a:visited
 .hit-target
   padding 0
 
+.hide
+  display none
+
 .dotted
   border-bottom 1px dotted mainColor
 
@@ -139,6 +140,11 @@ h1 > a, h1 > a:visited
 
 .disabled
   normOpacity(33)
+
+.spin-container
+  position relative
+  left 48%
+  margin 8% auto
 
 .gallery > img,
 .one-up-wrapper > img
@@ -272,4 +278,5 @@ h1 > a, h1 > a:visited
   color red
 
 @import 'login-form'  
+@import 'search-form'  
 @import 'responsive'

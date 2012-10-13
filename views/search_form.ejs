@@ -7,16 +7,16 @@
       <input type='text' class="big-text-field" name='longitude' id="longitude" value='-97.766862' placholder="-97.766862">
       <label for='caption'>Diameter (in meters)</label>
       <input type='text' class="big-text-field" name='distance' id="distance" value='1000' placholder="1000">
-      <input class="button pipe" type='submit' value='Search for Photos!'>
+      <input class="button" type='submit' value='Search for Photos!'>
     </fieldset>
   </form>  
 <% }%>
 <% if(searchType === 'tag'){ %>
-<form id="instagram_search_form" action="/instagram/search" enctype="application/x-www-form-urlencoded" method="post">
+<form id="instagram_search_form" class="left-search-form" action="/instagram/search" enctype="application/x-www-form-urlencoded" method="post">
   <fieldset>
-    <label for='caption'>Search Query</label>
+    <label for='caption'>Enter Search Tag</label>
     <input type='text' class="big-text-field" name='search_query' id="search_query" value='Pipe' placholder="Pipe">
-    <input class="button pipe" type='submit' value='Search for Photos!'>
+    <input class="button" type='submit' value='Search for Photos!'>
   </fieldset>
 </form>
 <% }%>
