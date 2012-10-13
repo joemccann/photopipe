@@ -1168,7 +1168,6 @@ $(function(){
           // get currentNetwork
           var currentNetwork = $body.attr('data-current-network')
           if(currentNetwork === 'instagram'){
-            console.log('scroll fired')
             Instagram.loadNextPageOfImages(function(){
               isScrollCbFired = false
             }) // end loadNextPageOfImages
@@ -1186,6 +1185,65 @@ $(function(){
 
   /******************************* End EndLess Scroll Module ***************************/
 
+
+  /******************************* EndLess Scroll Module ***************************/
+
+  var Downloader = (function(){
+    
+    function _getPhotoToUseUrl(){
+      return $('.one-up').find('img').attr('src')
+    }
+    
+    function _downloadFile(filename){
+      
+      var photoUrl = _getPhotoToUseUrl()
+        , fileNameValue = filename || photoUrl.split('/').pop()
+
+      $
+      .post("/smoke",{
+        type: 'download',
+        photoUrl: photoUrl,
+        filename: fileNameValue
+      })
+      .success(function(data){ 
+
+        $spin.hide()
+
+        downloadFile(data)
+
+      })
+      .error(function(e) {
+        $spin.hide()
+        if(e.status === 400) alert(e.responseText || 'Bad request.')
+        if(e.status === 401) alert(e.responseText || 'Unauthorized request.')
+        if(e.status === 402) alert(e.responseText || 'Forbidden request.')
+        if(e.status === 403) alert(e.responseText || 'Forbidden request.')
+        if(e.status === 404) alert(e.responseText || 'Images were not found.')
+        if(e.status === 405) alert(e.responseText || 'That method is not allowed.')
+        if(e.status === 408) alert(e.responseText || 'The request timed out. Try again.')
+        if(e.status === 500) alert(e.responseText || 'Something went really wrong.')
+      })
+
+      return false
+      
+    }
+    
+    !function(){
+      $('.download').bind('click', function(){
+        _downloadFile()
+        return false
+      })
+    }()
+    
+    return {
+      downloadFile: _downloadFile
+    }
+
+  })()
+
+  /******************************* End EndLess Scroll Module ***************************/
+
+  
   
   
   /******************************* UI STUFF *******************************/
