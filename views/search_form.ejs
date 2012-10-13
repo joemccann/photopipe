@@ -1,3 +1,17 @@
+<% if(searchType === 'geo'){ %>
+  <form id="instagram_geo_search_form" action="/instagram/search/geo" enctype="application/x-www-form-urlencoded" method="post">
+    <fieldset>
+      <label for='caption'>Latitude</label>
+      <input type='text' class="big-text-field" name='latitude' id="latitude" value='30.267819' placholder="30.267819">
+      <label for='caption'>Longitude</label>
+      <input type='text' class="big-text-field" name='longitude' id="longitude" value='-97.766862' placholder="-97.766862">
+      <label for='caption'>Diameter (in meters)</label>
+      <input type='text' class="big-text-field" name='distance' id="distance" value='1000' placholder="1000">
+      <input class="button pipe" type='submit' value='Search for Photos!'>
+    </fieldset>
+  </form>  
+<% }%>
+<% if(searchType === 'tag'){ %>
 <form id="instagram_search_form" action="/instagram/search" enctype="application/x-www-form-urlencoded" method="post">
   <fieldset>
     <label for='caption'>Search Query</label>
@@ -5,3 +19,4 @@
     <input class="button pipe" type='submit' value='Search for Photos!'>
   </fieldset>
 </form>
+<% }%>

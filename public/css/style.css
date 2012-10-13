@@ -555,8 +555,8 @@ h1 > a:visited {
   margin-top: 6%;
 }
 .big-text-field {
-  padding: 0 3%;
-  font-size: 2em;
+  padding: 3%;
+  font-size: 2.4em;
   line-height: 2.4;
   width: 90%;
 }
@@ -581,6 +581,9 @@ h1 > a:visited {
   max-width: 480px;
   margin: 6% auto 0;
 }
+form {
+  max-width: 480px;
+}
 label {
   display: block;
   padding: 2% 0 0;
@@ -595,7 +598,7 @@ input[type='email'],
 input[type='text'],
 input[type='password'] {
   display: block;
-  font: 100% 'Aldrich', Helvetica, Arial, sans-serif;
+  font: 150% 'Aldrich', Helvetica, Arial, sans-serif;
 }
 fieldset,
 .login-form {

@@ -59,23 +59,19 @@ exports.instagram_get_next_page_of_instagram_photos = function(req,res){
 
 exports.instagram_search = function(req,res){
 
-  if(!req.session.instagram) return res.redirect('/instagram')
+  // if(!req.session.instagram) return res.redirect('/instagram')
 
-  // Some flags to be set for client-side logic.
-  var auths = {
-    isTwitterAuth: !!req.session.twitter,
-    isFacebookAuth: !!req.session.facebook,
-    isInstagramAuth: !!req.session.instagram,
-    isDropboxAuth: !!req.session.dropbox
+  var config = {
+    searchType: 'tag'
   }
   
-  res.render('instagram_search', auths)
+  res.render('instagram_search', config)
 
 }
 
 exports.instagram_search_post = function(req,res){
 
-  if(!req.session.instagram) return res.redirect('/instagram')
+  // if(!req.session.instagram) return res.redirect('/instagram')
 
   if(!req.body.search_query) {
     res.type('text/plain')
@@ -86,6 +82,31 @@ exports.instagram_search_post = function(req,res){
   
 }
 
+
+exports.instagram_search_geo = function(req,res){
+
+  // if(!req.session.instagram) return res.redirect('/instagram')
+
+  var config = {
+    searchType: 'geo'
+  }
+  
+  res.render('instagram_search', config)
+
+}
+
+exports.instagram_search_geo_post = function(req,res){
+
+  // if(!req.session.instagram) return res.redirect('/instagram')
+
+  if(!req.body.latitude || !req.body.longitude) {
+    res.type('text/plain')
+    return res.status(403).send("Bad Request. You need a latitude and longitude.")
+  }
+  
+  Instagram.photopipe.executeGeoSearch(req,res)
+  
+}
 
 /*
  * GET instagram oauth page.

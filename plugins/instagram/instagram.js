@@ -94,7 +94,47 @@ Instagram.photopipe = {
       } // end complete 
     
     }) // end recent    
-  }
+  },
+  executeGeoSearch: function(req,res){
+
+    // Let's grab the user's recent photos from their feed.
+    Instagram.set('access_token', req.session.instagram.access_token)
+    
+    var lat = req.body.latitude
+      , lng = req.body.longitude
+      , distance = req.body.distance || 5000
+    
+    console.log(lat + " is the latiude.")
+    console.log(lng + " is the longitude.")
+    console.log(distance + " is the distance.")
+
+    Instagram.media.search({
+      lat: lat, 
+      lng: lng, 
+      distance: distance,
+      error: function(errorMessage, errorObject, caller, response){
+        var err = JSON.parse(errorObject).meta
+        console.error(err.error_message)
+        return res.status(err.code).send(err.error_message)
+      },
+      complete: function(data,page){
+        
+        // We are going to push the pagination object
+        // as the last item in the data array.
+        // IMPORTANT: Client side code should reflect this
+        data.push(page)
+        console.dir(data,5)
+
+        // unset access_token --> 
+        // this is probably pretty bad in practice actually (race conditions)
+        Instagram.set('access_token', null)
+
+        return res.json(data)
+      } // end complete 
+    
+    }) // end recent    
+  },
+  
 }
 
 exports.Instagram = Instagram

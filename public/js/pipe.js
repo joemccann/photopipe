@@ -844,6 +844,8 @@ $(function(){
 
   var Instagram = (function(){
     
+    var postData = postUrl = ''
+    
     function _appendPhotosToGallery(photos, cb){
       // Iterate over the images and add to thumbs string
       var images = ''
@@ -872,9 +874,24 @@ $(function(){
         .hide()
     }
     
-    function _executeSearch(){
+    function _executeSearch(type){
       
-      var query = $('#search_query').val()
+      if(type === 'geo'){
+        
+        postData += 'latitude=' + encodeURI( $('#latitude').val() )
+        postData += '&longitude=' + encodeURI( $('#longitude').val() )
+        postData += '&distance=' + encodeURI( $('#distance').val() )
+                
+        postUrl = '/instagram/search/geo'
+
+      }
+      else if(type === 'tag'){
+        
+        postData += 'search_query=' + encodeURI( $('#search_query').val() )
+
+        postUrl = '/instagram/search'
+
+      }
       
       function _beforeSendHandler(){
         // console.log('Searching Instagram for %s', query)
@@ -888,7 +905,14 @@ $(function(){
         // console.log('\nSearch query complete.')
         // console.dir(response)
         
-        _updatePaginationButton($instagramLoadMore, response)
+        var pageObj = response.pop()
+
+        if(pageObj && pageObj.next_url){
+          _updatePaginationButton($instagramLoadMore, response)
+        }
+        else{
+          $instagramLoadMore.hide()
+        }
 
         _appendPhotosToGallery(response, function(){
           wireInstagramGalleryPicker( $gallery, true )
@@ -913,8 +937,8 @@ $(function(){
       var config = {
                       type: 'POST',
                       dataType: 'json',
-                      data: 'search_query=' + encodeURI(query),
-                      url: '/instagram/search',
+                      data: postData,
+                      url: postUrl,
                       beforeSend: _beforeSendHandler,
                       error: _failHandler,
                       success: _doneHandler
@@ -940,7 +964,15 @@ $(function(){
     
     !(function(){
       
-      $('#instagram_search_form').bind('submit', _executeSearch)
+      $('#instagram_search_form').bind('submit', function(){
+        _executeSearch('tag')
+        return false
+      })
+
+      $('#instagram_geo_search_form').bind('submit', function(){
+        _executeSearch('geo') 
+        return false
+      })
       
     })()
     

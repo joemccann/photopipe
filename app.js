@@ -115,6 +115,10 @@ app.get('/instagram/search', instagram_routes.instagram_search)
 
 app.post('/instagram/search', instagram_routes.instagram_search_post)
 
+app.get('/instagram/search/geo', instagram_routes.instagram_search_geo)
+
+app.post('/instagram/search/geo', instagram_routes.instagram_search_geo_post)
+
 
 /************************** Facebook Support **************************/
 
