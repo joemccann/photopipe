@@ -66,13 +66,14 @@ Instagram.photopipe = {
 
     // Let's grab the user's recent photos from their feed.
     Instagram.set('access_token', req.session.instagram.access_token)
-    
-    var query = req.body.search_query
+
+    // Instagram barks, only allows single words (i.e. a tag)
+    var query = req.body.search_query.replace(/\s/g, '').replace(/#/g, '') 
     
     console.log(query + " is the search query.")
 
     Instagram.tags.recent({ 
-      name: req.body.search_query,
+      name: query,
       error: function(errorMessage, errorObject, caller, response){
         var err = JSON.parse(errorObject).meta
         console.error(err.error_message)

@@ -7,7 +7,7 @@
     <section id="login">
     
       <header>
-        <h1>Login or Signup for PhotoPipe</h1>
+        <h1>Login to Photo<span class="cool">Pipe</span></h1>
       </header>
       
       <% if(hasErrors){ %>
@@ -23,12 +23,14 @@
           <input type='password' class="login-form" name='login-password' id="login-password" value=''>
           <input class="button pipe" type='submit' value='Login'>
           <div class="login-copy">
-            <p>Or if you don't have <br>an account, create one.<br> It's free!</p>
+            <p>
+              <a href="/account/forgot" class="bold hit-target">Forgot your password?</a>
+            </p>
           </div>
-          <input class="button pipe" type='submit' value='Create My Account'>
-
-          <div class="login-copy">
-            <a href="/account/forgot">Forgot your password? &rarr;</a>
+          <hr>
+          <div class="no-account-copy">
+            <p>Don't have an account yet?</p>
+            <p><a class="bold hit-target" href="/account/create">Create one now! &rarr;</a></p>
           </div>
 
         </fieldset>

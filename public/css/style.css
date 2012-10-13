@@ -332,6 +332,9 @@ label {
   padding: 2% 0 0;
   font-size: 2em;
 }
+input:focus {
+  outline: 2px solid #f8a66e;
+}
 header {
   margin: 2% auto;
 }
@@ -431,6 +434,15 @@ h1 > a:visited {
 }
 .cool {
   color: #3f729b;
+}
+.bold {
+  font-weight: bold;
+}
+.hit-target {
+  padding: 0;
+}
+.dotted {
+  border-bottom: 1px dotted #3f729b;
 }
 .gallery {
   position: relative;
@@ -579,7 +591,7 @@ h1 > a:visited {
 }
 #login {
   max-width: 480px;
-  margin: 6% auto 0;
+  margin: 4% auto 0;
 }
 form {
   max-width: 480px;
@@ -591,7 +603,10 @@ label {
   text-align: left;
 }
 header {
-  margin: 2% auto;
+  margin: 2% auto 4%;
+}
+#login hr {
+  width: 94%;
 }
 input[type='url'],
 input[type='email'],
@@ -600,9 +615,8 @@ input[type='password'] {
   display: block;
   font: 150% 'Aldrich', Helvetica, Arial, sans-serif;
 }
-fieldset,
 .login-form {
-  width: 90%;
+  width: 88%;
 }
 fieldset > .button,
 .login-copy {
@@ -622,10 +636,10 @@ label {
   margin: 2.5% 3%;
 }
 .login-form {
-  padding: 2.5%;
+  padding: 4% 2.5%;
 }
 .login-copy {
-  margin: 8% auto 0;
+  margin: 8% auto 6%;
 }
 #login p,
 #login .error-copy {
@@ -634,6 +648,15 @@ label {
 #login .error-heading,
 #login .error-copy {
   color: #f00;
+}
+#login a {
+  color: #f46a0c;
+}
+.no-account-copy {
+  margin: 8% auto 0;
+}
+.no-account-copy > p:last-child {
+  margin-top: 3%;
 }
 @media only screen and (min-width: 45em) and (max-width: 57.5em) {
   body {
@@ -650,8 +673,14 @@ label {
   h1 {
     font-size: 2.2em;
   }
+  .hit-target {
+    padding: 2em 0;
+  }
 }
 @media only screen and (min-width: 20em) and (max-width: 29.9999em) {
+  .hit-target {
+    padding: 1.1em 0;
+  }
   body {
     padding: 3% 1%;
   }
@@ -681,6 +710,9 @@ label {
     margin-top: 9%;
   }
   .button {
-    font: bold 1em/2em Helvetica, Arial;
+    font: bold 1.2em/2.4em Helvetica, Arial;
+  }
+  #login {
+    margin-top: 2%;
   }
 }

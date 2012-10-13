@@ -986,6 +986,92 @@ $(function(){
   /******************************* End Instagram Module ***************************/
 
 
+  /******************************* Login Module *******************************/
+
+  var Login = (function(){
+    
+    var postData = postUrl = ''
+      , $emailAddress = $('#login-email-address')
+      , $password = $('#login-password')
+    
+    function _executeLogin(type){
+      
+      function _beforeSendHandler(){
+        // console.log('Searching Instagram for %s', query)
+      }
+
+      function _doneHandler(a, b, response){
+        a = b = null // JS hint barks...
+        response = JSON.parse(response.responseText)
+        
+        // console.log('\nSearch query complete.')
+        // console.dir(response)
+        
+        var pageObj = response.pop()
+
+        if(pageObj && pageObj.next_url){
+          _updatePaginationButton($instagramLoadMore, response)
+        }
+        else{
+          $instagramLoadMore.hide()
+        }
+
+        _appendPhotosToGallery(response, function(){
+          wireInstagramGalleryPicker( $gallery, true )
+        })
+
+      } // end done handler
+
+      function _failHandler(e){
+        $spin.hide()
+
+        if(e.status === 400) alert(e.responseText || 'Bad request.')
+        if(e.status === 401) alert(e.responseText || 'Unauthorized request.')
+        if(e.status === 402) alert(e.responseText || 'Forbidden request.')
+        if(e.status === 403) alert(e.responseText || 'Forbidden request.')
+        if(e.status === 404) alert(e.responseText || 'Images were not found.')
+        if(e.status === 405) alert(e.responseText || 'That method is not allowed.')
+        if(e.status === 408) alert(e.responseText || 'The request timed out. Try again.')
+        if(e.status === 500) alert(e.responseText || 'Something went really wrong.')
+
+      }
+
+      var config = {
+                      type: 'POST',
+                      dataType: 'json',
+                      data: postData,
+                      url: postUrl,
+                      beforeSend: _beforeSendHandler,
+                      error: _failHandler,
+                      success: _doneHandler
+                    }
+
+      $.ajax(config)
+      
+      return false
+      
+    }
+    
+    !(function(){
+      
+      if( $emailAddress.length ){
+        // Then we are on the login page.
+        $emailAddress.focus()
+        
+      }
+
+      
+    })()
+    
+    return {
+      executeLogin: _executeLogin
+    }
+  })()
+
+
+  /******************************* End Login Module ***************************/
+
+
   
   
   /******************************* UI STUFF *******************************/

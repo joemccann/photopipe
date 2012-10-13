@@ -1,6 +1,6 @@
 #login
   max-width 480px
-  margin 6% auto 0
+  margin 4% auto 0
 
 form
   max-width 480px
@@ -12,7 +12,10 @@ label
   text-align left
 
 header
-  margin 2% auto
+  margin 2% auto 4%
+
+#login hr
+  width 94%
     
 input[type='url'], 
 input[type='email'], 
@@ -20,11 +23,9 @@ input[type='text'],
 input[type='password']
   display block
   font 150% 'Aldrich', Helvetica, Arial, sans-serif
-  
 
-fieldset, 
 .login-form
-  width 90%
+  width 88%
 
 fieldset > .button, 
 .login-copy
@@ -43,10 +44,10 @@ fieldset
   margin 2.5% 3%
 
 .login-form
-  padding 2.5%
+  padding 4% 2.5%
 
 .login-copy
-  margin 8% auto 0
+  margin 8% auto 6%
 
 #login p,
 #login .error-copy
@@ -55,3 +56,12 @@ fieldset
 #login .error-heading,
 #login .error-copy
   color red
+
+#login a
+  color contrastColor
+
+.no-account-copy
+  margin 8% auto 0
+
+.no-account-copy > p:last-child
+  margin-top 3%
