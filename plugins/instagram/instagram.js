@@ -118,6 +118,11 @@ Instagram.photopipe = {
       lng: lng, 
       distance: distance,
       error: function(errorMessage, errorObject, caller, response){
+        if( !_.isObject( errorObject) ){
+          console.dir(errorObject)
+          return res.status(500).send("Something weird with Instagram API. Try again.")
+        }
+        
         var err = JSON.parse(errorObject).meta
         console.error(err.error_message)
         return res.status(err.code).send(err.error_message)

@@ -939,6 +939,8 @@ $(function(){
         if(e.status === 408) alert(e.responseText || 'The request timed out. Try again.')
         if(e.status === 500) alert(e.responseText || 'Something went really wrong.')
         
+        postData = postUrl = ''
+        
         cb & cb()
 
       }
@@ -1186,7 +1188,7 @@ $(function(){
   /******************************* End EndLess Scroll Module ***************************/
 
 
-  /******************************* EndLess Scroll Module ***************************/
+  /******************************* Downloader Module ***************************/
 
   var Downloader = (function(){
     
@@ -1241,7 +1243,7 @@ $(function(){
 
   })()
 
-  /******************************* End EndLess Scroll Module ***************************/
+  /******************************* End Downloader Module ***************************/
 
   
   

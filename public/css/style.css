@@ -407,6 +407,7 @@ h1 > a:visited {
   width: 100%;
   height: 100%;
   display: none;
+  z-index: 0;
 }
 #spin {
   display: block;
@@ -681,7 +682,7 @@ label {
 }
 #instagram-search-query {
   background: transparent url("/img/instagram-50x50.png") no-repeat top right scroll;
-  height: 50px;
+  height: 2em;
 }
 @media only screen and (min-width: 45em) and (max-width: 57.5em) {
   body {
@@ -737,6 +738,14 @@ label {
   #login {
     margin-top: 2%;
   }
+  label {
+    font-size: 1.4em;
+    display: inline-block;
+    width: 94%;
+    padding-top: 9%;
+    height: 1.4em;
+    margin: 0;
+  }
   .left-search-form {
     position: static;
     width: 100%;
@@ -744,8 +753,5 @@ label {
   .right-search-gallery {
     width: 100%;
     margin-top: 2%;
-    overflow: scroll;
-    overflow-x: hidden;
-    -webkit-overflow-scrolling: touch;
   }
 }
