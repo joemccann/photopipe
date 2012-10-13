@@ -63,8 +63,8 @@ exports.index = function(req, res){
       type: req.query.type
     })
   }
-  
-  res.render('index', auths)
+
+  res.render('index')
 }
 
 /*
@@ -76,6 +76,8 @@ exports.login = function(req, res, next){
   var config = {
     hasErrors: false
   }
+  // REMOVE THIS WHEN YOU SORT OUT THE ACCOUNT STUFF
+  return res.redirect('/instagram/search')
   
   res.render('login', config)
 }

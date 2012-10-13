@@ -59,7 +59,7 @@ exports.instagram_get_next_page_of_instagram_photos = function(req,res){
 
 exports.instagram_search = function(req,res){
 
-  // if(!req.session.instagram) return res.redirect('/instagram')
+  if(!req.session.instagram) return res.redirect('/instagram')
 
   var config = {
     searchType: 'tag',
@@ -72,7 +72,7 @@ exports.instagram_search = function(req,res){
 
 exports.instagram_search_post = function(req,res){
 
-  // if(!req.session.instagram) return res.redirect('/instagram')
+  if(!req.session.instagram) return res.redirect('/instagram')
 
   if(!req.body.search_query) {
     res.type('text/plain')
@@ -86,7 +86,7 @@ exports.instagram_search_post = function(req,res){
 
 exports.instagram_search_geo = function(req,res){
 
-  // if(!req.session.instagram) return res.redirect('/instagram')
+  if(!req.session.instagram) return res.redirect('/instagram')
 
   var config = {
     searchType: 'geo',
@@ -99,7 +99,7 @@ exports.instagram_search_geo = function(req,res){
 
 exports.instagram_search_geo_post = function(req,res){
 
-  // if(!req.session.instagram) return res.redirect('/instagram')
+  if(!req.session.instagram) return res.redirect('/instagram')
 
   if(!req.body.latitude || !req.body.longitude) {
     res.type('text/plain')
