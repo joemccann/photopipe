@@ -55,7 +55,7 @@ app.configure('development', function(){
 /************************** PhotoPipe Main **************************/
 
 /* GET routes */
-app.get('/', routes.login)
+app.get('/', routes.index)
 
 app.get('/wtf', routes.wtf)
 

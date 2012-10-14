@@ -77,9 +77,9 @@ exports.login = function(req, res, next){
     hasErrors: false
   }
   // REMOVE THIS WHEN YOU SORT OUT THE ACCOUNT STUFF
-  return res.redirect('/instagram/search')
+  // return res.redirect('/instagram/search')
   
-  res.render('login', config)
+  res.render('account_login', config)
 }
 
 /*
@@ -269,7 +269,7 @@ exports.download_file = function(req,res){
 
 
 /*
- * POST account creation or account login.
+ * POST account login.
  */
 
 exports.account_login = function(req,res){
@@ -281,6 +281,7 @@ exports.account_login = function(req,res){
   if(!email_address || !'change-this-to-a-validator'){
     return res.render('login', {hasErrors: true, error_message: "That's an invalid email address."})
   }
+  
   // TODO: VALIDATE PASSWORD
   if(!password || !'change-this-to-a-validator'){
     return res.render('login', {hasErrors: true, error_message: "That's an invalid password."})

@@ -454,6 +454,13 @@ h1 > a:visited {
   -moz-opacity: 0.33;
   opacity: 0.33;
 }
+.announcement {
+  background: #f8f8ff;
+  padding: 4%;
+  border: 1px solid #f46a0c;
+  margin: 0 auto;
+  width: 75%;
+}
 .spin-container {
   position: relative;
   left: 48%;
