@@ -118,7 +118,7 @@ module.exports = (function(){
       return client
     },
     // Check to see if account exists
-    doesAccountExist: function(uuid){
+    doesAccountExist: function(uuid, cb){
       console.warn("doesAccountExist is not implemented.")
       return false
     },
@@ -133,10 +133,13 @@ module.exports = (function(){
       })
     },
     // Create a new user account in Redis
+    // setname is the name of the set to add to
+    // hashPrefix is the prefix to identify the hash
     createUserIdentityAccount: function(userObj, setname, hashPrefix, cb){
       
       console.log("\nCreating new user account %s", userObj.network.username)
-    /*  
+      
+      /*
       userObj = {
         network: {
           type : 'facebook',
@@ -150,7 +153,7 @@ module.exports = (function(){
       }
       */
       
-      // CHECK IF HASH EXISTS
+      // TODO: CHECK IF HASH EXISTS
 
       // Schema should be:
       var schema = 
@@ -175,11 +178,14 @@ module.exports = (function(){
         }
       }
 
-      schema.uuid = sha1('photopipe', userObj.email_address)
+      // Generate unique user id
+      schema.uuid = sha1(redisConfig.salt, userObj.email_address)
 
       // "Official" email address is schema.email_addresses[0]
+      // Add it to the email addresses for the user
       schema.email_addresses.push(userObj.email_address)
 
+      // Let's 
       client.sadd(setname, schema.uuid, function(e,d){
 
         if(cb){
@@ -191,7 +197,6 @@ module.exports = (function(){
         client.hmset(hashPrefix +":"+schema.uuid, userObj, hmsetCb || userSetHashHandler)
         
       })
-
 
     },
     // Delete user's account from Redis.
