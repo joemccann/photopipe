@@ -1,5 +1,5 @@
 <% if(searchType === 'geo'){ %>
-  <form id="instagram_geo_search_form" action="/instagram/search/geo" enctype="application/x-www-form-urlencoded" method="post">
+  <form id="instagram_geo_search_form" class="left-search-form" action="/instagram/search/geo" enctype="application/x-www-form-urlencoded" method="post">
     <fieldset>
       <label for='caption'>Latitude</label>
       <input type='text' class="big-text-field" name='latitude' id="latitude" value='30.267819' placholder="30.267819">
@@ -15,7 +15,7 @@
 <form id="instagram_search_form" class="left-search-form" action="/instagram/search" enctype="application/x-www-form-urlencoded" method="post">
   <fieldset>
     <label for='search_query' id="instagram-search-query">Enter Search Tag</label>
-    <input type='text' class="big-text-field" name='search_query' id="search_query" value='Pipe' placholder="Pipe">
+    <input type='text' class="big-text-field" name='search_query' id="search_query" placeholder="Coffee">
     <input class="button" type='submit' value='Search for Photos!'>
   </fieldset>
 </form>

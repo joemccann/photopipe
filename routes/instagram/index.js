@@ -25,14 +25,39 @@ exports.instagram = function(req, res){
       display: 'touch'
     })
 
-    return res.render('instagram', { 
+    return res.render('instagram_auth', { 
         title: 'PhotoPipe - Instagram Connect'
       , auth_url: auth_url})
     
   }
   
-  // We are actually auth'd so no reason to be here.
-  res.redirect('/')
+  Instagram.photopipe.getUserRecentPhotos(req,res, function(err,data){
+
+    var o = data.pop()
+  
+    var nextPageUrl = o.next_url
+
+    var thumbs = ""
+
+    // Iterate over the images and add to thumbs string
+    data.forEach(function(el,i){
+      thumbs += "<img data-standard-resolution='"
+                + el.images.standard_resolution.url
+                +"' src='"+ el.images.thumbnail.url +"' />"
+    })
+
+    // Wire up the events to the images...
+    // wireInstagramGalleryPicker( $photoPickerInstagram )
+    
+    var config = {
+      thumbs: thumbs,
+      nextPageUrl: nextPageUrl
+    }
+
+    res.render('instagram', config)
+
+  })
+  
 
 } // end instagram route
 

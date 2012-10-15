@@ -8,7 +8,6 @@ $(function(){
   
   var $twitter = $('#twitter')
     , $facebook = $('#facebook')
-    , $instagram = $('#instagram')
     , $dropbox = $('#dropbox')
     , $url = $('#url')
     , $twitterDestination = $('.twitter-destination')
@@ -22,19 +21,15 @@ $(function(){
     , $photoPickerTwitter = $('#photo-picker-twitter')
     , $photoPickerFacebook = $('#photo-picker-facebook')
     , $galleryPickerFacebook = $('#gallery-picker-facebook')
-    , $photoPickerInstagram = $('#photo-picker-instagram')
     , $photoPickerUrl = $('#photo-picker-url')
     , $photoFromUrl = $('#photoFromUrl')
     , $twitterLoadMore = $('#twitter-load-more')
     , $facebookLoadMore = $('#facebook-load-more')
-    , $instagramLoadMore = $('#instagram-load-more')
     , $facebookGallery = $('#facebook-gallery')
     , $oneUpTwitter = $('#one-up-twitter')
     , $oneUpFacebook = $('#one-up-facebook')
-    , $oneUpInstagram = $('#one-up-instagram')
     , $oneUpTwitterWrapper = $('#one-up-twitter-wrapper')
     , $oneUpFacebookWrapper = $('#one-up-facebook-wrapper')
-    , $oneUpInstagramWrapper = $('#one-up-instagram-wrapper')
     , $stepThreeDestinationWrapper = $('#step-three-destination-wrapper')
     , $stepFourDestinationWrapper = $('#step-four-destination-wrapper')
     , $fbGalleryWrapper = null
@@ -57,7 +52,6 @@ $(function(){
 
     $twitter.isAuthenticated = $body.attr('data-twitter-auth') === 'true' ? true : false
     $facebook.isAuthenticated = $body.attr('data-facebook-auth') === 'true' ? true : false
-    $instagram.isAuthenticated = $body.attr('data-instagram-auth') === 'true' ? true : false
     $dropbox.isAuthenticated = $body.attr('data-dropbox-auth') === 'true' ? true : false
     
   }  
@@ -74,10 +68,6 @@ $(function(){
 
     $twitter.isAuthenticated && $twitter.bind('click', twitterClickHandler)
     $facebook.isAuthenticated && $facebook.bind('click', facebookClickHandler)
-    $instagram.isAuthenticated && $instagram.bind('click', function(){
-      instagramClickHandler()
-      return false
-    })
 
     $url.bind('click', urlClickHandler)
     
@@ -99,10 +89,6 @@ $(function(){
     
     $twitter.isAuthenticated && $twitterLoadMore.bind('click', twitterPaginationClickHandler)
     $facebook.isAuthenticated && $facebookLoadMore.bind('click', facebookPaginationClickHandler)
-    $instagram.isAuthenticated && $instagramLoadMore.bind('click', function(){
-      instagramClickHandler(true)
-      return false
-    })
     
   }
 
@@ -304,80 +290,6 @@ $(function(){
 
   }
 
-  // Step #1 instagram connection
-  // isPaging is a boolean flag for pagination of images
-  function instagramClickHandler(isPaging){
-    
-    // NOTE: this method will only get called if we are auth'd
-    var url = ''
-
-    // In case it is in view
-    closeOneUp()    
-
-    if(isPaging){
-      var nextPageUrl = $instagramLoadMore.attr('data-pagination') 
-      url = $instagramLoadMore.attr('href') + "?next_page_url=" + encodeURIComponent(nextPageUrl)
-    }
-    else{
-      url = $instagram.attr('href') // /instagram/get_user_recent_photos
-    }
-    
-    $
-    .get(url)
-    .success(function(d, resp){ 
-      
-      $spin.hide()
-      
-      // console.dir(d)
-      
-      Instagram.updatePaginationButton($instagramLoadMore, d)
-
-      var thumbs = ""
-
-      // Iterate over the images and add to thumbs string
-      d.forEach(function(el,i){
-        thumbs += "<img data-standard-resolution='"
-                  + el.images.standard_resolution.url
-                  +"' src='"+ el.images.thumbnail.url +"' />"
-      })
-
-      // Add to photoPicker div
-      $oneUpInstagramWrapper
-        .before(thumbs)
-      
-      $photoPickerInstagram
-        .show()
-
-      // Wire up the events to the images...
-      wireInstagramGalleryPicker( $photoPickerInstagram )
-
-      // Progress to Step 2 
-      // TODO: NEED TO MAKE THIS MORE MODULAR, LIKE A CB OR SOMETHING          
-      if(!isPaging){
-        progressToNextStep($stepOne, function(){
-
-          $stepTwo.slideDown(333)
-
-        })
-      }
-
-    })
-    .error(function(e,b){
-      $spin.hide()
-      if(e.status === 400) alert(e.responseText || 'Bad request.')
-      if(e.status === 401) alert(e.responseText || 'Unauthorized request.')
-      if(e.status === 402) alert(e.responseText || 'Forbidden request.')
-      if(e.status === 403) alert(e.responseText || 'Forbidden request.')
-      if(e.status === 404) alert(e.responseText || 'Images were not found.')
-      if(e.status === 405) alert(e.responseText || 'That method is not allowed.')
-      if(e.status === 408) alert(e.responseText || 'The request timed out. Try again.')
-      if(e.status === 500) alert(e.responseText || 'Something went really wrong.')
-    })
-    
-    // /instagram/get_photos_from_album_id?id='+id
-    
-  }
-
   // Step #1 photo by URL
   function urlClickHandler(){
     
@@ -431,23 +343,6 @@ $(function(){
     
   }
   
-  // Method that extracts the one up size instagram image to be piped
-  function wireInstagramGalleryPicker($el,doShow){
-    $el
-      .find('img')
-      .each(function(i,el){
-        // Because of pagination, we need to unbind then rebind all.
-        $(el)
-          .unbind('click')
-          .bind('click', function(e){
-            instagramOneUpClickHandler(e)
-          })
-        
-      }) // end each()
-      
-      if(doShow) $el.show()
-  }
-
   // Method that extracts the one up size twitter image to be piped
   function wireTwitterGalleryPicker(){
     
@@ -511,41 +406,6 @@ $(function(){
     
   }
   
-  // Method that handles the one up view (large view) of an image
-  function instagramOneUpClickHandler(e){
-    
-    closeOneUp()    
-    
-    var standardResUrl = $(e.target).attr('data-standard-resolution') // e.target.dataset.standardResolution
-    var img = new Image()
-
-    $spin.show()
-
-    img.src = standardResUrl
-    img.onload = function(){
-      
-      $spin.hide()
-      
-      $oneUpInstagram
-        .prepend(img)
-      
-      var $oneUpContainer = $photoPickerInstagram.find('.one-up-wrapper')
-      
-      // The images' container is the e.target's parent
-      positionFromTop( $(e.target).parent() , $oneUpContainer )
-
-      showOverlay()
-
-      $oneUpInstagram
-        .find('> .close-one-up:first')
-        .show()
-        .end()
-        .show()
-        
-    }
-    
-  }
-
   // Method that handles the one up view (large view) of an image
   function facebookOneUpClickHandler(e){
     closeOneUp()    
@@ -840,12 +700,57 @@ $(function(){
   }
 
 
+  // Initialize...
+  (function init(){
+    
+    // Create global object
+    window.Photopipe = window.Photopipe || {}
+    
+    window.Photopipe = {
+      instagram: {
+        isAuth: false
+      },
+      dropbox: {
+        isAuth: false
+      },
+      facebook: {
+        isAuth: false
+      },
+      twitter: {
+        isAuth: false
+      }
+    }
+    
+    // Order is important here.
+    featureDetector()
+    checkForAuths()
+    initDisplayFromBrowserCapabilities()
+
+    wireSourceClickHandlers()
+    wireDestinationClickHandlers()
+    wireUsePhotoHandlers()
+    wirePaginationButtons()
+    wireOneUpHandlers()
+    wirePipeForm()
+
+    spinner()
+    ajaxSetup()
+    
+  })()
+
+
   /******************************* Instagram Module *******************************/
 
   var Instagram = (function(){
     
     var postData = postUrl = ''
     
+    var $instagramLoadMore = $('#instagram-load-more')
+      , $photoPickerInstagram = $('#photo-picker-instagram')
+      , $oneUpInstagram = $('#one-up-instagram')
+      , $oneUpInstagramWrapper = $('#one-up-instagram-wrapper')
+      
+      
     function _appendPhotosToGallery(photos, cb){
       // Iterate over the images and add to thumbs string
       var images = ''
@@ -916,14 +821,14 @@ $(function(){
         }
 
         _appendPhotosToGallery(response, function(){
-          wireInstagramGalleryPicker( $gallery, true )
+          _wireGalleryPicker( $gallery, true )
         })
         
         // rest the postData, postUrl
         
         postData = postUrl = ''
         
-        cb & cb()
+        cb && cb()
 
       } // end done handler
 
@@ -973,7 +878,121 @@ $(function(){
       
     }
     
+    function _wireGalleryPicker($el,doShow){
+      $el
+        .find('img')
+        .each(function(i,el){
+          // Because of pagination, we need to unbind then rebind all.
+          $(el)
+            .unbind('click')
+            .bind('click', function(e){
+              _oneUpClickHandler(e)
+            })
+
+        }) // end each()
+
+        if(doShow) $el.show()
+    }
+    
+    function _oneUpClickHandler(e){
+
+      closeOneUp()    
+
+      var standardResUrl = $(e.target).attr('data-standard-resolution') // e.target.dataset.standardResolution
+      var img = new Image()
+
+      $spin.show()
+
+      img.src = standardResUrl
+      img.onload = function(){
+
+        $spin.hide()
+
+        $oneUpInstagram
+          .prepend(img)
+
+        var $oneUpContainer = $photoPickerInstagram.find('.one-up-wrapper')
+
+        // The images' container is the e.target's parent
+        positionFromTop( $(e.target).parent() , $oneUpContainer )
+
+        showOverlay()
+
+        $oneUpInstagram
+          .find('> .close-one-up:first')
+          .show()
+          .end()
+          .show()
+
+      } // end onload
+
+    } // end oneUpClickHandler
+    
+    function _loadNextPageOfImages(e,cb){
+      // NOTE: this method will only get called if we are auth'd
+      var url = ''
+
+      // In case it is in view
+      closeOneUp()    
+
+      var nextPageUrl = $instagramLoadMore.attr('data-pagination') 
+      url = $instagramLoadMore.attr('href') + "?next_page_url=" + encodeURIComponent(nextPageUrl)
+      
+      $
+      .ajax({url: url, type: 'GET', beforeSend: function(){
+        $spin.show()
+      } })
+      .done(function(){
+        cb && cb()
+      })
+      .success(function(d, resp){ 
+
+        $spin.hide()
+
+        // console.dir(d)
+
+        Instagram.updatePaginationButton($instagramLoadMore, d)
+
+        var thumbs = ""
+
+        // Iterate over the images and add to thumbs string
+        d.forEach(function(el,i){
+          thumbs += "<img data-standard-resolution='"
+                    + el.images.standard_resolution.url
+                    +"' src='"+ el.images.thumbnail.url +"' />"
+        })
+
+        // Add to photoPicker div
+        $oneUpInstagramWrapper
+          .before(thumbs)
+
+        // Wire up the events to the images...
+        Instagram.wireInstagramGalleryPicker( $photoPickerInstagram )
+
+      })
+      .error(function(e,b){
+        $spin.hide()
+        if(e.status === 400) alert(e.responseText || 'Bad request.')
+        if(e.status === 401) alert(e.responseText || 'Unauthorized request.')
+        if(e.status === 402) alert(e.responseText || 'Forbidden request.')
+        if(e.status === 403) alert(e.responseText || 'Forbidden request.')
+        if(e.status === 404) alert(e.responseText || 'Images were not found.')
+        if(e.status === 405) alert(e.responseText || 'That method is not allowed.')
+        if(e.status === 408) alert(e.responseText || 'The request timed out. Try again.')
+        if(e.status === 500) alert(e.responseText || 'Something went really wrong.')
+      })
+      
+      return false
+
+    }
+    
     !(function(){
+      
+      Photopipe.instagram.isAuth = $body.attr('data-twitter-auth') === 'true' ? true : false
+      
+      $instagramLoadMore.bind('click', _loadNextPageOfImages)
+      
+      _wireGalleryPicker($photoPickerInstagram)
       
       $('#instagram_search_form').bind('submit', function(){
         
@@ -1002,62 +1021,11 @@ $(function(){
     return {
       updatePaginationButton: _updatePaginationButton,
       executeSearch: _executeSearch,
-      loadNextPageOfImages: function(cb){
-        // NOTE: this method will only get called if we are auth'd
-        var url = ''
-
-        // In case it is in view
-        closeOneUp()    
-
-        var nextPageUrl = $instagramLoadMore.attr('data-pagination') 
-        url = $instagramLoadMore.attr('href') + "?next_page_url=" + encodeURIComponent(nextPageUrl)
-        
-        $
-        .ajax({url: url, type: 'GET', beforeSend: function(){
-          $spin.show()
-        } })
-        .done(function(){
-          cb && cb()
-        })
-        .success(function(d, resp){ 
-
-          $spin.hide()
-
-          // console.dir(d)
-
-          Instagram.updatePaginationButton($instagramLoadMore, d)
-
-          var thumbs = ""
-
-          // Iterate over the images and add to thumbs string
-          d.forEach(function(el,i){
-            thumbs += "<img data-standard-resolution='"
-                      + el.images.standard_resolution.url
-                      +"' src='"+ el.images.thumbnail.url +"' />"
-          })
-
-          // Add to photoPicker div
-          $oneUpInstagramWrapper
-            .before(thumbs)
-
-          // Wire up the events to the images...
-          wireInstagramGalleryPicker( $photoPickerInstagram )
-
-        })
-        .error(function(e,b){
-          $spin.hide()
-          if(e.status === 400) alert(e.responseText || 'Bad request.')
-          if(e.status === 401) alert(e.responseText || 'Unauthorized request.')
-          if(e.status === 402) alert(e.responseText || 'Forbidden request.')
-          if(e.status === 403) alert(e.responseText || 'Forbidden request.')
-          if(e.status === 404) alert(e.responseText || 'Images were not found.')
-          if(e.status === 405) alert(e.responseText || 'That method is not allowed.')
-          if(e.status === 408) alert(e.responseText || 'The request timed out. Try again.')
-          if(e.status === 500) alert(e.responseText || 'Something went really wrong.')
-        })
-
-      }
+      loadNextPageOfImages: _loadNextPageOfImages,
+      wireInstagramGalleryPicker: _wireGalleryPicker,
+      oneUpClickHandler: _oneUpClickHandler
     }
+    
   })()
 
   /******************************* End Instagram Module ***************************/
@@ -1170,7 +1138,7 @@ $(function(){
           // get currentNetwork
           var currentNetwork = $body.attr('data-current-network')
           if(currentNetwork === 'instagram'){
-            Instagram.loadNextPageOfImages(function(){
+            Instagram.loadNextPageOfImages(null,function(){
               isScrollCbFired = false
             }) // end loadNextPageOfImages
           }
@@ -1377,28 +1345,6 @@ $(function(){
     window.Photopipe.hasDownloadAttribute = ("download" in document.createElement("a"))                                  
     
   } // end feature detector
-      
-  // Initialize...
-  (function init(){
-    
-    // Create global object
-    window.Photopipe = window.Photopipe || {}
-    
-    // Order is important here.
-    featureDetector()
-    checkForAuths()
-    initDisplayFromBrowserCapabilities()
 
-    wireSourceClickHandlers()
-    wireDestinationClickHandlers()
-    wireUsePhotoHandlers()
-    wirePaginationButtons()
-    wireOneUpHandlers()
-    wirePipeForm()
-
-    spinner()
-    ajaxSetup()
-    
-  })()
   
 })

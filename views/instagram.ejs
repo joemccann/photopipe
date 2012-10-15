@@ -1,18 +1,49 @@
 <!DOCTYPE html>
 <html>
 <%- include head %>
-<body>
+<body data-twitter-auth="<%= isTwitterAuth %>" data-facebook-auth="<%= isFacebookAuth %>" data-instagram-auth="<%= isInstagramAuth %>" data-dropbox-auth="<%= isDropboxAuth %>">
 
   <div id="main">
 
     <%- include nav %>
-    <section class="oauth-page">
-      <p class="steps-copy">Connect Photo<span class="cool">Pipe</span> <br>with Instagram</p>
-      <p><a class="button-connect-instagram" href="<%- auth_url %>"></a></p>
-      <p class="permissions-copy">This will allow PhotoPipe to fetch your Instagram photos so you can pipe them to another location.</p>
+    <!-- Pick a photo from Instagram -->
+    <section class="gallery" id="photo-picker-instagram">
+      
+      <div class="announcement">
+        <p>Want to search for photos on Instagram?  <a href="/instagram/search">Go here &rarr;</a></p>
+      </div>
+      
+      <p class="steps">Step 2</p>
+      <p class="steps-copy">Select the photo you want to pipe:</p>
+      
+			<div class="one-up-wrapper" id="one-up-instagram-wrapper">
+			  
+        <div id="one-up-instagram" class="one-up">
+          <span class="close-one-up" data-icon="&#x2297;"></span>
+
+          <div class="use-photo-container">
+            <a class="button save use-photo" id="instagram-use-photo">This One!</a>
+          </div>
+
+        </div>
+
+			</div> <!-- end .one-up-wrapper -->
+
+		  <%- thumbs %>
+
+      <div class="load-more">
+        <a class="button add" data-pagination="<%- nextPageUrl %>" id="instagram-load-more" href="/instagram/get_next_page_of_instagram_photos">LOAD MORE PHOTOS</a>
+      </div>
+
     </section>
 
-  </div>
+  </div> <!-- /#main -->
+  
+  <iframe src="" id="downloader" class="none"></iframe>
+  
+	<div id="overlay"></div>
+  
+  <%- include scripts %>
 
 </body>
 
