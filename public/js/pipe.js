@@ -80,8 +80,6 @@ $(function(){
     $facebook.isAuthenticated && $facebookDestination.bind('click', facebookDestinationClickHandler)
     $dropbox.isAuthenticated && $dropboxDestination.bind('click', dropboxDestinationClickHandler)
     
-    $downloadDestination.bind('click', downloadDestinationClickHandler )
-    
   }
 
   // Attach click handlers to respective elements.
@@ -534,9 +532,11 @@ $(function(){
         })
 
       }
+      
+      localStorage.imageToPipe = _photoToUse
 
       console.log(_photoToUse)
-      
+      console.log(localStorage.imageToPipe)
       return false
 
     }) // end bind()
@@ -590,23 +590,6 @@ $(function(){
     // console.log(e.target + " is the target")
 
     toggleEnableChoice(e.target)
-    
-    return false
-    
-  }
-
-  // Download the file
-  function downloadDestinationClickHandler(e){
-    
-     _photoDestination = 'download'
-
-    // showCaptionForm(_photoDestination)
-
-    console.log(e.target + " is the target")
-
-    toggleEnableChoice(e.target)
-    
-    pipePhotoPostHandler()
     
     return false
     
@@ -725,7 +708,7 @@ $(function(){
     wireUsePhotoHandlers()
     wirePaginationButtons()
     wireOneUpHandlers()
-    // wirePipeForm()
+    wirePipeForm()
 
     spinner()
     ajaxSetup()
@@ -1061,43 +1044,47 @@ $(function(){
     
     !(function(){
       
-      Photopipe.instagram.isAuth = $body.attr('data-twitter-auth') === 'true' ? true : false
-      
-      $instagramLoadMore.bind('click', _loadNextPageOfImages)
-      
-      $usePhoto.bind('click submit', _selectPhotoForPipe)
-      
-      _wireGalleryPicker($photoPickerInstagram)
-      
-      $('#instagram_search_form').bind('submit', function(){
-        
-        var $button = $(this).find(' .button')
-        
-        _executeSearch('tag', function(){
+      if($body.hasClass('instagram-active')){
+
+        Photopipe.instagram.isAuth = $body.attr('data-twitter-auth') === 'true' ? true : false
+
+        $instagramLoadMore.bind('click', _loadNextPageOfImages)
+
+        $usePhoto.bind('click submit', _selectPhotoForPipe)
+
+        _wireGalleryPicker($photoPickerInstagram)
+
+        $('#instagram_search_form').bind('submit', function(){
+
+          var $button = $(this).find(' .button')
+
+          _executeSearch('tag', function(){
+            $button
+              .removeAttr('disabled')
+              .val('Search for Photos!')
+          })
+
           $button
-            .removeAttr('disabled')
-            .val('Search for Photos!')
+            .attr('disabled', true)
+            .val('Searching...')
+
+          return false
         })
 
-        $button
-          .attr('disabled', true)
-          .val('Searching...')
+        $('#instagram_geo_search_form').bind('submit', function(){
+          _executeSearch('geo') 
+          return false
+        })
 
-        return false
-      })
+        // We want to handle the pipe to case...
+        if( $body.attr('data-pipe-from') === "instagram" ){
+          // Then we are on the pipe to page.
+          // wire up the form
+          $photoPipeForm.bind('submit', _pipeFormHandler)
 
-      $('#instagram_geo_search_form').bind('submit', function(){
-        _executeSearch('geo') 
-        return false
-      })
-      
-      // We want to handle the pipe to case...
-      if( $body.attr('data-pipe-from') === "instagram" ){
-        // Then we are on the pipe to page.
-        // wire up the form
-        $photoPipeForm.bind('submit', _pipeFormHandler)
-      
-      }
+        }
+        
+      } // end if
       
     })()
     
@@ -1245,7 +1232,8 @@ $(function(){
     
     function _getPhotoToUseUrl(){
       
-      if( $('.one-up').length) return $('.one-up').find('img').attr('src')
+      if( $('.one-up').length && $('.one-up').find('img').length ) 
+        return $('.one-up').find('img').attr('src')
       
       if(localStorage.imageToPipe) return localStorage.imageToPipe
       
@@ -1257,7 +1245,6 @@ $(function(){
       var photoUrl = _getPhotoToUseUrl()
       
       if(photoUrl.split('/').length) var popped = photoUrl.split('/').pop()
-      
       var fileNameValue = filename || popped 
       
       $
