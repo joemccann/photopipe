@@ -479,22 +479,6 @@ $(function(){
   function wireUsePhotoHandlers(){
     
     $usePhoto.bind('click submit', function(e){
-      
-      if(e.target.id === 'instagram-use-photo'){
-
-        _photoToUse = $('.one-up:visible').find('img')[0].src
-        
-        closeOneUp()
-
-        $stepThreeDestinationWrapper.show()
-        
-        progressToNextStep($stepTwo, function(){
-
-          $stepThree.slideDown(333)
-
-        })
-        
-      }
        
       if(e.target.id === 'facebook-use-photo'){
         
@@ -741,10 +725,12 @@ $(function(){
     wireUsePhotoHandlers()
     wirePaginationButtons()
     wireOneUpHandlers()
-    wirePipeForm()
+    // wirePipeForm()
 
     spinner()
     ajaxSetup()
+    
+    if(!Photopipe.hasLocalStorage) alert('Sorry, but you need a new browser to use Photopipe.')
     
   })()
 
@@ -759,7 +745,16 @@ $(function(){
       , $photoPickerInstagram = $('#photo-picker-instagram')
       , $oneUpInstagram = $('#one-up-instagram')
       , $oneUpInstagramWrapper = $('#one-up-instagram-wrapper')
-      
+      , $usePhoto = $('.use-photo') 
+
+    // Super hack and certainly not bullet proof.
+    function _cleanseInput(dirty){
+      var clean = ''
+      clean = dirty.replace('@', '')
+      clean = clean.replace('#', '')
+      clean = clean.replace(/\s/g, '')
+      return clean
+    }
       
     function _appendPhotosToGallery(photos, cb){
       // Iterate over the images and add to thumbs string
@@ -802,7 +797,7 @@ $(function(){
       }
       else if(type === 'tag'){
         
-        postData += 'search_query=' + encodeURI( $('#search_query').val() )
+        postData += 'search_query=' + encodeURI( _cleanseInput( $('#search_query').val() ) )
 
         postUrl = '/instagram/search'
 
@@ -996,11 +991,81 @@ $(function(){
 
     }
     
+    // This method is where we select the image to 
+    // be piped to another location.
+    function _selectPhotoForPipe(e){
+      
+      var img = $('.one-up:visible').find('img')[0].src
+
+      localStorage.imageToPipe = img
+
+      closeOneUp()
+      
+      window.location = "/instagram/pipe/to"
+    }
+    
+    function _pipeFormHandler(){
+      
+      var photoToUse = localStorage.imageToPipe
+      
+      var fileNameValue =  $('#filename').val() || photoToUse.split('/').pop() || 'photopipe_'
+      var fileExtension = ''
+      var hasFileExt = (/\.(gif|jpg|jpeg|png|bmp)/gi.exec(photoToUse))
+      var fileExtension = (hasFileExt && hasFileExt.length) ? hasFileExt[0] : '.jpg'
+
+      fileNameValue = encodeURI( (fileNameValue + fileExtension) )
+
+      // If the filebegins with a question mark, make it empty string
+      if(fileNameValue.charAt(0) === '?') fileNameValue = ''
+
+      // console.dir(hasFileExt)
+      // console.log(fileExtension)    
+      // console.log(fileNameValue)    
+      // console.log(_photoDestination)
+      // console.log(photoToUse)
+
+      $
+      .post("/smoke",{
+        type: _photoDestination,
+        photoUrl: photoToUse,
+        filename: fileNameValue,
+        caption: $caption.val() || null
+      })
+      .success(function(data){ 
+
+        $spin.hide()
+        // console.dir(data)
+        alert('Success!')
+        // window.location = "/"
+
+      })
+      .error(function(e) {
+        $spin.hide()
+        if(e.status === 400) alert(e.responseText || 'Bad request.')
+        if(e.status === 401) alert(e.responseText || 'Unauthorized request.')
+        if(e.status === 402) alert(e.responseText || 'Forbidden request.')
+        if(e.status === 403) alert(e.responseText || 'Forbidden request.')
+        if(e.status === 404) alert(e.responseText || 'Images were not found.')
+        if(e.status === 405) alert(e.responseText || 'That method is not allowed.')
+        if(e.status === 408) alert(e.responseText || 'The request timed out. Try again.')
+        if(e.status === 500) alert(e.responseText || 'Something went really wrong.')
+
+        // TODO: RESTART AT STEP ONE? 0N 403 YES.
+        if(e.status === 403 && (e.responseText.regexIndexOf(/twitter/gi) > -1)) window.location = "/twitter"
+        if(e.status === 403 && (e.responseText.regexIndexOf(/facebook/gi) > -1)) window.location = "/facebook"
+        if(e.status === 403 && (e.responseText.regexIndexOf(/instagram/gi) > -1)) window.location = "/instagram"
+      })
+
+      return false
+    }
+    
     !(function(){
       
       Photopipe.instagram.isAuth = $body.attr('data-twitter-auth') === 'true' ? true : false
       
       $instagramLoadMore.bind('click', _loadNextPageOfImages)
+      
+      $usePhoto.bind('click submit', _selectPhotoForPipe)
       
       _wireGalleryPicker($photoPickerInstagram)
       
@@ -1025,6 +1090,14 @@ $(function(){
         _executeSearch('geo') 
         return false
       })
+      
+      // We want to handle the pipe to case...
+      if( $body.attr('data-pipe-from') === "instagram" ){
+        // Then we are on the pipe to page.
+        // wire up the form
+        $photoPipeForm.bind('submit', _pipeFormHandler)
+      
+      }
       
     })()
     
@@ -1171,14 +1244,22 @@ $(function(){
   var Downloader = (function(){
     
     function _getPhotoToUseUrl(){
-      return $('.one-up').find('img').attr('src')
+      
+      if( $('.one-up').length) return $('.one-up').find('img').attr('src')
+      
+      if(localStorage.imageToPipe) return localStorage.imageToPipe
+      
+      alert('No file selected!')
     }
     
     function _downloadFile(filename){
       
       var photoUrl = _getPhotoToUseUrl()
-        , fileNameValue = filename || photoUrl.split('/').pop()
-
+      
+      if(photoUrl.split('/').length) var popped = photoUrl.split('/').pop()
+      
+      var fileNameValue = filename || popped 
+      
       $
       .post("/smoke",{
         type: 'download',
@@ -1188,12 +1269,17 @@ $(function(){
       .success(function(data){ 
 
         $spin.hide()
+        
+        // console.dir(data)
 
         downloadFile(data)
 
       })
       .error(function(e) {
         $spin.hide()
+        
+             alert('error')
+        
         if(e.status === 400) alert(e.responseText || 'Bad request.')
         if(e.status === 401) alert(e.responseText || 'Unauthorized request.')
         if(e.status === 402) alert(e.responseText || 'Forbidden request.')
@@ -1209,10 +1295,12 @@ $(function(){
     }
     
     !function(){
+      
       $('.download').bind('click', function(){
         _downloadFile()
         return false
       })
+
     }()
     
     return {
@@ -1352,7 +1440,12 @@ $(function(){
                                       !!navigator.msGetUserMedia
                           
     // Check if client has the download attribute for anchor tags 
-    window.Photopipe.hasDownloadAttribute = ("download" in document.createElement("a"))                                  
+    window.Photopipe.hasDownloadAttribute = ("download" in document.createElement("a"))  
+    
+    // Check for localstorage
+    var storage
+    try{ if(localStorage.getItem) {storage = localStorage} }catch(e){}
+    window.Photopipe.hasLocalStorage = storage                                
     
   } // end feature detector
 

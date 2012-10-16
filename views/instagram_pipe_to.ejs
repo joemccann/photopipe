@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<%- include head %>
+<body data-twitter-auth="<%= isTwitterAuth %>" data-facebook-auth="<%= isFacebookAuth %>" data-instagram-auth="<%= isInstagramAuth %>" data-dropbox-auth="<%= isDropboxAuth %>" data-pipe-from="instagram">
+
+  <div id="main">
+
+    <%- include nav %>
+
+    <section>
+
+      <div id="step-four-destination-wrapper">
+
+        <p class="steps">Step 3</p>
+        <p class="steps-copy">Select your photo destination:</p>
+
+        <%- include destinations %>
+        <%- include form %>
+
+      </div> <!-- #destination-wrapper -->
+
+    </section>
+
+    <%- include debug %>
+
+  </div> <!-- /#main -->
+  
+  <iframe src="" id="downloader" class="none"></iframe>
+  
+	<div id="overlay"></div>
+  
+  <%- include scripts %>
+
+</body>
+
+</html>
+
+
+  

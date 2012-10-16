@@ -111,6 +111,8 @@ app.get('/instagram/get_next_page_of_instagram_photos', instagram_routes.instagr
 
 app.get('/oauth/instagram', instagram_routes.instagram_oauth)
 
+app.get('/instagram/pipe/to', instagram_routes.instagram_pipe_to)
+
 app.get('/instagram/search', instagram_routes.instagram_search)
 
 app.post('/instagram/search', instagram_routes.instagram_search_post)

@@ -82,6 +82,14 @@ exports.instagram_get_next_page_of_instagram_photos = function(req,res){
   
 }
 
+exports.instagram_pipe_to = function(req,res){
+
+  if(!req.session.instagram) return res.redirect('/instagram')
+  
+  res.render('instagram_pipe_to')
+  
+}
+
 exports.instagram_search = function(req,res){
 
   if(!req.session.instagram) return res.redirect('/instagram')
