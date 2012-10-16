@@ -551,6 +551,7 @@ $(function(){
 
       }
 
+      console.log(_photoToUse)
       
       return false
 
@@ -612,12 +613,12 @@ $(function(){
 
   // Download the file
   function downloadDestinationClickHandler(e){
-
-    _photoDestination = 'download'
+    
+     _photoDestination = 'download'
 
     // showCaptionForm(_photoDestination)
 
-    // console.log(e.target + " is the target")
+    console.log(e.target + " is the target")
 
     toggleEnableChoice(e.target)
     
@@ -635,19 +636,28 @@ $(function(){
   // Post the actual photo and caption
   // This method is for ALL pipes (fb, twitter, db, etc.)
   function pipePhotoPostHandler(){
-    
-    var fileNameValue = $('#filename').val()
-    var fileExtension = (/\.(gif|jpg|jpeg|png|bmp)/gi.exec(_photoToUse))[0]
-    
-    if(fileNameValue) encodeURI( fileNameValue = (fileNameValue + fileExtension) )
-    else fileNameValue = _photoToUse.split('/').pop()
+
+    var fileNameValue =  $('#filename').val() || _photoToUse.split('/').pop() || 'photopipe_'
+    var fileExtension = ''
+    var hasFileExt = (/\.(gif|jpg|jpeg|png|bmp)/gi.exec(_photoToUse))
+    var fileExtension = (hasFileExt && hasFileExt.length) ? hasFileExt[0] : '.jpg'
+
+    fileNameValue = encodeURI( (fileNameValue + fileExtension) )
+
+    // If the filebegins with a question mark, make it empty string
+    if(fileNameValue.charAt(0) === '?') fileNameValue = ''
+
+    // console.dir(hasFileExt)
+    // console.log(fileExtension)    
+    // console.log(fileNameValue)    
+
     
     $
     .post("/smoke",{
       type: _photoDestination,
       photoUrl: _photoToUse,
       filename: fileNameValue,
-      caption: $caption.val() 
+      caption: $caption.val() || null
     })
     .success(function(data){ 
 
@@ -660,7 +670,7 @@ $(function(){
       else{
         // console.dir(data)
         alert('Success!')
-        window.location = "/"
+        // window.location = "/"
       }
 
     })

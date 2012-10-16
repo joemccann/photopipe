@@ -62,7 +62,7 @@ function normalizeTwitterData(data,req,res){
       var el = data[i]
 
       // console.dir(el)
-      // Session won't stash this much data so switch this logic to pull from redis.
+      // TODO: Session won't stash this much data so switch this logic to pull from redis.
       if( req.session.media_cache && isItemFirstCacheItem(el.id, req.session.media_cache.latest_id ) ){
         console.log('\n\nCache is same so we are breaking...\n\n')
         // update latest_id in cache
@@ -261,8 +261,8 @@ function normalizeTwitterData(data,req,res){
 function processNormalizedResponse(normalized, req, res){
   if(!delay){
     // stash normalized in cache and return normalized
-    // console.log('\n\nDone!\n\n')
-    // if(!req.session.media_cache) req.session.media_cache = normalized
+    console.log('\n\nDone!\n\n')
+    if(!req.session.media_cache) req.session.media_cache = normalized
     // console.dir(req.session.media_cache)
     return res.json(normalized)
   }

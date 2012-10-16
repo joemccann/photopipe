@@ -109,8 +109,9 @@ exports.smoke = function(req, res){
   console.log('\n\nSmoking my pipe...\n\n')
 
   // Check for a mufkcn photo url...
-  if(!req.body.photoUrl) return res.json({error: true, message: "No photo URL in yer POST, brah."})
-  
+  if(!req.body.photoUrl) {
+    return res.status(403).send("No photo URL in yer POST, brah.")
+  }
   // Echo back all the things.
   var echo = {}
   
@@ -123,41 +124,43 @@ exports.smoke = function(req, res){
   
   // http://bit.ly/node-path-basename
   // Also, clean it up a bit
-  echo.photoName = req.body.filename || validator.getImageNameWithoutQueryStringOrHash( path.basename(req.body.photoUrl) )
-    
+  echo.photoName = req.body.filename || 
+                    validator.getImageNameWithoutQueryStringOrHash( path.basename(req.body.photoUrl) ) 
+                    || new Buffer( ( new Date().toString() ) ).toString('base64') +'.jpg' // this is a guess and will probably break
+  
   // Verify it's a mufckn image (png, jpg, etc.)
-  // TODO: CHECK FOR MIME TYPE?
-  if( !(/\.(?=gif|jpg|jpeg|png|bmp)/gi).test(echo.photoName) ){
-    echo.hasError = true
-    echo.message = "Looks like the url "+echo.photoUrl+" is not an image, breaux."
-    return res.json(echo)
-  }
+  // TODO: CHECK FOR MIME TYPE? -- we need to do this after it is fetched via request
+  // because some images may require redirects, like Instagram
+  // if( !(/\.(?=gif|jpg|jpeg|png|bmp)/gi).test(echo.photoName) ){
+  //   echo.message = "Looks like the url "+echo.photoUrl+" is not an image, breaux."
+  //   return res.status(403).send(echo.message)
+  // }
   
   echo.fullPhotoPath = path.join(echo.photoDirPath, echo.photoName)
   
-  // console.dir(echo)
-  
   // http://bit.ly/node-createWriteStream 
   var ws = fs.createWriteStream( echo.fullPhotoPath ) 
+  
+  console.log(echo.photoUrl + " is the photoUrl")
+  console.log(echo.photoName + " is the photoName")
 
   // Let's put the shit in our pipe and smoke it! Err, write it to a file.
   request(echo.photoUrl).pipe( ws )
 
   // http://bit.ly/node-stream-on-error
   ws.on('error', function(exception){
-    echo.hasError = true
-    echo.errorMessage = exception
-    return res.json(echo)
+    echo.message = exception
+    return res.status(403).send(echo.message)
   }) // end ws.error()  
 
   // http://bit.ly/node-stream-on-close
   ws.on('close', function(){
     // Check to see it was written.
     fs.exists(echo.fullPhotoPath, function (exists) {
-      
+
       if(!exists){
-        echo.hasError = true
         echo.errorMessage = "Unable to verify your photo " + echo.photoName + " was written to disk, brochacho."
+        return res.status(403).send(echo.message)
       }
       
       /******************** PUT PLUGIN HOOKS BELOW HERE **********************/
@@ -238,7 +241,7 @@ exports.download_file = function(req,res){
 
   var filePath = req.query.filePath
     , fileName = req.query.fileName || "photopipe_download"
-    
+  
   var fileExtension = (/\.(gif|jpg|jpeg|png|bmp)/gi.exec(filePath))[0]
 
   fileName += fileExtension
