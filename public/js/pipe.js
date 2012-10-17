@@ -484,7 +484,7 @@ $(function(){
         // it is the source of the image.
         $facebookDestination.hide()
 
-        _photoToUse = $('.one-up:visible').find('img')[0].src
+        _photoToUse = localStorage.imageToPipe || $('.one-up:visible').find('img')[0].src
         
         closeOneUp()
         
@@ -504,8 +504,8 @@ $(function(){
         // it is the source of the image.
         $twitterDestination.hide()
         
-        _photoToUse = $('.one-up:visible').find('img')[0].src
-        
+        _photoToUse = localStorage.imageToPipe || $('.one-up:visible').find('img')[0].src
+                
         closeOneUp()
 
         $stepThreeDestinationWrapper.show()
@@ -521,7 +521,7 @@ $(function(){
 
       if(e.target.id === 'url-use-photo'){
         
-        _photoToUse = $photoFromUrl.val()
+        _photoToUse = $photoFromUrl.val() || localStorage.imageToPipe
         
         $stepThreeDestinationWrapper.show()
         
@@ -613,16 +613,16 @@ $(function(){
 
     // If the filebegins with a question mark, make it empty string
     if(fileNameValue.charAt(0) === '?') fileNameValue = ''
-
-    // console.dir(hasFileExt)
-    // console.log(fileExtension)    
-    // console.log(fileNameValue)    
-
+    
+    console.dir(hasFileExt)
+    console.log(fileExtension)    
+    console.log(fileNameValue)    
+    console.log(_photoToUse)
     
     $
     .post("/smoke",{
       type: _photoDestination,
-      photoUrl: _photoToUse,
+      photoUrl: localStorage.imageToPipe,
       filename: fileNameValue,
       caption: $caption.val() || null
     })
