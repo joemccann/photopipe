@@ -301,9 +301,45 @@ exports.account_login = function(req,res){
   else{
     // Otherwise, store it in the hash (maybe after we add the account?)
     emailHashStore(email_address)
-    res.redirect('/:username')
+    // TODO: Send validation email
+
+    // Now, send them to the page to pick their username
+    res.redirect('/account/username?email_address='+email_address)    
+    
   }
 
+}
+
+/*
+ * GET create username
+ */
+
+exports.account_username = function(req,res,next){
+  
+  var config = {
+    hasErrors: false,
+    account_email_address: req.query.email_address
+  }
+  
+  if(!config.account_email_address) return next()
+  
+  res.render('account_username', config)
+  
+}
+
+
+/*
+ * POST create username
+ */
+ 
+exports.account_username_post = function(req,res,next){
+
+  // TODO: CHECK TO SEE IF THE USERNAME EXISTS
+
+
+  // TODO: ADD THE USERNAME TO THE ASSOCIATED ACCOUNT
+  res.render('not-implemented')
+  
 }
 
 /*

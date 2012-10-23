@@ -16,10 +16,10 @@
 
     <div class="login left">
       
-      <h3 class="login-header">Login <em class="cool">or</em> Signup</h3>
+      <h3 class="login-header">Create your Username</h3>
       <hr>
     
-      <form action="/account/login" enctype="application/x-www-form-urlencoded" method="post">
+      <form action="/account/username" enctype="application/x-www-form-urlencoded" method="post">
         
         <fieldset>
           
@@ -31,25 +31,13 @@
           <% }%>
           
           <div class="form-item-wrapper">
-            <label class="form-item" for='login-email-address'>Email Address</label>
-            <input autofocus  class="input-item login-form" type='email' name='login-email-address' id="login-email-address">
-          </div>
-          
-          <div class="form-item-wrapper">
-            <label class="form-item" for='login-password'>Password</label>
-            <input class="input-item login-form" required type='password' name='login-password' id="login-password" value=''>
+            <label class="form-item" for='account-username'>Username</label>
+            <input type='hidden' name='account-email-address' value="<%- account_email_address %>">
+            <input autofocus class="input-item login-form" type='username' name='account-username' id="account-username">
           </div>
 
           <div class="form-item-wrapper">
             <input class="button pipe form-item go" type='submit' value='Go!'>
-          </div>
-
-          <div class="form-item-wrapper">
-            <div class="form-item">
-              <p>
-                <a href="/account/forgot" class="hit-target">Forgot your password?</a>
-              </p>
-            </div>
           </div>
 
         </fieldset>
@@ -59,6 +47,7 @@
 
   </section>
 
+    
   <%- include scripts %>
 </body>
 <!--
