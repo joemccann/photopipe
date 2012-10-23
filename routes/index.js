@@ -63,6 +63,8 @@ exports.index = function(req, res){
       type: req.query.type
     })
   }
+  
+  return res.render('home')
 
   res.render('index')
 }
@@ -282,12 +284,12 @@ exports.account_login = function(req,res){
 
   // TODO: VALIDATE EMAIL ADDRESS
   if(!email_address || !'change-this-to-a-validator'){
-    return res.render('login', {hasErrors: true, error_message: "That's an invalid email address."})
+    return res.render('home', {hasErrors: true, error_message: "That's an invalid email address."})
   }
   
   // TODO: VALIDATE PASSWORD
   if(!password || !'change-this-to-a-validator'){
-    return res.render('login', {hasErrors: true, error_message: "That's an invalid password."})
+    return res.render('home', {hasErrors: true, error_message: "That's an invalid password."})
   }
   
   // TODO: CHECK TO SEE IF EMAIL EXISTS
@@ -299,7 +301,7 @@ exports.account_login = function(req,res){
   else{
     // Otherwise, store it in the hash (maybe after we add the account?)
     emailHashStore(email_address)
-    res.redirect('/')
+    res.redirect('/:username')
   }
 
 }
@@ -326,6 +328,26 @@ exports.account_forgot = function(req,res,next){
 exports.account_forgot_find = function(req,res,next){
   
   res.render('not-implemented')
+  
+}
+
+
+/*
+ * GET forgot account page
+ */
+
+exports.user_dashboard = function(req,res,next){
+  
+  var config = {
+    hasErrors: false,
+    username: req.params.username
+  }
+  
+  // TODO: LOOK UP USER AND GET THEIR INFO
+  
+  return res.render('not-implemented')
+  
+  res.render('user_dashboard', config)
   
 }
 

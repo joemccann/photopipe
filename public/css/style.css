@@ -189,36 +189,36 @@ table {
 .button {
   display: inline-block;
   white-space: nowrap;
-  background-color: #ddd;
-  background-image: -webkit-gradient(linear, left top, left bottom, from(#eee), to(#3f729b));
-  background-image: -webkit-linear-gradient(top, #eee, #3f729b);
-  background-image: -moz-linear-gradient(top, #eee, #3f729b);
-  background-image: -ms-linear-gradient(top, #eee, #3f729b);
-  background-image: -o-linear-gradient(top, #eee, #3f729b);
-  background-image: linear-gradient(top, #eee, #3f729b);
+  background-color: #999;
+  background-image: -webkit-gradient(linear, left top, left bottom, from(#999), to(#808080));
+  background-image: -webkit-linear-gradient(top, #999, #808080);
+  background-image: -moz-linear-gradient(top, #999, #808080);
+  background-image: -ms-linear-gradient(top, #999, #808080);
+  background-image: -o-linear-gradient(top, #999, #808080);
+  background-image: linear-gradient(top, #999, #808080);
   border: 1px solid #777;
   padding: 0 1.5em;
   margin: 0.5em 0;
-  font: bold 2em/2em Arial, Helvetica;
   text-decoration: none;
   color: #333;
   text-shadow: 0 1px 0 rgba(255,255,255,0.8);
   -moz-border-radius: 0.2em;
   -webkit-border-radius: 0.2em;
   border-radius: 0.2em;
-  -moz-box-shadow: 0 0 1px 1px rgba(255,255,255,0.8) inset, 0 1px 0 rgba(0,0,0,0.3);
-  -webkit-box-shadow: 0 0 1px 1px rgba(255,255,255,0.8) inset, 0 1px 0 rgba(0,0,0,0.3);
-  box-shadow: 0 0 1px 1px rgba(255,255,255,0.8) inset, 0 1px 0 rgba(0,0,0,0.3);
   cursor: pointer;
+  margin: 3% auto;
+  font-size: 1.6em;
+  line-height: 2;
+  width: 100%;
 }
 .button:hover {
   background-color: #fff;
-  background-image: -webkit-gradient(linear, left top, left bottom, from(#eee), to(#78a4c8));
-  background-image: -webkit-linear-gradient(top, #eee, #78a4c8);
-  background-image: -moz-linear-gradient(top, #eee, #78a4c8);
-  background-image: -ms-linear-gradient(top, #eee, #78a4c8);
-  background-image: -o-linear-gradient(top, #eee, #78a4c8);
-  background-image: linear-gradient(top, #eee, #78a4c8);
+  background-image: -webkit-gradient(linear, left top, left bottom, from(#999), to(#b3b3b3));
+  background-image: -webkit-linear-gradient(top, #999, #b3b3b3);
+  background-image: -moz-linear-gradient(top, #999, #b3b3b3);
+  background-image: -ms-linear-gradient(top, #999, #b3b3b3);
+  background-image: -o-linear-gradient(top, #999, #b3b3b3);
+  background-image: linear-gradient(top, #999, #b3b3b3);
 }
 .button:active {
   -moz-box-shadow: 0 0 4px 2px rgba(0,0,0,0.3) inset;
@@ -322,7 +322,7 @@ table {
 body {
   font: 100% 'Aldrich', Helvetica, Arial, sans-serif;
   background: transparent url("/img/bg-noise-150x150.png") repeat scroll top left;
-  color: #3b3b3b;
+  color: #fefefe;
 }
 section {
   margin: 2.75% auto;
@@ -335,9 +335,9 @@ label {
 input:focus {
   outline: 2px solid #f8a66e;
 }
-header {
-  margin: 2% auto;
-}
+/*header
+  margin 2% auto
+  */
 input[type='url'] {
   display: block;
   width: 94%;
@@ -346,8 +346,9 @@ input[type='url'] {
 }
 fieldset {
   background: rgba(0,0,0,0.05);
-  border: 2px dotted #3f729b;
   padding: 3% 5%;
+  border: none;
+/*  border 2px dotted mainColor */
 }
 nav {
   text-align: left;
@@ -383,14 +384,14 @@ nav > a {
 }
 a {
   text-decoration: none;
-  color: #3f729b;
+  color: #f46a0c;
 }
 a:visited {
-  color: #3f729b;
+  color: #00bfff;
 }
 h1 > a,
 h1 > a:visited {
-  color: #3b3b3b;
+  color: #fefefe;
 }
 #main {
   width: 98%;
@@ -432,7 +433,7 @@ h1 > a:visited {
   display: inline-block;
 }
 .cool {
-  color: #3f729b;
+  color: #00bfff;
 }
 .bold {
   font-weight: bold;
@@ -444,7 +445,7 @@ h1 > a:visited {
   display: none;
 }
 .dotted {
-  border-bottom: 1px dotted #3f729b;
+  border-bottom: 1px dotted #00bfff;
 }
 .gallery {
   position: relative;
@@ -553,7 +554,7 @@ h1 > a:visited {
 }
 #demoCurlSection > pre {
   background: rgba(0,0,0,0.05);
-  border: 2px dotted #3f729b;
+  border: 2px dotted #00bfff;
   padding: 3% 5%;
 }
 .close-one-up {
@@ -589,11 +590,11 @@ h1 > a:visited {
 #wtf > p {
   margin: 3% auto;
   line-height: 1.4;
-  color: #626262;
+  color: #fefefe;
 }
 #wtf > .steps {
   line-height: 1;
-  color: #3b3b3b;
+  color: #fefefe;
 }
 #debug {
   display: none;
@@ -603,75 +604,152 @@ h1 > a:visited {
   line-height: 2;
   color: #f00;
 }
-#login {
-  max-width: 480px;
-  margin: 4% auto 0;
+body {
+  background: transparent url("/img/photopipe-home-bg.jpg") no-repeat scroll top left;
+  width: 98%;
+  height: 100%;
+  font-family: 'Helvetica Neue', Helvetica, serif;
+  font-weight: 300;
+  color: #f5f5f5;
 }
-form {
-  max-width: 480px;
+section {
+  margin: 0 auto;
 }
-label {
-  display: block;
+#lead {
+  background: rgba(0,0,0,0);
+  width: 100%;
+  height: 10%;
+  margin: 0 auto;
   padding: 2% 0 0;
-  font-size: 2em;
-  text-align: left;
 }
 header {
-  margin: 2% auto 4%;
+  padding: 0 20%;
+  width: 60%;
 }
-#login hr {
-  width: 94%;
+h1,
+h2,
+h3,
+p {
+  font-weight: 100;
 }
-input[type='url'],
-input[type='email'],
-input[type='text'],
-input[type='password'] {
-  display: block;
-  font: 150% 'Aldrich', Helvetica, Arial, sans-serif;
+h1,
+h2 {
+  text-align: center;
 }
-.login-form {
-  width: 88%;
+h3 {
+  text-align: left;
 }
-fieldset > .button,
-.login-copy {
-  width: 94%;
-}
-fieldset > .button {
-  margin-top: 6%;
-}
-fieldset {
-  background: rgba(0,0,0,0.05);
-  border: 0;
-  padding: 4% 5% 8%;
-  margin-top: 3%;
-}
-.login-form,
-label {
-  margin: 2.5% 3%;
-}
-.login-form {
-  padding: 4% 2.5%;
-}
-.login-copy {
-  margin: 8% auto 6%;
-}
-#login p,
-#login .error-copy {
+p {
   font-size: 1.2em;
 }
-#login .error-heading,
-#login .error-copy {
-  color: #f00;
-}
-#login a {
+a,
+a:visited {
+  text-decoration: none;
   color: #f46a0c;
 }
-.no-account-copy {
-  margin: 8% auto 0;
+a:hover,
+a:active,
+a:focus {
+  color: #f57924;
+  border-bottom: 1px dotted #fefefe;
 }
-.no-account-copy > p:last-child {
-  margin-top: 3%;
+h1 {
+  display: block;
+  font-size: 4.8em;
+  color: #00bfff;
 }
+h2 {
+  font-size: 2.4em;
+}
+h3 {
+  font-size: 2em;
+}
+.login-header {
+  margin: 0 0 4%;
+  padding: 0;
+}
+.bottom-dotted {
+  border-bottom: 1px dotted #ccc;
+}
+#account {
+  max-width: 440px;
+  overflow: auto;
+  background: #000;
+  background: rgba(0,0,0,0.8);
+  padding: 0 1%;
+}
+.login {
+  display: block;
+  width: 100%;
+}
+.underline {
+  border-bottom: 1px solid #fefefe;
+}
+.left {
+  float: left;
+}
+.right {
+  float: right;
+}
+.border-box {
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+}
+.box-flex {
+  -webkit-box-flex: 1;
+  -moz-box-flex: 1;
+  -ms-box-flex: 1;
+  -webkit-box-flex: 1;
+  -moz-box-flex: 1;
+  -ms-box-flex: 1;
+  -o-box-flex: 1;
+  box-flex: 1;
+}
+.login {
+  width: 94%;
+  padding: 3%;
+}
+fieldset {
+  margin: 5% auto 0;
+  padding: 0;
+}
+label {
+  display: block;
+  padding: 0 0 2%;
+  font-size: 1.4em;
+  text-align: left;
+}
+.form-item-wrapper {
+  margin: 7% 0%;
+}
+.form-item {
+  width: 100%;
+}
+.input-item {
+  width: 92.5%;
+  padding: 2.5% 3%;
+  background-color: rgba(255,255,255,0.87);
+}
+.input-item:focus {
+  outline: 2px solid #f8a66e;
+}
+.error-copy {
+  color: #f00;
+  line-height: 1.8;
+}
+#copy {
+  margin: 5% auto;
+}
+#copy p {
+  margin: 2.5% auto;
+}
+body.not-implemented #copy p {
+  font-size: 2.2em;
+}
+/* @import 'login-form'  */
 .left-search-form {
   padding: 0;
   margin: 0;
@@ -696,7 +774,13 @@ label {
     padding: 2% 1%;
   }
   h1 {
-    font-size: 2.3em;
+    font-size: 2.8em;
+  }
+  h2 {
+    font-size: 1.8em;
+  }
+  h3 {
+    font-size: 1.6em;
   }
 }
 @media only screen and (min-width: 30em) and (max-width: 45em) {
@@ -704,10 +788,27 @@ label {
     padding: 2% 1%;
   }
   h1 {
-    font-size: 2.2em;
+    font-size: 2.8em;
+  }
+  h2 {
+    font-size: 1.8em;
+  }
+  h3 {
+    font-size: 1.6em;
   }
 }
 @media only screen and (min-width: 20em) and (max-width: 29.9999em) {
+  #login {
+    margin-top: 2%;
+  }
+  .left-search-form {
+    position: static;
+    width: 100%;
+  }
+  .right-search-gallery {
+    width: 100%;
+    margin-top: 2%;
+  }
   .hit-target {
     padding: 1.1em 0;
   }
@@ -715,7 +816,13 @@ label {
     padding: 3% 1%;
   }
   h1 {
-    font-size: 2.1em;
+    font-size: 2.8em;
+  }
+  h2 {
+    font-size: 1.8em;
+  }
+  h3 {
+    font-size: 1.6em;
   }
   nav > a {
     margin-top: 3%;
@@ -741,24 +848,5 @@ label {
   }
   .button {
     font: bold 1.2em/2.4em Helvetica, Arial;
-  }
-  #login {
-    margin-top: 2%;
-  }
-  label {
-    font-size: 1.4em;
-    display: inline-block;
-    width: 94%;
-    padding-top: 9%;
-    height: 1.4em;
-    margin: 0;
-  }
-  .left-search-form {
-    position: static;
-    width: 100%;
-  }
-  .right-search-gallery {
-    width: 100%;
-    margin-top: 2%;
   }
 }

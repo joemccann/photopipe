@@ -1,1 +1,83 @@
-<% if %>
+<!DOCTYPE html>
+<html>
+<%- include head %>
+<body class="home" data-twitter-auth="<%= isTwitterAuth %>" data-facebook-auth="<%= isFacebookAuth %>" data-instagram-auth="<%= isInstagramAuth %>" data-dropbox-auth="<%= isDropboxAuth %>">
+  
+  <section id="lead">
+    <header id="header-home">
+      <hgroup>
+        <h1>PhotoPipe</h1>
+        <h2>Take Control of <em>Your</em> Photos</h2>
+      </hgroup>
+    </header>
+  </section>
+  
+  <section id="account">
+
+    <div class="login left">
+      
+      <h3 class="login-header">Login <em class="cool">or</em> Signup</h3>
+      <hr>
+    
+      <form action="/account/login" enctype="application/x-www-form-urlencoded" method="post">
+        
+        <fieldset>
+          
+          <% if(hasErrors){ %>
+          <div class="form-item-wrapper">
+            <p class="error-heading">Whoops!</p>
+            <p class="error-copy"><%- error_message %></p>
+          </div>
+          <% }%>
+          
+          <div class="form-item-wrapper">
+            <label class="form-item" for='login-email-address'>Email Address</label>
+            <input autofocus  class="input-item login-form" type='email' name='login-email-address' id="login-email-address">
+          </div>
+          
+          <div class="form-item-wrapper">
+            <label class="form-item" for='login-password'>Password</label>
+            <input class="input-item login-form" required type='password' name='login-password' id="login-password" value=''>
+          </div>
+
+          <div class="form-item-wrapper">
+            <input class="button pipe form-item go" type='submit' value='Go!'>
+          </div>
+
+          <div class="form-item-wrapper">
+            <div class="form-item">
+              <p>
+                <a href="/account/forgot" class="hit-target">Forgot your password?</a>
+              </p>
+            </div>
+          </div>
+
+        </fieldset>
+        
+      </form>
+    </div>
+
+  </section>
+
+  <div id="main">
+  
+  </div>
+    
+  <%- include scripts %>
+</body>
+<!--
+
+  Oh hi, there.  You're viewing source so you're probably somewhat
+  nerdy, geeky or you got here by accident.
+
+  Nonetheless, did you know that PhotoPipe is 100% open source?
+  Fuck yeah, it is.
+
+  Go here:  http://github.com/joemccann/photopipe
+
+  Don't see a service (like Flickr, 500px, etc.) on here?  Create
+  a plugin and contribute.  If it's cool and it works, I'll merge
+  it in and host it here!	
+
+-->
+</html>

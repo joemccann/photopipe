@@ -26,9 +26,9 @@ label
 input:focus
   outline 2px solid lighten(contrastColor,20)
 
-header
+/*header
   margin 2% auto
-    
+  */  
 input[type='url']
   display block
   width 94%
@@ -37,8 +37,10 @@ input[type='url']
   
 fieldset
   background rgba(0,0,0,0.05)
-  border 2px dotted mainColor
   padding 3% 5%
+  border none
+  /*  border 2px dotted mainColor */
+  
 
 nav
   text-align left
@@ -74,7 +76,7 @@ nav > a
 
 a
   text-decoration none
-  color mainColor
+  color contrastColor
   
 a:visited
   color mainColor
@@ -287,6 +289,7 @@ h1 > a, h1 > a:visited
   line-height 2
   color red
 
-@import 'login-form'  
+@import 'home'
+/* @import 'login-form'  */
 @import 'search-form'  
 @import 'responsive'

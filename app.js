@@ -30,6 +30,9 @@ app.configure(function(){
     app.locals.isFacebookAuth = !!req.session.facebook
     app.locals.isInstagramAuth = !!req.session.instagram
     app.locals.isDropboxAuth = !!req.session.dropbox
+    
+    app.locals.hasErrors = false
+    
     return next()
   })
 
@@ -65,6 +68,8 @@ app.get('/not-implemented', routes['not-implemented'])
 app.post('/smoke', routes.smoke)
 
 app.get('/download/file', routes.download_file)
+
+app.get('/account/login', routes.index)
 
 app.post('/account/login', routes.account_login)
 
@@ -140,6 +145,14 @@ app.get('/facebook/get_tagged_in_photos', facebook_routes.facebook_get_tagged_in
 app.get('/facebook/get_next_page_user_photos', facebook_routes.facebook_get_next_page_user_photos)
 
 app.get('/oauth/facebook', facebook_routes.facebook_oauth)
+
+
+/************************** Customer Accounts **************************/
+
+app.get('/:username', routes.user_dashboard)
+
+/************************** End Customer Accounts **************************/
+
 
 
 // Spin up le server...
