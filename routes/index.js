@@ -15,6 +15,18 @@ Account Management Module
 var Account = (function(){
   
   return{
+    alreadyExists: function(req,res, message){
+      return res.render('home', {hasErrors: true, error_message: message})
+    },
+    createAccount: function(email_address, password, cb){
+      // emails is set; user is the hashPrefix
+      db_client.createUserIdentityAccount(email_address, password, 'emails', 'user', function(err,data){
+        cb && cb(err,data)
+      })
+    },
+    attachUsernameToAccount: function(email_address, username, cb){
+      db_client.addUserNameToAccount(email_address, username, 'user', cb)
+    },
     loginUser: function(email,password){
       
     }
@@ -32,18 +44,6 @@ Util methods...
 
 function incrementPipedCount(){
   db_client.getClient().incr( "totalPipedPhotos" , redis.print)
-}
-
-function emailHashStore(email,isExistent){
-
-  this._hash = this._hash || {}
-  
-  if(isExistent){
-    return !!(this._hash[email])
-  }
-  return this._hash[email] = true
-  
-  
 }
 
 /****************************************************************
@@ -279,8 +279,10 @@ exports.download_file = function(req,res){
 
 exports.account_login = function(req,res){
 
-  var email_address = req.body['login-email-address']
-    , password = req.body['login-password']
+  var email_address = req.body['email_address']
+    , password = req.body['password']
+
+    console.log(email_address)
 
   // TODO: VALIDATE EMAIL ADDRESS
   if(!email_address || !'change-this-to-a-validator'){
@@ -292,21 +294,20 @@ exports.account_login = function(req,res){
     return res.render('home', {hasErrors: true, error_message: "That's an invalid password."})
   }
   
-  // TODO: CHECK TO SEE IF EMAIL EXISTS
-  if( emailHashStore(email_address, true) ){
-    // Try to login
-    console.log('Email exists in hash')
-    res.send('exists')
-  }  
-  else{
-    // Otherwise, store it in the hash (maybe after we add the account?)
-    emailHashStore(email_address)
-    // TODO: Send validation email
-
+  Account.createAccount(email_address, password, function(err,data){
     // Now, send them to the page to pick their username
+    if(err) return console.error(err)
+
+    // When data returns 0, it means the email already exists in Redis
+    if(data === 0) return Account.alreadyExists(req,res, "That email address already has an account.")
+
+    console.log('good!')
+    console.dir(data)
+    
     res.redirect('/account/username?email_address='+email_address)    
     
-  }
+  })
+  
 
 }
 
@@ -335,10 +336,35 @@ exports.account_username = function(req,res,next){
 exports.account_username_post = function(req,res,next){
 
   // TODO: CHECK TO SEE IF THE USERNAME EXISTS
+  var email_address = req.body['email_address']
+    , username = req.body['username']
 
+  console.log(username)
 
-  // TODO: ADD THE USERNAME TO THE ASSOCIATED ACCOUNT
-  res.render('not-implemented')
+  // TODO: VALIDATE EMAIL ADDRESS
+  if(!email_address || !'change-this-to-a-validator'){
+    return res.render('home', {hasErrors: true, error_message: "Missing the attached email address. Start over."})
+  }
+  
+  // TODO: VALIDATE USERNAME
+  if(!username || !'change-this-to-a-validator'){
+    return res.render('home', {hasErrors: true, error_message: "That's an invalid username."})
+  }
+  
+  Account.attachUsernameToAccount(email_address, username, function(err,data){
+    // Now, send them to the page to pick their username
+    if(err) return console.error(err)
+
+    // When data returns 0, it means the email already exists in Redis
+    if(data === 0) return Account.alreadyExists(req,res,"That username already exists.")
+
+    console.log('good username!')
+    console.dir(data)
+    
+    res.send(data)    
+    
+  })
+
   
 }
 

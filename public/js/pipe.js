@@ -1298,6 +1298,28 @@ $(function(){
 
   /******************************* End Downloader Module ***************************/
 
+
+  /******************************* What Is PhotoPipe Module ***************************/
+  
+  // var WhatIs = (function(){
+  //   
+  //   var $whatIsPp = $('#what-is-photopipe')
+  //     , $whatIsPpCopy = $('#what-is-photopipe-copy')
+  //   
+  //   !function(){
+  //     
+  //     $whatIsPp.bind('click', function(e){
+  //       $whatIsPpCopy[0].style.display = $whatIsPpCopy[0].style.display === 'block' ? 'none' : 'block'
+  //       return false
+  //     })
+  // 
+  //   }()
+  //   
+  //   return {}
+  // 
+  // })()
+
+  /******************************* What Is PhotoPipe Module ***************************/
   
   
   

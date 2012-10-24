@@ -1,33 +1,10 @@
 body
-  background transparent url('/img/photopipe-home-bg.jpg') no-repeat scroll top left
+  background transparent url('/img/photopipe-home-bg-1.jpeg') no-repeat scroll top left
   width 98%
   height 100%
   font-family 'Helvetica Neue', Helvetica, serif
   font-weight 300
   color #F5F5F5
-
-section
-  margin 0 auto
-
-#lead
-  background rgba(0,0,0,0.0)
-  width 100%
-  height 10%
-  margin 0 auto
-  padding 2% 0 0
-
-header
-  padding 0 20%
-  width 60%
-
-h1, h2, h3, p
-  font-weight 100
-
-h1, h2
-  text-align center
-
-h3
-  text-align left
 
 p
   font-size 1.2em
@@ -40,6 +17,37 @@ a:hover, a:active, a:focus
   color lighten(contrastColor,5)
   border-bottom 1px dotted textColor
 
+section
+  margin 0 auto
+
+header
+  padding 0 20%
+  width 60%
+
+#header-home h1
+ color contrastColor
+
+h1, h2, h3, h4, p
+  font-weight 100
+
+h1, h2, h4
+  text-align center
+
+h3
+  text-align left
+
+h4
+  font-size 2em
+  margin 0
+  padding 0
+
+h4 a, h4 a:visited
+  color mainColor
+
+h4 a:hover, h4 a:active, h4 a:focus
+  color lighten(mainColor,15)
+  border-bottom none
+
 h1
   display block
   font-size 4.8em  
@@ -51,6 +59,13 @@ h2
 h3
   font-size 2em
 
+#lead
+  background transparent
+  width 100%
+  height 10%
+  margin 0 auto
+  padding 2% 0 0
+
 .login-header
   margin 0 0 4%
   padding 0
@@ -59,12 +74,27 @@ h3
   border-bottom 1px dotted #ccc
 
 #account
-  max-width 440px
   overflow auto
+
+.trans-black-bg
   background black
   background rgba(0,0,0,0.8)
+
+#account, #whatis
+  background black
+  background rgba(0,0,0,0.8)
+  max-width 440px
   padding 0 1%
-  
+
+#whatis
+  margin 2% auto
+  padding 2% 1%
+
+#what-is-photopipe-copy p
+  margin 2% auto
+  font-size 1.6em
+  line-height 1.6
+   
 .login
   display block
   width 100%

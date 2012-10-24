@@ -5,6 +5,7 @@ var fs = require('fs')
   , crypto = require('crypto')
   , redis = require('redis')
   , colors = require('colors')
+  // , bcrypt = require('bcrypt')
   , isInitComplete = false
 
 var redisConfig = JSON.parse( fs.readFileSync( path.resolve(__dirname, './redis-config.json'), 'utf-8' ) )
@@ -107,6 +108,24 @@ module.exports = (function(){
   function sha1 (key, body) {
     return crypto.createHmac('sha1', key).update(body).digest('base64')
   }
+  
+  function _userSetAddHandler(e,d){
+    if(e){
+      console.log("User set add data response: %s", d)
+      e && console.error(e)
+      return
+    }
+    console.log("User set add data response with no error: %s", d)  
+  }
+  
+  // function getBcryptHash(password){
+  //   var salt = bcrypt.genSaltSync(10)
+  //   return bcrypt.hashSync(password, salt)
+  // }
+  // 
+  // function isPasswordLegit(password, hash){
+  //   return bcrypt.compareSync(password, hash) 
+  // }
 
   return {
     // The reason we have a getter here is when the redis
@@ -135,30 +154,15 @@ module.exports = (function(){
     // Create a new user account in Redis
     // setname is the name of the set to add to
     // hashPrefix is the prefix to identify the hash
-    createUserIdentityAccount: function(userObj, setname, hashPrefix, cb){
+    createUserIdentityAccount: function(email_address, password, setname, hashPrefix, cb){
       
-      console.log("\nCreating new user account %s", userObj.network.username)
+      console.log("\nCreating new user account %s", email_address)
       
-      /*
-      userObj = {
-        network: {
-          type : 'facebook',
-          first_name: 'Joe',
-          last_name: 'McCann',
-          username: 'joemccann',
-          full_name: 'Joe McCann'
-        },
-        email_address: 'joseph.isaac@gmail.com',
-        oauth: {}
-      }
-      */
-      
-      // TODO: CHECK IF HASH EXISTS
-
       // Schema should be:
       var schema = 
       {
         uuid: null,
+        username: '',
         networks: { 
           twitter: {},
           facebook: {},
@@ -175,29 +179,67 @@ module.exports = (function(){
           flickr: null,
           dropbox: null,
           google_drive: null
-        }
+        },
+        password: null
       }
 
       // Generate unique user id
-      schema.uuid = sha1(redisConfig.salt, userObj.email_address)
+      schema.uuid = sha1(redisConfig.salt, email_address)
+
+      // Generate bcrypt hashed password
+      schema.password = password //getBcryptHash(password)
 
       // "Official" email address is schema.email_addresses[0]
       // Add it to the email addresses for the user
-      schema.email_addresses.push(userObj.email_address)
+      schema.email_addresses.push(email_address)
 
-      // Let's 
+      // Let's add the sha1 hash of the email address to the set (of emails)
       client.sadd(setname, schema.uuid, function(e,d){
+        
+        // Add email to set handler
+        _userSetAddHandler(e,d)
 
+        // Redundant check from where it's being called?
+        if( d === 1 ){
+          // Add hash to multi-hash in redis
+          client.hmset(hashPrefix +":"+schema.uuid, schema, function(e,d){
+            // Let's just verify by logging it out.
+            client.hgetall(hashPrefix +":"+schema.uuid, function(e,d){
+              
+              console.log(typeof d + " is the typeof d")
+              console.dir(d)
+              
+            })// end hgetall
+          })
+        }
+        
         if(cb){
           return cb(e,d)
-        } 
+        }         
         
-        userSetAddHandler(e,d)
+      }) // end client.sadd
 
-        client.hmset(hashPrefix +":"+schema.uuid, userObj, hmsetCb || userSetHashHandler)
+    },
+    addUserNameToAccount: function(email_address, username, hashPrefix, cb){
+      // First, fetch the account
+      var uuid = sha1(redisConfig.salt, email_address)
+      
+      client.hgetall(hashPrefix + ":" + uuid, function(e,d){
+        
+        if(e) return cb(e,null)
+
+        if(d.username) return cb(new Error('Username already exists for this email address.'), null)
+
+        d.username = username
+        
+        client.hmset(hashPrefix +":"+uuid, d, function(e,d){
+
+          cb && cb(e,d)
+
+        }) // end hmset
         
       })
-
+      
     },
     // Delete user's account from Redis.
     deleteUserIdentityAccount: function(userObj, setname, hashPrefix, cb){
@@ -221,14 +263,7 @@ module.exports = (function(){
 
     },
     // Callback after setting user to the set of users
-    userSetAddHandler: function(e,d){
-      if(e){
-        console.log("User set add data response: %s", d)
-        e && console.error(e)
-        return
-      }
-      console.log("User set add data response with no error: %s", d)  
-    },
+    userSetAddHandler: _userSetAddHandler,
     // Callback afters setting user's hash of key/values in Redis
     userSetHashHandler: function(e,d){
 
@@ -239,7 +274,7 @@ module.exports = (function(){
 
       console.log("User hash set add data response with no error: %s", d)
 
-      var uuid = sha1('photopipe', userObj.email_address)
+      var uuid = sha1('photopipe', email_address)
 
       client.hgetall("user:"+uuid, userGetAllHashHandler)
 
