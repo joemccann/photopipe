@@ -230,7 +230,11 @@ module.exports = (function(){
 
         if(d.username) return cb(new Error('Username already exists for this email address.'), null)
 
+        // TODO: CHECK IF USERNAME EXISTS IN THE SET
+
         d.username = username
+        
+        // TODO:  ADD USERNAME TO USERNAMES SET VIA SHA1 HASH
         
         client.hmset(hashPrefix +":"+uuid, d, function(e,d){
 

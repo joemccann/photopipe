@@ -339,7 +339,7 @@ exports.account_username_post = function(req,res,next){
   var email_address = req.body['email_address']
     , username = req.body['username']
 
-  console.log(username)
+  console.log(username + " is the incoming username")
 
   // TODO: VALIDATE EMAIL ADDRESS
   if(!email_address || !'change-this-to-a-validator'){
@@ -355,11 +355,20 @@ exports.account_username_post = function(req,res,next){
     // Now, send them to the page to pick their username
     if(err) return console.error(err)
 
-    // When data returns 0, it means the email already exists in Redis
-    if(data === 0) return Account.alreadyExists(req,res,"That username already exists.")
+    if(data === 0) return Account.alreadyExists(req,res, "You already have a username.")
 
+    // When data returns 0, it means the email already exists in Redis
+    client.sget(username, function(e,d){
+
+      if(err) return console.error(err)
+      
+      if(data === 0) return Account.alreadyExists(req,res, "That username is taken.")
+      
+    })
+    
     console.log('good username!')
-    console.dir(data)
+    
+    // TODO: REDIRECT TO DASHBOARD
     
     res.send(data)    
     
