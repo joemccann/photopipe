@@ -141,9 +141,7 @@ module.exports = (function(){
     // Check to see if account exists
     doesAccountExist: function(setname, email_address, cb){
 
-      var uuid = sha1(redisConfig.salt, email_address)
-      
-      client.sismember(setname, uuid, function(err,data){
+      client.sismember(setname, email_address, function(err,data){
         if(err) return cb(err)
       
         return cb(null,data)
@@ -213,7 +211,7 @@ module.exports = (function(){
       schema.email_addresses.push(email_address)
 
       // Let's add the sha1 hash of the email address to the set (of emails)
-      client.sadd(setname, schema.uuid, function(e,d){
+      client.sadd(setname, email_address, function(e,d){
         
         // Add email to set handler
         _userSetAddHandler(e,d)
@@ -224,12 +222,11 @@ module.exports = (function(){
           client.hmset(hashPrefix +":"+schema.uuid, schema, function(e,d){
             // Let's just verify by logging it out.
             client.hgetall(hashPrefix +":"+schema.uuid, function(e,d){
-              
-              console.log(typeof d + " is the typeof d")
+              if(e) return console.error(e)
+              console.log('Successfully added user object:')
               console.dir(d)
-              
             })// end hgetall
-          })
+          }) // end hmset
         }
         
         if(cb){
@@ -246,9 +243,6 @@ module.exports = (function(){
       client.hgetall(hashPrefix + ":" + uuid, function(e,data){
         
         if(e) return cb(e,null)
-        
-        console.dir(data)
-        console.dir(typeof data)
 
         // Set the username on the data object
         data.username = username
@@ -274,6 +268,19 @@ module.exports = (function(){
     // Sends back via callback a boolean if there is no error.
     // The boolean is whether or not it matches the password stored in the
     // hash.
+    getUsername: function(email_address, hashPrefix, cb){
+      
+      var uuid = sha1(redisConfig.salt, email_address)
+      
+      client.hget(hashPrefix+":"+uuid, 'username', function(err,hash_username){
+        if(err) return console.error(err)
+        
+        return cb(null,hash_username)
+        
+      })
+      
+      
+    },
     verifyPassword: function(email_address, password, hashPrefix, cb){
       // First, fetch the account
       var uuid = sha1(redisConfig.salt, email_address)

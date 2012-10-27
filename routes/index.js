@@ -66,6 +66,19 @@ var Account = (function(){
     },
     incrementPipedCount: function(){
       db_client.getClient().incr( "totalPipedPhotos" , redis.print)
+    },
+    renderDashboard: function(req,res,email_address){
+
+      // Get the username
+      db_client.getUsername(email_address, 'user', function(err,username){
+
+        req.session.username = username
+        req.session.email_address = email_address
+
+        return res.redirect('/'+username)
+        
+      }) // end getUsername()
+      
     }
   }
   
@@ -314,6 +327,7 @@ exports.account_login = function(req,res){
   validator.check(email_address, "That's not a valid email address.").isEmail()  
   // VALIDATE PASSWORD
   validator.check(password, "Your password must be at least 8 characters long.").notEmpty().len(8,128)
+
   // If we have errors...
   if( validator.getErrors().length ){
     // Right now we just grab the first one because we're lazy
@@ -321,7 +335,7 @@ exports.account_login = function(req,res){
     return res.render('home', {hasErrors: true, error_message: validator.getErrors()[0] })
   }
   
-  
+  // Check if the account already exists, meaning, they are logging in
   Account.doesAccountExist('emails', email_address, function(err,data){
     if(err) return console.error(err)
 
@@ -340,10 +354,8 @@ exports.account_login = function(req,res){
         }
 
         // Otherwise, all is fine and we are logged in so send them to the dashboard.
-        
         console.log('Password auth was successful.')
-
-        return res.send('Logged in.')
+        return Account.renderDashboard(req,res,email_address)
         
       }) // end verifyPassword()
       
@@ -461,11 +473,10 @@ exports.account_username_post = function(req,res,next){
               }
             ) // end renderLoginError
 
-          console.log('good username!')
+          console.log('Good username!')
 
-          // TODO: REDIRECT TO DASHBOARD
-          
-          return res.send("Welcome to PhotoPipe " + username + "!")    
+          // REDIRECT TO DASHBOARD
+          return Account.renderDashboard(req,res,email_address)
 
         }) // end sget()
 
@@ -510,16 +521,18 @@ exports.account_forgot_find = function(req,res,next){
 
 exports.user_dashboard = function(req,res,next){
   
-  var config = {
-    hasErrors: false,
-    username: req.params.username
+  // CHECK IF WE ARE LOGGED IN, IF NOT, LOGIN PAGE.
+  if( !(req.session.username && req.session.email_address ) ){
+    return res.redirect('/')
   }
   
-  // TODO: LOOK UP USER AND GET THEIR INFO
+  var config = {
+    hasErrors: false,
+    username: req.session.username,
+    email_address: req.session.email_address
+  }
   
-  return res.render('not-implemented')
-  
-  res.render('user_dashboard', config)
+  return res.render('user_dashboard', config)
   
 }
 

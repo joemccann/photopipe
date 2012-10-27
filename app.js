@@ -32,6 +32,7 @@ app.configure(function(){
     app.locals.isDropboxAuth = !!req.session.dropbox
     
     app.locals.hasErrors = false
+    app.locals.username = ""
     
     return next()
   })
