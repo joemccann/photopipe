@@ -5,6 +5,7 @@ var path = require('path')
   , validator = require( path.resolve(__dirname, '..', 'utils/validation.js') ) 
   , db_client = require( path.resolve(__dirname, '..', 'database/redis-client.js') )
   , redis = require('redis')
+  , _ = require('lodash')
 
 
 /****************************************************************
@@ -15,8 +16,12 @@ Account Management Module
 var Account = (function(){
   
   return{
-    alreadyExists: function(req,res, message){
-      return res.render('home', {hasErrors: true, error_message: message})
+    renderLoginError: function(req,res, message, view, extras){
+
+      // Our view may require view specific variables so we merge them here.
+      var config = _.merge(extras, {hasErrors: true, error_message: message})
+      
+      return res.render(view, config )
     },
     createAccount: function(email_address, password, cb){
       // emails is set; user is the hashPrefix
@@ -25,10 +30,16 @@ var Account = (function(){
       })
     },
     attachUsernameToAccount: function(email_address, username, cb){
-      db_client.addUserNameToAccount(email_address, username, 'user', cb)
+      db_client.addUsernameToAccount(email_address, username, 'usernames', 'user', cb)
     },
-    loginUser: function(email,password){
-      
+    verifyPassword: function(email_address, password, cb){
+      db_client.verifyPassword(email_address,password, 'user', cb)
+    },
+    doesAccountExist: function(setname, email_address, cb){
+      db_client.doesAccountExist(setname, email_address, cb)
+    },
+    doesUsernameExist: function(setname, username, cb){
+      db_client.doesUsernameExist(setname, username, cb)
     }
   }
   
@@ -282,7 +293,7 @@ exports.account_login = function(req,res){
   var email_address = req.body['email_address']
     , password = req.body['password']
 
-    console.log(email_address)
+  console.log(email_address + " is the incoming email address.")
 
   // TODO: VALIDATE EMAIL ADDRESS
   if(!email_address || !'change-this-to-a-validator'){
@@ -294,20 +305,49 @@ exports.account_login = function(req,res){
     return res.render('home', {hasErrors: true, error_message: "That's an invalid password."})
   }
   
-  Account.createAccount(email_address, password, function(err,data){
-    // Now, send them to the page to pick their username
+  Account.doesAccountExist('emails', email_address, function(err,data){
     if(err) return console.error(err)
 
-    // When data returns 0, it means the email already exists in Redis
-    if(data === 0) return Account.alreadyExists(req,res, "That email address already has an account.")
+    console.log('Does account exist? ' + (data === 0 ? 'no' : 'yes') )
+    
+    // If it is 1 then we have it in the set, meaning, it is already created
+    if(data === 1){
+      
+      Account.verifyPassword(email_address, password, function(err,isMatch){
+        
+        if(err) return console.error(err)
+        
+        if( !isMatch ) {
+          console.log('Password auth was not successful.')
+          return Account.renderLoginError( req,res, "That password is invalid.", "home")
+        }
 
-    console.log('good!')
-    console.dir(data)
-    
-    res.redirect('/account/username?email_address='+email_address)    
-    
-  })
-  
+        // Otherwise, all is fine and we are logged in so send them to the dashboard.
+        
+        console.log('Password auth was successful.')
+
+        return res.send('Logged in.')
+        
+      }) // end verifyPassword()
+      
+    }
+
+    // Otherwise, it is 0 meaning it does not exist.
+    if(data === 0){
+
+      Account.createAccount(email_address, password, function(err,data){
+        // Now, send them to the page to pick their username
+        if(err) return console.error(err)
+
+        console.dir(data)
+
+        res.redirect('/account/username?email_address='+email_address)    
+
+      }) // end createAccount
+      
+    }
+
+  }) // end doesAccountExist()
 
 }
 
@@ -351,29 +391,72 @@ exports.account_username_post = function(req,res,next){
     return res.render('home', {hasErrors: true, error_message: "That's an invalid username."})
   }
   
-  Account.attachUsernameToAccount(email_address, username, function(err,data){
-    // Now, send them to the page to pick their username
-    if(err) return console.error(err)
+  // Check to see if username exists
+  
+  Account.doesUsernameExist('usernames', username, function(err,data){
 
-    if(data === 0) return Account.alreadyExists(req,res, "You already have a username.")
+    console.log('Does username exist? ' + (data === 0 ? 'no' : 'yes') )
 
-    // When data returns 0, it means the email already exists in Redis
-    client.sget(username, function(e,d){
-
-      if(err) return console.error(err)
+    // If it is 1 then we have it in the set, meaning, it is already claimed
+    if(data === 1){
       
-      if(data === 0) return Account.alreadyExists(req,res, "That username is taken.")
+      return Account.renderLoginError(
+          req,
+          res, 
+          "That username is already taken.", "account_username", 
+          {
+            account_email_address: email_address
+          }
+        ) // end renderLoginError()
       
-    })
-    
-    console.log('good username!')
-    
-    // TODO: REDIRECT TO DASHBOARD
-    
-    res.send(data)    
-    
-  })
+    }
 
+    // Otherwise, it is 0 meaning it does not exist.
+    if(data === 0){
+    
+      Account.attachUsernameToAccount(email_address, username, function(err,data){
+        // Now, send them to the page to pick their username
+        if(err) return console.error(err)
+
+        if(data === 0) return Account.renderLoginError(
+            req,
+            res, 
+            "You already have a username.", 
+            "account_username", 
+            {
+              account_email_address: email_address
+            }
+          ) // end renderLoginError
+
+        // When data returns 0, it means the username already exists in Redis
+        db_client.getClient().sismember(username, function(e,d){
+
+          if(err) return console.error(err)
+
+          if(data === 0) return Account.renderLoginError(
+              req,
+              res, 
+              "That username is taken.", 
+              "account_username",
+              {
+                account_email_address: email_address
+              }
+            ) // end renderLoginError
+
+          console.log('good username!')
+
+          // TODO: REDIRECT TO DASHBOARD
+          
+          return res.send("Welcome to PhotoPipe " + username + "!")    
+
+        }) // end sget()
+
+      }) // end attachUsernameToAccount()
+      
+    }
+
+  }) // end doesUsernameExist()
+  
   
 }
 

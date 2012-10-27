@@ -92,6 +92,8 @@ client.on('ready', function (err){
 
     initializeKeys(keys)
     
+    // TODO: INITIALIZE USERNAMES THAT ARE RESTRICTED (see the routes)
+    
     isInitComplete = true
 
   }
@@ -137,9 +139,26 @@ module.exports = (function(){
       return client
     },
     // Check to see if account exists
-    doesAccountExist: function(uuid, cb){
-      console.warn("doesAccountExist is not implemented.")
-      return false
+    doesAccountExist: function(setname, email_address, cb){
+
+      var uuid = sha1(redisConfig.salt, email_address)
+      
+      client.sismember(setname, uuid, function(err,data){
+        if(err) return cb(err)
+      
+        return cb(null,data)
+        
+      })
+    },
+    // Check to see if username exists
+    doesUsernameExist: function(setname, username, cb){
+
+      client.sismember(setname, username, function(err,data){
+        if(err) return cb(err)
+      
+        return cb(null,data)
+        
+      })
     },
     // logs the members of the set
     // setname is the name of the set (string)
@@ -220,32 +239,58 @@ module.exports = (function(){
       }) // end client.sadd
 
     },
-    addUserNameToAccount: function(email_address, username, hashPrefix, cb){
+    addUsernameToAccount: function(email_address, username, setname, hashPrefix, cb){
       // First, fetch the account
       var uuid = sha1(redisConfig.salt, email_address)
       
-      client.hgetall(hashPrefix + ":" + uuid, function(e,d){
+      client.hgetall(hashPrefix + ":" + uuid, function(e,data){
         
         if(e) return cb(e,null)
-
-        if(d.username) return cb(new Error('Username already exists for this email address.'), null)
-
-        // TODO: CHECK IF USERNAME EXISTS IN THE SET
-
-        d.username = username
         
-        // TODO:  ADD USERNAME TO USERNAMES SET VIA SHA1 HASH
-        
-        client.hmset(hashPrefix +":"+uuid, d, function(e,d){
+        console.dir(data)
+        console.dir(typeof data)
 
-          cb && cb(e,d)
+        // Set the username on the data object
+        data.username = username
+        
+        // Now stash it
+        client.hmset(hashPrefix +":"+uuid, data, function(e,data){
+
+          if(e) return cb(e)
+          
+          else cb(null,data)
 
         }) // end hmset
         
-      })
+        // Now, add the username to the set...
+        client.sadd(setname, username, function(e,data){
+          if(e) return console.error(e)
+          else return console.log("Successfully added "+ username +" to the set " + setname)
+        }) // end sadd
+        
+      }) // end hgetall()
       
     },
-    // Delete user's account from Redis.
+    // Sends back via callback a boolean if there is no error.
+    // The boolean is whether or not it matches the password stored in the
+    // hash.
+    verifyPassword: function(email_address, password, hashPrefix, cb){
+      // First, fetch the account
+      var uuid = sha1(redisConfig.salt, email_address)
+      
+      client.hget(hashPrefix +":"+uuid, 'password', function(err,data){
+        if(err) return cb(err)
+
+        // We have a match?
+        if(data === password){
+          return cb(null, true)
+        }
+        
+        else return cb(null, false)
+
+      }) // end hget
+      
+    },    // Delete user's account from Redis.
     deleteUserIdentityAccount: function(userObj, setname, hashPrefix, cb){
 
       // client.srem('users',userObj.uuid, redis.print)
