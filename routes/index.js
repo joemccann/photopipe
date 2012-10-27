@@ -6,6 +6,8 @@ var path = require('path')
   , db_client = require( path.resolve(__dirname, '..', 'database/redis-client.js') )
   , redis = require('redis')
   , _ = require('lodash')
+  , Validator = require('validator').Validator
+  , validator = null
 
 
 /****************************************************************
@@ -15,21 +17,42 @@ Account Management Module
 ****************************************************************/
 var Account = (function(){
   
+  // Constructor...
+  !function(){
+    
+    // Extend the validator object's prototype to capture all errors
+    // and then provide a method to get the array of them
+    
+    Validator.prototype.error = function (msg) {
+        this._errors.push(msg)
+        return this
+    }
+
+    Validator.prototype.getErrors = function () {
+        return this._errors
+    }
+
+    validator = new Validator()
+
+  }()
+  
   return{
+    reservedUsernames: /wtf|account|smoke|not-implemented|dropbox|twitter|instagram|facebook|evernote|500px|flickr|bazaarvoice|box|google-drive/i,
     renderLoginError: function(req,res, message, view, extras){
 
       // Our view may require view specific variables so we merge them here.
-      var config = _.merge(extras, {hasErrors: true, error_message: message})
+      var config = _.merge(extras || {}, {hasErrors: true, error_message: message})
       
       return res.render(view, config )
     },
     createAccount: function(email_address, password, cb){
-      // emails is set; user is the hashPrefix
+      // emails is setname; user is the hashPrefix
       db_client.createUserIdentityAccount(email_address, password, 'emails', 'user', function(err,data){
         cb && cb(err,data)
       })
     },
     attachUsernameToAccount: function(email_address, username, cb){
+      // usernames is setname; user is the hashPrefix
       db_client.addUsernameToAccount(email_address, username, 'usernames', 'user', cb)
     },
     verifyPassword: function(email_address, password, cb){
@@ -40,22 +63,14 @@ var Account = (function(){
     },
     doesUsernameExist: function(setname, username, cb){
       db_client.doesUsernameExist(setname, username, cb)
+    },
+    incrementPipedCount: function(){
+      db_client.getClient().incr( "totalPipedPhotos" , redis.print)
     }
   }
   
 })()
 
-  
-
-/****************************************************************
-
-Util methods...
-
-****************************************************************/
-
-function incrementPipedCount(){
-  db_client.getClient().incr( "totalPipedPhotos" , redis.print)
-}
 
 /****************************************************************
 
@@ -189,7 +204,7 @@ exports.smoke = function(req, res){
 
         fb.pipePhotoToFb(echo, req, res)
         
-        incrementPipedCount()
+        Account.incrementPipedCount()
         
       }else if(echo.type === 'twitter'){
 
@@ -199,7 +214,7 @@ exports.smoke = function(req, res){
         // request and response objects as well.
         twit.pipeToTwitter(echo, req, res)
         
-        incrementPipedCount()
+        Account.incrementPipedCount()
       }else if(echo.type === 'dropbox'){
 
         var dropbox = require(path.resolve(__dirname, '..', 'plugins/dropbox/dropbox.js')).Dropbox
@@ -208,7 +223,7 @@ exports.smoke = function(req, res){
         // request and response objects as well.
         dropbox.pipeToDropbox(echo, req, res)
         
-        incrementPipedCount()
+        Account.incrementPipedCount()
         
       }else if(echo.type === 'bazaarvoice'){
 
@@ -218,13 +233,13 @@ exports.smoke = function(req, res){
         // response object as well.
         bv.pipeToBv(echo, res)
         
-        incrementPipedCount()
+        Account.incrementPipedCount()
         
       }else if(echo.type === 'echo' || echo.type === 'download'){
         
         res.json(echo)
         
-        if(echo.type === 'download') incrementPipedCount()
+        if(echo.type === 'download') Account.incrementPipedCount()
         
       }
 
@@ -295,15 +310,17 @@ exports.account_login = function(req,res){
 
   console.log(email_address + " is the incoming email address.")
 
-  // TODO: VALIDATE EMAIL ADDRESS
-  if(!email_address || !'change-this-to-a-validator'){
-    return res.render('home', {hasErrors: true, error_message: "That's an invalid email address."})
+  // VALIDATE EMAIL ADDRESS
+  validator.check(email_address, "That's not a valid email address.").isEmail()  
+  // VALIDATE PASSWORD
+  validator.check(password, "Your password must be at least 8 characters long.").notEmpty().len(8,128)
+  // If we have errors...
+  if( validator.getErrors().length ){
+    // Right now we just grab the first one because we're lazy
+    console.error("Error: " + validator.getErrors()[0])
+    return res.render('home', {hasErrors: true, error_message: validator.getErrors()[0] })
   }
   
-  // TODO: VALIDATE PASSWORD
-  if(!password || !'change-this-to-a-validator'){
-    return res.render('home', {hasErrors: true, error_message: "That's an invalid password."})
-  }
   
   Account.doesAccountExist('emails', email_address, function(err,data){
     if(err) return console.error(err)
@@ -381,18 +398,19 @@ exports.account_username_post = function(req,res,next){
 
   console.log(username + " is the incoming username")
 
-  // TODO: VALIDATE EMAIL ADDRESS
-  if(!email_address || !'change-this-to-a-validator'){
-    return res.render('home', {hasErrors: true, error_message: "Missing the attached email address. Start over."})
-  }
-  
-  // TODO: VALIDATE USERNAME
-  if(!username || !'change-this-to-a-validator'){
-    return res.render('home', {hasErrors: true, error_message: "That's an invalid username."})
+  // VALIDATE EMAIL ADDRESS
+  validator.check(email_address, "That's not a valid email address.").isEmail()  
+  // VALIDATE USERNAME
+  validator.check(username, "Sorry, that username is taken.").not(Account.reservedUsernames)
+  validator.check(username, "Your username must be at least one character long.").notEmpty().len(1,128)
+  // If we have errors...
+  if( validator.getErrors().length ){
+    // Right now we just grab the first one because we're lazy
+    console.error("Error: " + validator.getErrors()[0])
+    return res.render('account_username', {hasErrors: true, error_message: validator.getErrors()[0], account_email_address: email_address })
   }
   
   // Check to see if username exists
-  
   Account.doesUsernameExist('usernames', username, function(err,data){
 
     console.log('Does username exist? ' + (data === 0 ? 'no' : 'yes') )

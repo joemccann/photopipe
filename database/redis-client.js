@@ -5,7 +5,7 @@ var fs = require('fs')
   , crypto = require('crypto')
   , redis = require('redis')
   , colors = require('colors')
-  // , bcrypt = require('bcrypt')
+  , bcrypt = require('bcrypt')
   , isInitComplete = false
 
 var redisConfig = JSON.parse( fs.readFileSync( path.resolve(__dirname, './redis-config.json'), 'utf-8' ) )
@@ -120,14 +120,14 @@ module.exports = (function(){
     console.log("User set add data response with no error: %s", d)  
   }
   
-  // function getBcryptHash(password){
-  //   var salt = bcrypt.genSaltSync(10)
-  //   return bcrypt.hashSync(password, salt)
-  // }
-  // 
-  // function isPasswordLegit(password, hash){
-  //   return bcrypt.compareSync(password, hash) 
-  // }
+  function getBcryptHash(password){
+    var salt = bcrypt.genSaltSync(10)
+    return bcrypt.hashSync(password, salt)
+  }
+  
+  function isPasswordLegit(password, hash){
+    return bcrypt.compareSync(password, hash) 
+  }
 
   return {
     // The reason we have a getter here is when the redis
@@ -206,7 +206,7 @@ module.exports = (function(){
       schema.uuid = sha1(redisConfig.salt, email_address)
 
       // Generate bcrypt hashed password
-      schema.password = password //getBcryptHash(password)
+      schema.password = getBcryptHash(password)
 
       // "Official" email address is schema.email_addresses[0]
       // Add it to the email addresses for the user
@@ -282,11 +282,11 @@ module.exports = (function(){
         if(err) return cb(err)
 
         // We have a match?
-        if(data === password){
-          return cb(null, true)
-        }
+        var isLegit = isPasswordLegit(password,data)
+
+        console.log( isLegit ? "Password is legit" : "Password is not legit")
         
-        else return cb(null, false)
+        return cb(null, isLegit )
 
       }) // end hget
       
