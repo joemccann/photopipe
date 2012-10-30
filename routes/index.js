@@ -97,6 +97,8 @@ Actual Routes...
 
 exports.index = function(req, res){
   
+  if(req.session.username && req.session.email_address) return res.redirect('/'+req.session.username)
+  
   if(req.query.error){
     return res.render('error', {
       type: req.query.type
@@ -105,7 +107,7 @@ exports.index = function(req, res){
   
   return res.render('home')
 
-  res.render('index')
+  // res.render('index')
 }
 
 /*
@@ -138,6 +140,7 @@ exports.wtf = function(req, res, next){
  * POST inbound photo url.
 
   -- API Interface --
+  
   Post body can/should contain:
 
   photoUrl (required)     An URL to an image
@@ -381,6 +384,18 @@ exports.account_login = function(req,res){
 }
 
 /*
+ * GET account logout route.
+ */
+ 
+exports.account_logout = function(req,res){
+
+  req.session = null
+
+  res.redirect('/')
+
+}
+
+/*
  * GET create username
  */
 
@@ -516,12 +531,12 @@ exports.account_forgot_find = function(req,res,next){
 
 
 /*
- * GET forgot account page
+ * GET user dashboard page
  */
 
 exports.user_dashboard = function(req,res,next){
   
-  // CHECK IF WE ARE LOGGED IN, IF NOT, LOGIN PAGE.
+  // CHECK IF WE ARE LOGGED IN, IF NOT, GO TO LOGIN PAGE.
   if( !(req.session.username && req.session.email_address ) ){
     return res.redirect('/')
   }

@@ -46,7 +46,8 @@
     "dropbox": ">=0.3.3",
     "oauth": "0.9.7",
     "bcrypt": ">=0.7.2",
-    "validator": ">=0.2.8"
+    "validator": ">=0.2.8",
+    "nodemailer": ">=0.3.14"
   },
   "bundleDependencies": [
     "redis"

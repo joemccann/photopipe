@@ -75,6 +75,8 @@ app.get('/account/login', routes.index)
 
 app.post('/account/login', routes.account_login)
 
+app.get('/account/logout', routes.account_logout)
+
 app.get('/account/username', routes.account_username)
 
 app.post('/account/username', routes.account_username_post)

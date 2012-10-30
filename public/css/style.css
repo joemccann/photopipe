@@ -432,7 +432,9 @@ h1 > a:visited {
 .inline-block {
   display: inline-block;
 }
-.cool {
+.cool,
+a.cool,
+a:visited.cool {
   color: #00bfff;
 }
 .bold {
@@ -784,6 +786,24 @@ label {
 }
 body.not-implemented #copy p {
   font-size: 2.2em;
+}
+nav {
+  overflow: auto;
+  padding: 2%;
+}
+nav h1 {
+  text-align: left;
+  width: 79%;
+  display: inline-block;
+}
+.nav-primary {
+  display: inline-block;
+}
+.dashboard {
+  background: transparent url("/img/bg-noise-150x150.png") repeat scroll top left;
+}
+#main {
+  margin-top: 0;
 }
 /* @import 'login-form'  */
 .left-search-form {

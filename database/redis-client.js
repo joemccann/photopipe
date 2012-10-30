@@ -110,6 +110,15 @@ module.exports = (function(){
   function sha1 (key, body) {
     return crypto.createHmac('sha1', key).update(body).digest('base64')
   }
+
+  function getBcryptHash(password){
+    var salt = bcrypt.genSaltSync(10)
+    return bcrypt.hashSync(password, salt)
+  }
+  
+  function isPasswordLegit(password, hash){
+    return bcrypt.compareSync(password, hash) 
+  }
   
   function _userSetAddHandler(e,d){
     if(e){
@@ -120,13 +129,10 @@ module.exports = (function(){
     console.log("User set add data response with no error: %s", d)  
   }
   
-  function getBcryptHash(password){
-    var salt = bcrypt.genSaltSync(10)
-    return bcrypt.hashSync(password, salt)
-  }
-  
-  function isPasswordLegit(password, hash){
-    return bcrypt.compareSync(password, hash) 
+  // We need a utility method to handle various redis errors
+  function _handleRedisError(e, req, res, cb){
+    console.error(e)
+    // TODO: Emit some generic redis error event
   }
 
   return {
@@ -162,7 +168,7 @@ module.exports = (function(){
     // setname is the name of the set (string)
     printSetMembers: function(setname, cb){
       client.smembers(setname, function(e,d){
-        if(e) return console.error(e)
+        if(e) return _handleRedisError(e)
         console.log("\nPrinting set members for set %s", setname)
         console.dir(d)
         cb && cb(e,d)
@@ -273,6 +279,7 @@ module.exports = (function(){
       var uuid = sha1(redisConfig.salt, email_address)
       
       client.hget(hashPrefix+":"+uuid, 'username', function(err,hash_username){
+        
         if(err) return console.error(err)
         
         return cb(null,hash_username)
