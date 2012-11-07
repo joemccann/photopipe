@@ -44,10 +44,6 @@ app.configure(function(){
   app.locals.description = "PhotoPipe is a free service so you can download Instagram Photos, download Facebook galleries, Post to photos to Twitter and More!"
   app.locals.node_version = process.version
   
-  // For the user databases, if you don't want redis, remove this line
-  // and swap out for whatever you want
-  db_client = require( path.resolve(__dirname, "./database/redis-client.js") )
-  
 })
 
 app.configure('development', function(){
@@ -89,6 +85,8 @@ app.get('/account/reset_password', routes.account_reset_password)
 app.post('/account/reset_password', routes.account_reset_password_post)
 
 app.get('/account/reset_password_email_sent', routes.account_reset_password_email_sent)
+
+app.get('/account/temp', routes.account_temp)
 
 
 /************************** Dropbox Support **************************/

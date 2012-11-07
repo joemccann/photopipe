@@ -12,7 +12,7 @@ var path = require('path')
 
 /****************************************************************
 
-Account Management Module
+Photopipe Account Management Module
 
 ****************************************************************/
 var Account = (function(){
@@ -72,6 +72,12 @@ var Account = (function(){
 
       email_client.sendResetPasswordEmail(null,email_address,"Reset your PhotoPipe Password",textForEmail,htmlForEmail,cb)      
 
+    },
+    addHashToEmail: function(email_address, unique, cb){
+      db_client.addHashToEmail(email_address,unique, cb)      
+    },
+    fetchEmailFromUniqueHash: function(unique,cb){
+      db_client.fetchEmailFromUniqueHash(unique,cb)
     },
     doesAccountExist: function(setname, email_address, cb){
       db_client.doesAccountExist(setname, email_address, cb)
@@ -541,7 +547,6 @@ exports.account_forgot = function(req,res,next){
  
 exports.account_forgot_post = function(req,res,next){
   
-  // TODO: CHECK TO SEE IF THE USERNAME EXISTS
   var email_address = req.body['forgot_email_address']
 
   console.log(email_address + " is the forgot password email_address")
@@ -573,12 +578,14 @@ exports.account_forgot_post = function(req,res,next){
       // First, wipe the old password from the account.
       return Account.wipeUserAccountPassword(email_address, function(err,data){
         
-        console.log('Returning from Account.wipeUserAccountPassword ')
-        console.dir(data)
-        
         if(err){
           console.error("Error: " + err)
-          return res.render('account_forgot', {hasErrors: true, error_message: "Ruh roh. Please try again.", account_email_address: email_address })
+          return res.render('account_forgot', 
+            {
+              hasErrors: true
+              , error_message: "Ruh roh. Please try again."
+              , account_email_address: email_address 
+            })
         }
         
         if(data === 'OK'){
@@ -596,6 +603,19 @@ exports.account_forgot_post = function(req,res,next){
               )
               ; // just for style
             }
+            
+            // Associate the hash with an email address.  We will look this up when the user
+            // clicks the link in the email
+            Account.addHashToEmail(email_address, unique_url, function(err,data){
+            
+              if(err){
+                return console.error(err)
+              }
+              else {
+                console.log("Data from adding to identity: "+data)
+                console.log("unique url, "+unique_url+", was added to email " + email_address)
+              }
+            }) // end addUrlToIdentity
 
             // Finally send email with new password to the account. 
             Account.sendResetPasswordEmail(email_address, unique_url, function(err,data){
@@ -605,6 +625,7 @@ exports.account_forgot_post = function(req,res,next){
                 return res.send(data).status(403)
               }
               
+              // TODO: SHOW VIEW OF 'CHECK YOUR EMAIL'
               res.send(data)
               
             }) // end sendResetPasswordEmail
@@ -617,29 +638,13 @@ exports.account_forgot_post = function(req,res,next){
       
     }
     
-  // res.render('not-implemented')
-  
-  })
+  }) // end doesAccountExist()
   
 }
 
 
 /*
- * GET email sent page (generic)
- */
-
-exports.account_reset_password = function(req,res,next){
-  
-  var config = {
-    hasErrors: false
-  }
-  
-  // res.render('account_forgot', config)
-  
-}
-
-/*
- * GET reset password page
+ * GET reset password email sent page
  */
 
 exports.account_reset_password_email_sent = function(req,res,next){
@@ -654,16 +659,27 @@ exports.account_reset_password_email_sent = function(req,res,next){
 }
 
 /*
- * POST reset password page
+ * GET account reset page
  */
 
-exports.account_reset_password_post = function(req,res,next){
+exports.account_reset_password = function(req,res,next){
   
   var config = {
     hasErrors: false
   }
   
-  res.render('account_forgot', config)
+  res.render('account_reset_password', config)
+  
+}
+
+
+/*
+ * POST reset password page
+ */
+
+exports.account_reset_password_post = function(req,res,next){
+  
+  res.redirect('/not-implemented')
   
 }
 
@@ -689,6 +705,28 @@ exports.user_dashboard = function(req,res,next){
   
 }
 
+exports.account_temp = function(req,res,next){
+  
+  var unique = req.query.unique
+  
+  // Take the unique and lookup the email address, then 
+  // redirect to page where user can change password
+  Account.fetchEmailFromUniqueHash(unique, function(err,email_address){
+
+    if(err){
+     console.error(err)
+     return Account.renderErrorView(req,res,"We were unable to lookup your account. Please try again.", "account_forgot") 
+    }
+    else{
+      // data should be the email address
+      // Now, render the view with the email address as 
+      // hidden input and let the user change their password
+      return res.send(email_address)
+    }
+    
+  }) // fetchEmailFromUniqueHash
+  
+}
 
 /*
  * GET not implemented page.

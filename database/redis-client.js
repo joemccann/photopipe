@@ -364,7 +364,26 @@ module.exports = (function(){
       return "/account/temp?unique=" + _generateRandomId()
       
     },
-    
+    addHashToEmail: function(email_address, unique, cb){
+      // Strip the hash off the end
+      var hash = unique.split('=')[1]
+      // console.log(hash + " is the hash from the qs")
+      client.set(hash,email_address,function(err,data){
+        cb && cb(err,data)
+      })
+    },
+    fetchEmailFromUniqueHash: function(unique, cb){
+      client.get(unique, function(err,data){
+        if(err) {
+          console.error(err)
+          return err
+        }
+        else{
+          if(!data) return cb(new Error('Email adddress not found for hash '+unique))
+          else return cb(null,data) // data should be an email address
+        }
+      }) // end get()
+    },
     // Callback after setting user to the set of users
     userSetAddHandler: _userSetAddHandler,
     // Callback afters setting user's hash of key/values in Redis
