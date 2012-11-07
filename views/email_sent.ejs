@@ -7,33 +7,16 @@
     <section id="login">
     
       <header>
-        <h1>Forgot your Password?</h1>
-        <p class="login-copy">Please enter your email <br>address and we'll have a look.</p>
+        <h1><%- email_sent_header %></h1>
+        <p class="login-copy"><%- email_sent_copy %></p>
       </header>
-      
-      <% if(hasErrors){ %>
-        <p class="error-heading">Error!</p>
-        <p class="error-copy"><%- error_message %></p>
-      <% }%>
-    
-      <form action="/account/forgot" enctype="application/x-www-form-urlencoded" method="post">
-        <fieldset>
-          <label for='forgot_email_address'>Email Address</label>
-          <input type='email' class="login-form" name='forgot_email_address' id="forgot_email_address">
-          <input class="button pipe" type='submit' value='Find It!'>
-        </fieldset>
-        
-      </form>
     
       <%- include debug %>
       
     </section>
     
   </div> <!-- end #main -->
-  
-  <iframe src="" id="downloader" class="none"></iframe>
-  
-	<div id="overlay"></div>
+
   
   <%- include scripts %>
 </body>

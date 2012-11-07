@@ -2,8 +2,8 @@ var path = require('path')
   , request = require('request')
   , fs = require('fs')
   , qs = require('querystring')
-  , validator = require( path.resolve(__dirname, '..', 'utils/validation.js') ) 
   , db_client = require( path.resolve(__dirname, '..', 'database/redis-client.js') )
+  , email_client = require( path.resolve(__dirname, '..', 'utils/email.js') ).Email
   , redis = require('redis')
   , _ = require('lodash')
   , Validator = require('validator').Validator
@@ -38,7 +38,7 @@ var Account = (function(){
   
   return{
     reservedUsernames: /wtf|account|smoke|not-implemented|dropbox|twitter|instagram|facebook|evernote|500px|flickr|bazaarvoice|box|google-drive/i,
-    renderLoginError: function(req,res, message, view, extras){
+    renderErrorView: function(req,res, message, view, extras){
 
       // Our view may require view specific variables so we merge them here.
       var config = _.merge(extras || {}, {hasErrors: true, error_message: message})
@@ -57,6 +57,21 @@ var Account = (function(){
     },
     verifyPassword: function(email_address, password, cb){
       db_client.verifyPassword(email_address,password, 'user', cb)
+    },
+    wipeUserAccountPassword: function(email_address, cb){
+      db_client.wipeUserAccountPassword(email_address, 'user', cb)
+    },
+    createTemporaryUrl: function(email_address,cb){
+      db_client.createTemporaryUrl(email_address,cb)      
+    },
+    sendResetPasswordEmail: function(email_address, unique_url, cb){
+      // "fromSender, toRecipient, subject, emailText, emailHtml, cb"
+      var resetUrl = 'http://photopi.pe'+unique_url
+        , textForEmail = 'Go here:  '+resetUrl
+        , htmlForEmail = '<p>Click the link: <a href="'+resetUrl+'">'+resetUrl+'</a></p>'
+
+      email_client.sendResetPasswordEmail(null,email_address,"Reset your PhotoPipe Password",textForEmail,htmlForEmail,cb)      
+
     },
     doesAccountExist: function(setname, email_address, cb){
       db_client.doesAccountExist(setname, email_address, cb)
@@ -353,7 +368,7 @@ exports.account_login = function(req,res){
         
         if( !isMatch ) {
           console.log('Password auth was not successful.')
-          return Account.renderLoginError( req,res, "That password is invalid.", "home")
+          return Account.renderErrorView( req,res, "That password is invalid.", "home")
         }
 
         // Otherwise, all is fine and we are logged in so send them to the dashboard.
@@ -445,14 +460,14 @@ exports.account_username_post = function(req,res,next){
     // If it is 1 then we have it in the set, meaning, it is already claimed
     if(data === 1){
       
-      return Account.renderLoginError(
+      return Account.renderErrorView(
           req,
           res, 
           "That username is already taken.", "account_username", 
           {
             account_email_address: email_address
           }
-        ) // end renderLoginError()
+        ) // end renderErrorView()
       
     }
 
@@ -463,7 +478,7 @@ exports.account_username_post = function(req,res,next){
         // Now, send them to the page to pick their username
         if(err) return console.error(err)
 
-        if(data === 0) return Account.renderLoginError(
+        if(data === 0) return Account.renderErrorView(
             req,
             res, 
             "You already have a username.", 
@@ -471,14 +486,15 @@ exports.account_username_post = function(req,res,next){
             {
               account_email_address: email_address
             }
-          ) // end renderLoginError
+          ) // end renderErrorView
 
         // When data returns 0, it means the username already exists in Redis
+        // TODO: KEEP THIS ABSTRACT...DON'T ACCESS 'db_client' directly. ABSTRACTION!!!
         db_client.getClient().sismember(username, function(e,d){
 
           if(err) return console.error(err)
 
-          if(data === 0) return Account.renderLoginError(
+          if(data === 0) return Account.renderErrorView(
               req,
               res, 
               "That username is taken.", 
@@ -486,7 +502,7 @@ exports.account_username_post = function(req,res,next){
               {
                 account_email_address: email_address
               }
-            ) // end renderLoginError
+            ) // end renderErrorView
 
           console.log('Good username!')
 
@@ -523,9 +539,131 @@ exports.account_forgot = function(req,res,next){
  * POST forgot account page
  */
  
-exports.account_forgot_find = function(req,res,next){
+exports.account_forgot_post = function(req,res,next){
   
-  res.render('not-implemented')
+  // TODO: CHECK TO SEE IF THE USERNAME EXISTS
+  var email_address = req.body['forgot_email_address']
+
+  console.log(email_address + " is the forgot password email_address")
+
+  // VALIDATE EMAIL ADDRESS
+  validator.check(email_address, "That's not a valid email address.").isEmail()
+  
+  if( validator.getErrors().length ){
+    // Right now we just grab the first one because we're lazy
+    console.error("Error: " + validator.getErrors()[0])
+    return res.render('account_forgot', {hasErrors: true, error_message: validator.getErrors()[0], account_email_address: email_address })
+  }
+
+  // Check if the account already exists, meaning, they are logging in
+  Account.doesAccountExist('emails', email_address, function(err,data){
+    if(err) return console.error(err)
+
+    console.log('Does account exist? ' + (data === 0 ? 'no' : 'yes') )
+
+    // If it is 1 then we have it in the set, meaning, it is already created
+    if(data === 0){
+      console.log('Email address: ' + email_address + ' was not found. Can\'t reset password.')
+      return Account.renderErrorView( req,res, "That email address doesn't match any account.", "account_forgot")
+    }
+    
+    // If it is 1 then we have it in the set, meaning, it exists
+    if(data === 1){
+      console.log("Beginning to wipe old password...")
+      // First, wipe the old password from the account.
+      return Account.wipeUserAccountPassword(email_address, function(err,data){
+        
+        console.log('Returning from Account.wipeUserAccountPassword ')
+        console.dir(data)
+        
+        if(err){
+          console.error("Error: " + err)
+          return res.render('account_forgot', {hasErrors: true, error_message: "Ruh roh. Please try again.", account_email_address: email_address })
+        }
+        
+        if(data === 'OK'){
+          // Next create a temp url for the account.
+          Account.createTemporaryUrl(email_address, function(err,email_address,unique_url){
+
+            if(err){
+              console.error("Error: " + err)
+              return res.render('account_forgot',
+                {
+                  hasErrors: true
+                , error_message: "Ruh roh. Please try again." 
+                , account_email_address: email_address 
+                }
+              )
+              ; // just for style
+            }
+
+            // Finally send email with new password to the account. 
+            Account.sendResetPasswordEmail(email_address, unique_url, function(err,data){
+            
+              if(err){
+                console.error(err)
+                return res.send(data).status(403)
+              }
+              
+              res.send(data)
+              
+            }) // end sendResetPasswordEmail
+
+          }) // end createTempUrl
+
+        } // end if data === 'OK'
+
+      }) // end wipeUserAccountPassword
+      
+    }
+    
+  // res.render('not-implemented')
+  
+  })
+  
+}
+
+
+/*
+ * GET email sent page (generic)
+ */
+
+exports.account_reset_password = function(req,res,next){
+  
+  var config = {
+    hasErrors: false
+  }
+  
+  // res.render('account_forgot', config)
+  
+}
+
+/*
+ * GET reset password page
+ */
+
+exports.account_reset_password_email_sent = function(req,res,next){
+  
+  var config = {
+    email_sent_header: "Check Your Email!",
+    email_sent_copy: "We just sent you instructions to your email address on file. Head there now!"
+  }
+  
+  res.render('email_sent', config)
+  
+}
+
+/*
+ * POST reset password page
+ */
+
+exports.account_reset_password_post = function(req,res,next){
+  
+  var config = {
+    hasErrors: false
+  }
+  
+  res.render('account_forgot', config)
   
 }
 

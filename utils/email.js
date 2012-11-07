@@ -1,4 +1,4 @@
-var nodemailer = require("nodemailer")
+var nodemailer = require('nodemailer')
   , fs = require('fs')
   , path = require('path')
 
@@ -8,8 +8,8 @@ exports.Email = (function(){
     , smtpTransport
 
   // Load up the config file from an optional path or hardcoded fallback.
-  function _loadConfig(path){
-    email_config = JSON.parse( path || (fs.readFileSync( path.resolve(__dirname, 'email-config.json'), 'utf-8' ) ) )
+  function _loadConfig(filepath){
+    email_config = JSON.parse( filepath || (fs.readFileSync( path.resolve(__dirname, 'email-config.json'), 'utf-8' ) ) )
   }
   
   // Create the SMTP transport for later use
@@ -22,6 +22,8 @@ exports.Email = (function(){
             pass: email_config.password
         }
     })
+    
+    console.log('SMTP transport created...')
     
   }
   
@@ -37,15 +39,14 @@ exports.Email = (function(){
 
   return {
     loadConfig: _loadConfig,
-    sendForgotPasswordEmail: function(fromSender, toRecipient, subject, emailText, emailHtml, cb){
+    sendResetPasswordEmail: function(fromSender, toRecipient, subject, emailText, emailHtml, cb){
       
-      var fromAddress = fromSender "Photopipe Support <no-reply@photopi.pe>"
+      var fromAddress = fromSender || "Photopipe Support <no-reply@photopi.pe>"
         , toAddress = toRecipient || "joseph.isaac@gmail.com" // TODO: CHANGE THIS TO TEST@PHOTOPI.PE
         , subject = subject || "Reset Your Photopipe Password"
         , text = emailText || "You need to reset your password, yo!" 
         , html = emailHtml || "<b>You need to reset your password, yo!</b>" 
         
-      // setup e-mail data with unicode symbols
       var mailOptions = {
           from: fromAddress, 
           to: toAddress, 
@@ -53,6 +54,9 @@ exports.Email = (function(){
           text: text, 
           html: html 
       }
+      
+      console.log("Mail options:")
+      console.dir(mailOptions)
       
       // send mail with defined transport object
       smtpTransport.sendMail(mailOptions, function(error, response){

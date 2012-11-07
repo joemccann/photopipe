@@ -47,7 +47,6 @@ app.configure(function(){
   // For the user databases, if you don't want redis, remove this line
   // and swap out for whatever you want
   db_client = require( path.resolve(__dirname, "./database/redis-client.js") )
-
   
 })
 
@@ -59,14 +58,12 @@ app.configure('development', function(){
 /************************** PhotoPipe Main **************************/
 
 
-/* GET routes */
 app.get('/', routes.index)
 
 app.get('/wtf', routes.wtf)
 
 app.get('/not-implemented', routes['not-implemented'])
 
-/* POST routes */
 app.post('/smoke', routes.smoke)
 
 app.get('/download/file', routes.download_file)
@@ -85,7 +82,13 @@ app.post('/account/error', routes.account_error)
 
 app.get('/account/forgot', routes.account_forgot)
 
-app.post('/account/forgot', routes.account_forgot_find)
+app.post('/account/forgot', routes.account_forgot_post)
+
+app.get('/account/reset_password', routes.account_reset_password)
+
+app.post('/account/reset_password', routes.account_reset_password_post)
+
+app.get('/account/reset_password_email_sent', routes.account_reset_password_email_sent)
 
 
 /************************** Dropbox Support **************************/

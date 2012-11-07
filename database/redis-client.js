@@ -120,6 +120,10 @@ module.exports = (function(){
     return bcrypt.compareSync(password, hash) 
   }
   
+  function _generateRandomId(){
+    return Math.random().toString(36).slice(2)
+  }
+  
   function _userSetAddHandler(e,d){
     if(e){
       console.log("User set add data response: %s", d)
@@ -325,6 +329,42 @@ module.exports = (function(){
       
 
     },
+    wipeUserAccountPassword: function(email_address, hashPrefix, cb){
+      
+      // First, fetch the account
+      var uuid = sha1(redisConfig.salt, email_address)
+      
+      client.hgetall(hashPrefix + ":" + uuid, function(e,data){
+        
+        if(e) return cb(e,null)
+
+        // Reset the password
+        data.password = ''
+        
+        // Now stash it
+        client.hmset(hashPrefix +":"+uuid, data, function(e,data){
+
+          if(e) return cb(e)
+          
+          else cb(null,data)
+
+        }) // end hmset
+        
+      }) // end hgetall()
+            
+    },
+    createTemporaryUrl: function(email_address, cb){
+      
+      // If there is a callback, then pass the url as the last arg
+      if(cb){
+        return cb(null,email_address,"/account/temp?unique=" + _generateRandomId())
+      }
+
+      // Otherwise, just send me the string...
+      return "/account/temp?unique=" + _generateRandomId()
+      
+    },
+    
     // Callback after setting user to the set of users
     userSetAddHandler: _userSetAddHandler,
     // Callback afters setting user's hash of key/values in Redis
