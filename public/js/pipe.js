@@ -714,6 +714,7 @@ $(function(){
     ajaxSetup()
     
     if(!Photopipe.hasLocalStorage) alert('Sorry, but you need a new browser to use Photopipe.')
+    if(!Photopipe.hasTouchEvents) $('html').addClass('no-touch') 
     
   })()
 
@@ -1455,6 +1456,10 @@ $(function(){
     var storage
     try{ if(localStorage.getItem) {storage = localStorage} }catch(e){}
     window.Photopipe.hasLocalStorage = storage                                
+    
+    // Check for touch events (note: this is not exhaustive)
+    if(('ontouchstart' in window) || window.DocumentTouch && document instanceof DocumentTouch) 
+      window.Photopipe.hasTouchEvents = true
     
   } // end feature detector
 

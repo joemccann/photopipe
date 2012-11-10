@@ -2,150 +2,21 @@
 <html>
 <%- include head %>
 <body data-twitter-auth="<%= isTwitterAuth %>" data-facebook-auth="<%= isFacebookAuth %>" data-instagram-auth="<%= isInstagramAuth %>" data-dropbox-auth="<%= isDropboxAuth %>" class="dashboard">
-  <div id="main">
-    
+
     <%- include nav %>
     
-    <!-- Step 1: Pick a photo source. -->
+    <section class="main" id="dashboard">
     
-    <%- include sources %>
+      <section class="notification">
+        <p>Hey there <%- username %>!</p>
+      </section>
     
-    <!-- Step 2: Pick a photo or gallery (in facebook case). -->
-    
-    <section id="step-two">
-
-      <!-- Pick a photo from Twitter -->
-      <section class="gallery" id="photo-picker-twitter">
-        <p class="steps">Step 2</p>
-        <p class="steps-copy">Select the photo you want to pipe:</p>
-        
-				<div class="one-up-wrapper" id="one-up-twitter-wrapper">
-
-	        <div id="one-up-twitter" class="one-up">
-	          <span class="close-one-up" data-icon="&#x2297;"></span>
-
-	          <div class="use-photo-container">
-	            <a class="button save use-photo" id="twitter-use-photo">This One!</a>
-	          </div>
-
-	        </div>
-
-				</div> <!-- one-up-twitter-wrapper -->
-
-        <div class="load-more">
-          <a class="button add" id="twitter-load-more">LOAD MORE PHOTOS</a>
-        </div>
-        
-      </section>
-
-      <!-- Pick a gallery from Twitter -->
-      <section class="gallery" id="gallery-picker-facebook">
-        <!-- We have to select from a gallery first -->
-        <p class="steps">Step 2</p>
-        <p class="steps-copy">Select the photo gallery:</p>
-        
-        <div id="facebook-gallery" class="none">
-        </div>
-        
-      </section>
-      
-      <!-- "Pick" (paste) a photo from an URL -->
-      <section class="gallery" id="photo-picker-url">
-        
-        <p class="steps">Step 2</p>
-        <p class="steps-copy">Type or paste in your photo's URL:</p>
-        
-        <fieldset>
-          <label for='photoFromUrl'>The Photo's URL</label>
-          <input type='text' class="big-text-field" name='photoFromUrl' id="photoFromUrl" value='' placeholder="http://photopi.pe/pipe.jpg">
-          <input class="button save use-photo" type='submit' id="url-use-photo" value='Ok!'>
-        </fieldset>
-
-      </section>
-
-
     </section>
     
-    <!-- Step 3 Pick a destination or a photo (in fb case) -->
-    
-    <section id="step-three">
-      
-      <!-- Pick a photo from Facebook -->
-      <div id="photo-picker-facebook" class="gallery">
-        
-        <p class="steps">Step 3</p>
-        <p class="steps-copy">Select the photo you want to pipe:</p>
-        
-				<div class="one-up-wrapper" id="one-up-facebook-wrapper">
-
-	        <div id="one-up-facebook" class="one-up">
-          
-	          <span class="close-one-up" data-icon="&#x2297;"></span>
-
-	          <div class="use-photo-container">
-	            <a class="button save use-photo" id="facebook-use-photo">This One!</a>
-	          </div>
-
-	        </div>
-
-				</div> <!-- end #one-up-facebook-wrapper -->
-
-        <div class="load-more">
-          <a class="button add" data-pagination="" id="facebook-load-more" href="/facebook/get_next_page_user_photos">LOAD MORE PHOTOS</a>
-        </div>
-
-      </div> <!-- end  #photo-picker-facebook -->
-      
-      <div id="step-three-destination-wrapper" class="none">
-      
-        <p class="steps">Step 3</p>
-        <p class="steps-copy">Select your photo destination:</p>
-        <%- include destinations %>
-        <%- include form %>
-      
-      </div> <!-- #destination-wrapper -->
-        
-    </section>
-
-    <!-- Step 4 Pick a destination (in fb case) -->
-    
-    <section id="step-four">
-      
-      <div id="step-four-destination-wrapper">
-      
-        <p class="steps">Step 4</p>
-        <p class="steps-copy">Select your photo destination:</p>
-        
-        <%- include destinations %>
-        <%- include form %>
-      
-      </div> <!-- #destination-wrapper -->
-        
-    </section>
-    
-    <%- include debug %>
-    
-  </div> <!-- end #main -->
-  
-  <iframe src="" id="downloader" class="none"></iframe>
+    <!-- <%- include debug %> -->
   
   <div id="overlay"></div>
   
   <%- include scripts %>
 </body>
-<!--
-
-  Oh hi, there.  You're viewing source so you're probably somewhat
-  nerdy, geeky or you got here by accident.
-
-  Nonetheless, did you know that PhotoPipe is 100% open source?
-  Fuck yeah, it is.
-
-  Go here:  http://github.com/joemccann/photopipe
-
-  Don't see a service (like Flickr, 500px, etc.) on here?  Create
-  a plugin and contribute.  If it's cool and it works, I'll merge
-  it in and host it here!	
-
--->
 </html>

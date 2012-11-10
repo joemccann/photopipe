@@ -1,0 +1,278 @@
+body
+  font 100% 'Aldrich', Helvetica, Arial, sans-serif
+  background transparent url('/img/bg-noise-150x150.png') repeat scroll top left
+  color textColor
+
+section
+  margin 2.75% auto
+  
+label
+  display block
+  padding 2% 0 0
+  font-size 2em
+
+input:focus
+  outline 2px solid lighten(contrastColor,20)
+
+/*header
+  margin 2% auto
+  */  
+input[type='url']
+  display block
+  width 94%
+  padding 1.75%
+  margin-bottom 2%
+  
+fieldset
+  background rgba(0,0,0,0.05)
+  padding 3% 5%
+  border none
+  /*  border 2px dotted mainColor */
+  
+
+nav
+  text-align left
+
+h1
+  font-size 2.4em
+  line-height 1
+  display inline-block
+  margin 0
+
+hr
+  clear both
+
+p 
+  font-size 2.8em
+  line-height 1
+  margin 0
+  padding 0
+
+ul
+  margin 0
+  padding 0
+
+li
+  list-style-type none
+
+img
+  max-width 100%
+
+nav > a
+  float right
+  margin-top: 1.75%
+
+a
+  text-decoration none
+  color contrastColor
+  
+a:visited
+  color mainColor
+
+h1 > a, h1 > a:visited
+  color textColor
+
+#main
+  width 98%
+  max-width 920px
+  margin 1% auto 0
+  text-align center
+
+#overlay
+  background-color rgb(0,0,0)
+  opacity 0.5
+  position absolute
+  top 0
+  left 0
+  width 100%
+  height 100%
+  display none
+  z-index 0
+
+#spin
+  display block
+
+.steps
+  font-size 6em
+  margin 6% 0 3%
+
+.steps-copy
+  font-size 2.4em
+  margin-bottom 3%
+
+.permissions-copy
+  font-size 1.2em
+  margin 4% auto 0
+  max-width 20em
+
+.inline
+  display inline
+
+.inline-block
+  display inline-block
+
+.cool, a.cool, a:visited.cool
+  color mainColor
+
+.bold
+  font-weight bold
+
+.hit-target
+  padding 0
+
+.hide
+  display none
+
+.dotted
+  border-bottom 1px dotted mainColor
+
+.gallery
+  position relative
+
+.disabled
+  normOpacity(33)
+
+.announcement
+  background #F8F8FF
+  padding 4%
+  border 1px solid contrastColor
+  margin 0 auto
+  width 75%
+
+.spin-container
+  position relative
+  left 48%
+  margin 8% auto
+
+.gallery > img,
+.one-up-wrapper > img
+.gallery-wrapper
+  border 3px solid #CCC
+  borderRadius(4px)
+  background rgba(0, 0, 0, 0.1)
+  padding 2%
+  margin 2%
+  cursor pointer
+  
+.gallery > img
+  max-width 130px
+
+.gallery-wrapper
+  max-width 130px
+  text-align center
+
+.fb-gallery-label
+  display block
+
+#photo-to-pipe
+  margin 3% 0
+  display inline
+  width auto
+
+#photo-to-pipe li
+  margin 1% 1.4%
+  display inline-block
+  padding 0
+
+#photo-to-pipe li a
+  margin 0
+  padding 0
+  borderRadius(10px)
+
+.none
+#step-two, 
+#step-three, 
+#step-four,
+#photo-picker-twitter,
+#photo-picker-facebook,
+#photo-picker-url,
+#gallery-picker-facebook
+  display none
+
+/* #photo-picker-instagram,   */
+  
+.one-up-wrapper
+  position absolute
+  width 100%
+  top 0
+  
+.one-up
+  display none
+  padding 3%
+  borderRadius(4px)
+  background #ccc
+  z-index 2
+  max-width 630px
+  margin 0 auto
+  position relative
+  
+#one-up-relative
+  position relative
+
+#one-up-controls-wrapper
+  position absolute
+  bottom 0
+  height 36px
+  width 100%
+
+#one-up-controls-cancel, 
+#one-up-controls-use
+  display inline
+  width 50%
+  float left
+  height 30px
+  background #cecece
+  font-family Helvetica
+
+#demoCurlSection > pre
+  background rgba(0,0,0,0.05)
+  border 2px dotted mainColor
+  padding 3% 5%
+
+.close-one-up
+  color #E71E03
+  position absolute
+  top -1.9%
+  right -1.9%  
+  display none
+  z-index 5
+  font-size 3em
+  cursor pointer
+
+.use-photo-container
+  margin 2% auto 0
+  text-align center
+
+.oauth-page
+  margin-top 3%
+
+.photoPipeForm
+  margin 6% auto
+  display none
+
+
+.error_redirect
+  margin-top 6%
+
+.big-text-field
+  padding 3%
+  font-size 2.4em
+  line-height 2.4
+  width 90%
+
+#wtf > p
+  margin 3% auto
+  line-height 1.4
+  color lighten(textColor,20%)
+
+#wtf > .steps
+  line-height 1
+  color textColor
+
+#debug
+  display none
+
+#debug p
+  font-size 1.2em
+  line-height 2
+  color red

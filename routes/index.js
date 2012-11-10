@@ -132,7 +132,6 @@ exports.index = function(req, res){
   
   return res.render('home')
 
-  // res.render('index')
 }
 
 /*
@@ -666,20 +665,6 @@ exports.account_reset_password_email_sent = function(req,res,next){
   
 }
 
-/*
- * GET account reset page
- */
-
-exports.account_reset_password = function(req,res,next){
-  
-  var config = {
-    hasErrors: false
-  }
-  
-  res.render('account_reset_password', config)
-  
-}
-
 
 /*
  * POST reset password page
@@ -731,6 +716,9 @@ exports.account_reset_password_post = function(req,res,next){
         }
         else{
           console.log('Account password updated for '+ email_address)
+          // TODO: NOW DELETE THE KEY THAT IS THE UNIQUE HASH SO WE 
+          // CLEANUP REDIS
+          
           // now redirect home page so they login
           return res.redirect('/')
         }
@@ -744,26 +732,9 @@ exports.account_reset_password_post = function(req,res,next){
 
 
 /*
- * GET user dashboard page
+ * GET account temp page (used for resetting password)
  */
-
-exports.user_dashboard = function(req,res,next){
-  
-  // CHECK IF WE ARE LOGGED IN, IF NOT, GO TO LOGIN PAGE.
-  if( !(req.session.username && req.session.email_address ) ){
-    return res.redirect('/')
-  }
-  
-  var config = {
-    hasErrors: false,
-    username: req.session.username,
-    email_address: req.session.email_address
-  }
-  
-  return res.render('user_dashboard', config)
-  
-}
-
+ 
 exports.account_temp = function(req,res,next){
   
   var unique = req.query.unique
@@ -810,6 +781,28 @@ exports.account_temp = function(req,res,next){
     }
     
   }) // fetchEmailFromUniqueHash
+  
+}
+
+
+/*
+ * GET user dashboard page
+ */
+
+exports.user_dashboard = function(req,res,next){
+  
+  // CHECK IF WE ARE LOGGED IN, IF NOT, GO TO LOGIN PAGE.
+  if( !(req.session.username && req.session.email_address ) ){
+    return res.redirect('/')
+  }
+  
+  var config = {
+    hasErrors: false,
+    username: req.session.username,
+    email_address: req.session.email_address
+  }
+  
+  return res.render('user_dashboard', config)
   
 }
 
