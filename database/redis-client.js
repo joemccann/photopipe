@@ -384,6 +384,28 @@ module.exports = (function(){
         }
       }) // end get()
     },
+    updatePassword: function(email_address, password, hashPrefix, cb){
+      // First, fetch the account
+      var uuid = sha1(redisConfig.salt, email_address)
+      
+      client.hgetall(hashPrefix + ":" + uuid, function(e,data){
+        
+        if(e) return cb(e,null)
+
+        // Reset the password
+        data.password = getBcryptHash(password)
+        
+        // Now stash it
+        client.hmset(hashPrefix +":"+uuid, data, function(e,data){
+
+          if(e) return cb(e)
+          
+          else cb(null,data)
+
+        }) // end hmset
+        
+      }) // end hgetall()
+    },
     // Callback after setting user to the set of users
     userSetAddHandler: _userSetAddHandler,
     // Callback afters setting user's hash of key/values in Redis

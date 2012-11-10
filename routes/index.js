@@ -79,6 +79,10 @@ var Account = (function(){
     fetchEmailFromUniqueHash: function(unique,cb){
       db_client.fetchEmailFromUniqueHash(unique,cb)
     },
+    updatePassword: function(email_address, password, cb){
+      // pass the hashprefix, 'user'
+      db_client.updatePassword(email_address, password, 'user', cb)
+    },
     doesAccountExist: function(setname, email_address, cb){
       db_client.doesAccountExist(setname, email_address, cb)
     },
@@ -625,9 +629,13 @@ exports.account_forgot_post = function(req,res,next){
                 return res.send(data).status(403)
               }
               
-              // TODO: SHOW VIEW OF 'CHECK YOUR EMAIL'
-              res.send(data)
-              
+              var config = {
+                email_sent_header: "Check Your Email!",
+                email_sent_copy: "We just sent you instructions to your email address on file. Head there now!"
+              }
+
+              return res.render('email_sent', config)
+                            
             }) // end sendResetPasswordEmail
 
           }) // end createTempUrl
@@ -679,7 +687,58 @@ exports.account_reset_password = function(req,res,next){
 
 exports.account_reset_password_post = function(req,res,next){
   
-  res.redirect('/not-implemented')
+  var email_address = req.body['reset_email_address']
+    , password = req.body['reset_password']
+
+  console.log(email_address + " is the forgot password email_address")
+
+  // VALIDATE EMAIL ADDRESS
+  validator.check(email_address, "That's not a valid email address.").isEmail()
+  // VALIDATE PASSWORD
+  validator.check(password, "Your password must be at least 8 characters long.").notEmpty().len(8,128)
+  
+  if( validator.getErrors().length ){
+    // Right now we just grab the first one because we're lazy
+    console.error("Error: " + validator.getErrors()[0])
+    var unique = req.session.unique
+    return res.redirect('/account/temp?unique='+unique+'&error_type=invalid_password')
+    
+  }
+
+  // Check if the account already exists, meaning, they are logging in
+  Account.doesAccountExist('emails', email_address, function(err,data){ 
+    if(err) return console.error(err)
+
+    console.log('Does account exist? ' + (data === 0 ? 'no' : 'yes') )
+
+    // If it is 1 then we have it in the set, meaning, it exists.
+    if(data === 0){
+      console.log('Email address: ' + email_address + ' was not found. Can\'t update password.')
+      return Account.renderErrorView( req,res, "That email address doesn't match any account.", "account_forgot")
+    }
+    
+    // If it is 1 then we have it in the set, meaning, it exists
+    if(data === 1){
+      
+      console.log("Beginning to update with new password...")
+      
+      Account.updatePassword(email_address, password, function(err,data){
+        
+        if(err){
+          console.error(err)
+          var unique = req.session.unique
+          return res.redirect('/account/temp?unique='+unique+'&error_type=no_email')
+        }
+        else{
+          console.log('Account password updated for '+ email_address)
+          // now redirect home page so they login
+          return res.redirect('/')
+        }
+        
+      }) // end updatePassword()
+    }
+    
+  }) // end doesAccountExist()
   
 }
 
@@ -708,6 +767,26 @@ exports.user_dashboard = function(req,res,next){
 exports.account_temp = function(req,res,next){
   
   var unique = req.query.unique
+    , config = {
+      hasErrors: false
+    }
+
+  req.session.unique = unique
+  
+  // In the case there is an error from the first attempt...
+  if(req.query.error_type){
+
+    config.hasErrors = true
+    
+    if(req.query.error_type === 'no_email'){
+      config.error_message = "Sorry, but we weren't able to find your email address. Try again."
+    }
+    
+    else if(req.query.error_type === 'invalid_password'){
+      config.error_message = "Your password must be at least 8 characters long."
+    }
+    
+  }
   
   // Take the unique and lookup the email address, then 
   // redirect to page where user can change password
@@ -721,7 +800,13 @@ exports.account_temp = function(req,res,next){
       // data should be the email address
       // Now, render the view with the email address as 
       // hidden input and let the user change their password
-      return res.send(email_address)
+      config.email_address = email_address
+      
+      // So we can use it later
+      req.session.unique = unique
+
+      return res.render('account_reset_password', config)
+      
     }
     
   }) // fetchEmailFromUniqueHash

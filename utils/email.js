@@ -55,8 +55,8 @@ exports.Email = (function(){
           html: html 
       }
       
-      console.log("Mail options:")
-      console.dir(mailOptions)
+      // console.log("Mail options:")
+      // console.dir(mailOptions)
       
       // send mail with defined transport object
       smtpTransport.sendMail(mailOptions, function(error, response){
