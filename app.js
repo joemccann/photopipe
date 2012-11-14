@@ -156,7 +156,7 @@ app.get('/oauth/facebook', facebook_routes.facebook_oauth)
 
 /************************** Customer Accounts **************************/
 
-app.get('/:username', routes.user_dashboard)
+app.get('/dashboard', routes.user_dashboard)
 
 /************************** End Customer Accounts **************************/
 

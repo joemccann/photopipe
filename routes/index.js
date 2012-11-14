@@ -103,7 +103,7 @@ var Account = (function(){
         req.session.username = username
         req.session.email_address = email_address
 
-        return res.redirect('/'+username)
+        return res.redirect('/dashboard')
         
       }) // end getUsername()
       
@@ -118,39 +118,6 @@ var Account = (function(){
 Actual Routes...
 
 ****************************************************************/
-
-/*
- * GET home page.
- */
-
-exports.index = function(req, res){
-  
-  if(req.session.username && req.session.email_address) return res.redirect('/'+req.session.username)
-  
-  if(req.query.error){
-    return res.render('error', {
-      type: req.query.type
-    })
-  }
-  
-  return res.render('home')
-
-}
-
-/*
- * GET login/create account page.
- */
-
-exports.login = function(req, res, next){
-  
-  var config = {
-    hasErrors: false
-  }
-  // REMOVE THIS WHEN YOU SORT OUT THE ACCOUNT STUFF
-  // return res.redirect('/instagram/search')
-  
-  res.render('account_login', config)
-}
 
 /*
  * GET wtf (about) page.
@@ -343,6 +310,40 @@ exports.download_file = function(req,res){
 
 
 /*
+ * GET home page.
+ */
+
+exports.index = function(req, res){
+  
+  if(req.session.username && req.session.email_address) return res.redirect('/dashboard')
+  
+  if(req.query.error){
+    return res.render('error',{
+      type: req.query.type
+    })
+  }
+  
+  return res.render('home')
+
+}
+
+/*
+ * GET login/create account page.
+ */
+
+exports.login = function(req, res, next){
+  
+  var config = {
+    hasErrors: false
+  }
+  // REMOVE THIS WHEN YOU SORT OUT THE ACCOUNT STUFF
+  // return res.redirect('/instagram/search')
+  
+  res.render('account_login', config)
+}
+
+
+/*
  * POST account login.
  */
 
@@ -446,7 +447,6 @@ exports.account_username = function(req,res,next){
  
 exports.account_username_post = function(req,res,next){
 
-  // TODO: CHECK TO SEE IF THE USERNAME EXISTS
   var email_address = req.body['email_address']
     , username = req.body['username']
 
