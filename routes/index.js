@@ -76,6 +76,9 @@ var Account = (function(){
     addHashToEmail: function(email_address, unique, cb){
       db_client.addHashToEmail(email_address,unique, cb)      
     },
+    deleteHashForEmail: function(unique,cb){
+      db_client.deleteHashForEmail(unique,cb)
+    },
     fetchEmailFromUniqueHash: function(unique,cb){
       db_client.fetchEmailFromUniqueHash(unique,cb)
     },
@@ -716,8 +719,14 @@ exports.account_reset_password_post = function(req,res,next){
         }
         else{
           console.log('Account password updated for '+ email_address)
-          // TODO: NOW DELETE THE KEY THAT IS THE UNIQUE HASH SO WE 
+          
+          // NOW DELETE THE KEY THAT IS THE UNIQUE HASH SO WE 
           // CLEANUP REDIS
+          Account.deleteHashForEmail(req.session.unique, function(err,data){
+            if(err) return console.error(err)
+            console.log("Deleted the hash " + req.session.unique)
+            delete req.session.unique
+          })
           
           // now redirect home page so they login
           return res.redirect('/')

@@ -80,8 +80,6 @@ app.get('/account/forgot', routes.account_forgot)
 
 app.post('/account/forgot', routes.account_forgot_post)
 
-app.get('/account/reset_password', routes.account_reset_password)
-
 app.post('/account/reset_password', routes.account_reset_password_post)
 
 app.get('/account/reset_password_email_sent', routes.account_reset_password_email_sent)

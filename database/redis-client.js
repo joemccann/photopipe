@@ -372,6 +372,12 @@ module.exports = (function(){
         cb && cb(err,data)
       })
     },
+    deleteHashForEmail: function(unique,cb){
+      var hash = unique.split('=')[1]
+      client.del(hash,function(err,data){
+        cb && cb(err,data)
+      })
+    },
     fetchEmailFromUniqueHash: function(unique, cb){
       client.get(unique, function(err,data){
         if(err) {
