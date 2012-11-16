@@ -724,7 +724,8 @@ exports.account_reset_password_post = function(req,res,next){
           // CLEANUP REDIS
           Account.deleteHashForEmail(req.session.unique, function(err,data){
             if(err) return console.error(err)
-            console.log("Deleted the hash " + req.session.unique)
+            if(data === 1) console.log("Deleted the hash " + req.session.unique)
+            else console.log("For some reason, the hash " + req.session.unique + " was not deleted.")
             delete req.session.unique
           })
           

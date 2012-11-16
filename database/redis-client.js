@@ -373,8 +373,7 @@ module.exports = (function(){
       })
     },
     deleteHashForEmail: function(unique,cb){
-      var hash = unique.split('=')[1]
-      client.del(hash,function(err,data){
+      client.del(unique,function(err,data){
         cb && cb(err,data)
       })
     },
