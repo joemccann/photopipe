@@ -431,19 +431,16 @@ h3 {
 .bottom-dotted {
   border-bottom: 1px dotted #ccc;
 }
-#account {
+.section-form {
   overflow: auto;
-}
-.trans-black-bg {
-  background: #000;
-  background: rgba(0,0,0,0.8);
-}
-#account,
-#whatis {
   background: #000;
   background: rgba(0,0,0,0.8);
   max-width: 440px;
   padding: 0 1%;
+}
+.trans-black-bg {
+  background: #000;
+  background: rgba(0,0,0,0.8);
 }
 #whatis {
   margin: 2% auto;
@@ -626,6 +623,7 @@ span.branding {
     padding: 0;
   }
 }
+/* Page specific */
 /* @import 'login-form'  */
 .left-search-form {
   padding: 0;

@@ -1,24 +1,34 @@
 <!DOCTYPE html>
 <html>
 <%- include head %>
-<body data-twitter-auth="<%= isTwitterAuth %>" data-facebook-auth="<%= isFacebookAuth %>" data-instagram-auth="<%= isInstagramAuth %>" data-dropbox-auth="<%= isDropboxAuth %>">
-  <div id="main">
+<body class="out" data-twitter-auth="<%= isTwitterAuth %>" data-facebook-auth="<%= isFacebookAuth %>" data-instagram-auth="<%= isInstagramAuth %>" data-dropbox-auth="<%= isDropboxAuth %>">
     
-    <section id="login">
-    
-      <header>
-        <h1><%- email_sent_header %></h1>
-        <p class="login-copy"><%- email_sent_copy %></p>
-      </header>
-    
-      <%- include debug %>
-      
-    </section>
-    
-  </div> <!-- end #main -->
+  <section id="lead">
+    <header id="header-home">
+      <hgroup>
+        <h1><a href="/">PhotoPipe</a></h1>
+        <h2>Take Control of <em>Your</em> Photos</h2>
+      </hgroup>
+    </header>
+  </section>
 
-  
+  <section id="email-sent" class="section-form">
+
+    <div class="login left">
+
+      <h3 class="login-header"><%- email_sent_header %></h3>
+      <hr>
+
+      <p class="login-copy"><%- email_sent_copy %></p>
+
+    </div>
+
+  </section>
+    
+  <%- include debug %>
+
   <%- include scripts %>
+
 </body>
 <!--
 
