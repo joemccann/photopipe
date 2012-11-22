@@ -1,1 +1,43 @@
+#dashboard > section
+  margin 0% 1.5%
+  padding 1%
+  borderRadius(10px)
+  background #000
+  background rgba(0,0,0,0.1)
 
+.box
+  display -webkit-box
+  display -moz-box
+  display -o-box
+  display box
+
+.box > section, .box > div
+  -webkit-box-flex 1
+  -moz-box-flex 1
+  box-flex 1
+  
+/* 1em = 16px from body */
+@media only screen and (min-width: 45em) and (max-width: 57.5em)
+
+  h1
+    font-size 2.8em
+
+@media only screen and (min-width: 34.25em) and (max-width: 45em)
+  
+  #dashboard > section
+    margin 1.5% 1.5%
+
+  .box
+    -moz-box-orient: vertical
+    -webkit-box-orient: vertical  
+    box-orient: vertical  
+
+@media only screen and (min-width: 20em) and (max-width: 34.24em)
+
+  #dashboard > section
+    margin 1.5% 1.5%
+
+  .box
+    -moz-box-orient: vertical
+    -webkit-box-orient: vertical  
+    box-orient: vertical  

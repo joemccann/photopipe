@@ -5,10 +5,15 @@
 
     <%- include nav %>
     
-    <section class="main" id="dashboard">
+    <section class="main box" id="dashboard">
     
       <section class="notification">
         <p>Hey there <%- username %>!</p>
+      </section>
+      
+      <section class="third-parties">
+        <p>Sync up some of these photo sources and destinations.</p>
+        <%- include photo_sources_and_destinations %>
       </section>
     
     </section>
