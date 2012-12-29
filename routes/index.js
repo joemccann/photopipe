@@ -805,11 +805,17 @@ exports.user_dashboard = function(req,res,next){
   if( !(req.session.username && req.session.email_address ) ){
     return res.redirect('/')
   }
-  
+
+  // TODO: Eventually modify this based on state (new user, etc.)
+  // Also, move these into separate template files as opposed to hardcoded
+  var notification_messasge = '<p>Looks like you\'re new here.</p><p>After you\'ve synchronized some of your photo sources and'
+                            + ' destinations, you can start piping your photos.</p>'
+                            
   var config = {
     hasErrors: false,
     username: req.session.username,
-    email_address: req.session.email_address
+    email_address: req.session.email_address,
+    notification_messasge: notification_messasge
   }
   
   return res.render('user_dashboard', config)

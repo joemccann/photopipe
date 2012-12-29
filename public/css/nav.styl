@@ -4,6 +4,7 @@ nav
   top 0
   width 100%
   z-index 999
+  background transparent url("/img/photopipe-home-bg-3.jpeg") no-repeat scroll 0% 79%
 
 .tier-0
   webkit-box-shadow 0 1px 2px rgba(0,0,0,0.5)
@@ -17,9 +18,7 @@ nav
   text-align right
   
 .nav-section
-  background #fafaff url(/img/bg-nav-50x50.jpg) repeat scroll top left
-  border-left 1px solid #fff
-  border-right 1px solid rgba(0,0,0,0.2)
+  background transparent
   height 2.604166667em
   text-align center
   -webkit-transition background-color 200ms
@@ -43,30 +42,29 @@ span.branding
   display inline-table
   min-width 4.166666667em
   float left
-  line-height: 2.7125em;
+  line-height: 2.7125em
   padding: 0 1em
   font-size 1em
 
-.nav-section:first-child
-  border-left 1px solid rgba(0,0,0,0.2)
+// .nav-section:first-child
+//   border-left 1px solid rgba(0,0,0,0.2)
 
 .primary, .secondary
   display table
 
 .no-touch .nav-section:hover
-  background-image none
-  color contrastColor
-
+  background rgba(255,255,255,0.39) url() repeat scroll top left
+  
 .nav-section a
   line-height 2.7125em
   padding 0 1.5625em
 
 .nav-section a > .nav-item
-  color #333
+  color #fff
   letter-spacing -1px
 
 .no-touch .nav-section a > .nav-item:hover
-  color contrastColor
+  color darken(contrastColor,50)
 
 /* 1em = 16px from body */
 @media only screen and (min-width: 45em) and (max-width: 57.5em)

@@ -11,10 +11,28 @@
   display -o-box
   display box
 
-.box > section, .box > div
+.box > section, 
+.box > div,
+.box > li
   -webkit-box-flex 1
   -moz-box-flex 1
   box-flex 1
+
+.notification-container
+  margin 7% auto 2.5%
+  max-width 320px
+  background #fafafa
+  background rgba(255,255,255,0.2)
+  padding: 1% 5%
+  borderRadius(10px)
+
+.notification-container > p
+  line-height 1.25
+  margin 5% auto
+
+.third-parties-container
+  margin 1.5% auto 2.5%
+  max-width 960px
   
 /* 1em = 16px from body */
 @media only screen and (min-width: 45em) and (max-width: 57.5em)

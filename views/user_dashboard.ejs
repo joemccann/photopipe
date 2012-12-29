@@ -8,12 +8,18 @@
     <section class="main box" id="dashboard">
     
       <section class="notification">
-        <p>Hey there <%- username %>!</p>
+        <h3>Hey there <span class="cool"><%- username %></span>!</h3>
+        <!-- Determine messages to say here -->
+        <div class="notification-container">
+          <%- include user_notification_message %>
+        </div>
       </section>
       
       <section class="third-parties">
-        <p>Sync up some of these photo sources and destinations.</p>
-        <%- include photo_sources_and_destinations %>
+        <h3>Sync up some of these photo sources and destinations:</h3>
+        <div class="third-parties-container">
+          <%- include photo_sources_and_destinations %>
+        </div>
       </section>
     
     </section>

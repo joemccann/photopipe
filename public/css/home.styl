@@ -10,22 +10,20 @@ section
 
 header
   padding 0 20%
-  width 60%
+  margin-bottom 1.25%
 
 #header-home h1
  color contrastColor
  margin 0
  padding 0
- line-height .5
+ line-height 1.25
 
 h1, h2, h3, h4, p
   font-weight 100
 
-h1, h2, h4
+h1, h2, h3, h4
   text-align center
 
-h3
-  text-align left
 
 h4
   font-size 2em
@@ -54,7 +52,7 @@ h3
   background transparent
   width 100%
   margin 0 auto
-  padding 4% 0 0
+  padding 2.5% 0 0
 
 .login-header
   margin 0 0 4%
@@ -98,24 +96,23 @@ h3
   float right
 
 .border-box
-  -webkit-box-sizing: border-box;
-  -moz-box-sizing: border-box;
-  -webkit-box-sizing: border-box;
-  -moz-box-sizing: border-box;
-  box-sizing: border-box;
+  -webkit-box-sizing: border-box
+  -moz-box-sizing: border-box
+  -webkit-box-sizing: border-box
+  -moz-box-sizing: border-box
+  box-sizing: border-box
 
 .box-flex
-  -webkit-box-flex: 1;
-  -moz-box-flex: 1;
-  -ms-box-flex: 1;
-  -webkit-box-flex: 1;
-  -moz-box-flex: 1;
-  -ms-box-flex: 1;
-  -o-box-flex: 1;
-  box-flex: 1;
+  -webkit-box-flex: 1
+  -moz-box-flex: 1
+  -ms-box-flex: 1
+  -webkit-box-flex: 1
+  -moz-box-flex: 1
+  -ms-box-flex: 1
+  -o-box-flex: 1
+  box-flex: 1
 
 .login
-  width 94%
   padding 3%
 
 fieldset
@@ -135,7 +132,7 @@ label
   width 100%
 
 .input-item
-  width 92.5%
+  width 100%
   padding 2.5% 3%
   background-color rgba(255, 255, 255, 0.87)
 
@@ -145,7 +142,72 @@ label
 .error-copy
   color red
   line-height 1.8
-  
+
+input[type='url'], 
+input[type='email'], 
+input[type='text'], 
+input[type='password']  
+  background: rgba(0,0,0,0.15)
+  border-radius: 2px
+  box-shadow: 0 1px 0 rgba(255,255,255,0.2), inset 0 1px 1px rgba(0,0,0,0.1)
+  -webkit-transition: all 0.3s ease-out
+  -moz-transition: all 0.3s ease-out
+  -ms-transition: all 0.3s ease-out
+  -o-transition: all 0.3s ease-out
+  transition: all 0.3s ease-out
+
+
+
+input[type='url'], 
+input[type='email'], 
+input[type='text'], 
+input[type='password']
+  width: 100%;
+  padding: 8px 4px 8px 10px;
+  border: 1px solid #4e3043;
+  border: 1px solid rgba(78,48,67, 0.8);
+  background: rgba(0,0,0,0.15);
+  border-radius: 2px;
+  box-shadow: 0 1px 0 rgba(255,255,255,0.2), inset 0 1px 1px rgba(0,0,0,0.1);
+  -webkit-transition: all 0.3s ease-out;
+  -moz-transition: all 0.3s ease-out;
+  -ms-transition: all 0.3s ease-out;
+  -o-transition: all 0.3s ease-out;
+  transition: all 0.3s ease-out;
+  font-family: 'Raleway', 'Lato', Arial, sans-serif;
+  color: #fff
+  font-size: 1.1em
+
+
+
+input::-webkit-input-placeholder 
+    color: rgba(37,21,26,0.5)
+    text-shadow: 0 1px 0 rgba(255,255,255,0.15)
+
+input:-moz-placeholder 
+    color: rgba(37,21,26,0.5)
+    text-shadow: 0 1px 0 rgba(255,255,255,0.15)
+
+input:-ms-input-placeholder 
+    color: rgba(37,21,26,0.5)
+    text-shadow: 0 1px 0 rgba(255,255,255,0.15)
+
+input[type='url']:hover, 
+input[type='email']:hover, 
+input[type='text']:hover, 
+input[type='password']:hover
+  border-color: #333
+
+input[type='url']:focus, 
+input[type='email']:focus, 
+input[type='text']:focus, 
+input[type='password']:focus,
+input[type='submit']:focus 
+    box-shadow: 0 1px 0 rgba(255,255,255,0.2), 
+        inset 0 1px 1px rgba(0,0,0,0.1),
+        0 0 0 3px rgba(255,255,255,0.15)
+    outline: none
+
 
 #copy
   margin 5% auto

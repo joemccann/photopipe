@@ -1,53 +1,52 @@
 var express = require('express')
-  , routes = require('./routes')
-  , http = require('http')
-  , path = require('path')
-  , request = require('request')
-  , fs = require('fs')
-  , db_client 
+    , routes = require('./routes')
+    , http = require('http')
+    , path = require('path')
+    , request = require('request')
+    , fs = require('fs')
 
 var app = express()
 
 app.configure(function(){
-  
-  app.set('port', process.env.PORT || 80)
-  app.set('views', __dirname + '/views')
-  app.set('view engine', 'ejs')
-  app.use(express.logger('dev'))
-  app.use(express.favicon(__dirname + '/public/favicon.ico'))
-  app.use(express.bodyParser())
-  app.use(express.methodOverride())
-  app.use(express.compress())
-  app.use(require('stylus').middleware(__dirname + '/public'))
-  app.use(express.static(path.join(__dirname, 'public')))
-  app.use(express.cookieParser('photopipe'))
-  app.use(express.cookieSession())
 
-  // Expose session'd accounts to every request as a
-  // local variable available in the view.
-  app.use(function(req,res,next){
-    app.locals.isTwitterAuth = !!req.session.twitter
-    app.locals.isFacebookAuth = !!req.session.facebook
-    app.locals.isInstagramAuth = !!req.session.instagram
-    app.locals.isDropboxAuth = !!req.session.dropbox
-    
-    app.locals.hasErrors = false
-    app.locals.username = ""
-    
-    return next()
-  })
+    app.set('port', process.env.PORT || 80)
+    app.set('views', __dirname + '/views')
+    app.set('view engine', 'ejs')
+    app.use(express.logger('dev'))
+    app.use(express.favicon(__dirname + '/public/favicon.ico'))
+    app.use(express.bodyParser())
+    app.use(express.methodOverride())
+    app.use(express.compress())
+    app.use(require('stylus').middleware(__dirname + '/public'))
+    app.use(express.static(path.join(__dirname, 'public')))
+    app.use(express.cookieParser('photopipe'))
+    app.use(express.cookieSession())
 
-  app.use(app.router)
+    // Expose session'd accounts to every request as a
+    // local variable available in the view.
+    app.use(function(req,res,next){
+        app.locals.isTwitterAuth = !!req.session.twitter
+        app.locals.isFacebookAuth = !!req.session.facebook
+        app.locals.isInstagramAuth = !!req.session.instagram
+        app.locals.isDropboxAuth = !!req.session.dropbox
 
-  // Setup local variables to be available in the views.
-  app.locals.title = "PhotoPipe - Download Instagram Photos, Download Facebook Galleries, Post to Twitter and More!"
-  app.locals.description = "PhotoPipe is a free service so you can download Instagram Photos, download Facebook galleries, Post to photos to Twitter and More!"
-  app.locals.node_version = process.version
-  
+        app.locals.hasErrors = false
+        app.locals.username = ""
+
+        return next()
+    })
+
+    app.use(app.router)
+
+    // Setup local variables to be available in the views.
+    app.locals.title = "PhotoPipe - Download Instagram Photos, Download Facebook Galleries, Post to Twitter and More!"
+    app.locals.description = "PhotoPipe is a free service so you can download Instagram Photos, download Facebook galleries, Post to photos to Twitter and More!"
+    app.locals.node_version = process.version
+
 })
 
 app.configure('development', function(){
-  app.use(express.errorHandler())
+    app.use(express.errorHandler())
 })
 
 
@@ -164,5 +163,5 @@ app.get('/dashboard', routes.user_dashboard)
 
 // Spin up le server...
 http.createServer(app).listen(app.get('port'), function(){
-  console.log("Express server holdin it down on port " + app.get('port'));
+    console.log("Express server holdin it down on port " + app.get('port'));
 })
