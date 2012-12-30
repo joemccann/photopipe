@@ -750,8 +750,11 @@ body.not-implemented #copy p {
   border-radius: 10px;
 }
 .notification-container > p {
-  line-height: 1.25;
+  line-height: 1.425;
   margin: 5% auto;
+}
+.third-parties {
+  max-width: 74%;
 }
 .third-parties-container {
   margin: 1.5% auto 2.5%;
@@ -763,8 +766,11 @@ body.not-implemented #copy p {
   }
 }
 @media only screen and (min-width: 34.25em) and (max-width: 45em) {
+  .third-parties {
+    max-width: 100%;
+  }
   #dashboard > section {
-    margin: 1.5% 1.5%;
+    margin: 2% 2%;
   }
   .box {
     -moz-box-orient: vertical;
@@ -773,8 +779,11 @@ body.not-implemented #copy p {
   }
 }
 @media only screen and (min-width: 20em) and (max-width: 34.24em) {
+  .third-parties {
+    max-width: 100%;
+  }
   #dashboard > section {
-    margin: 1.5% 1.5%;
+    margin: 2.5% 2.5%;
   }
   .box {
     -moz-box-orient: vertical;
@@ -812,6 +821,10 @@ body.not-implemented #copy p {
   h3 {
     font-size: 1.6em;
   }
+  .notification-container {
+    margin: 7% 5% 2.5%;
+    padding: 2% 6%;
+  }
 }
 @media only screen and (min-width: 30em) and (max-width: 45em) {
   h1 {
@@ -825,6 +838,7 @@ body.not-implemented #copy p {
   }
   .notification-container {
     margin: 3.5% auto 3.5%;
+    padding: 2% 3%;
   }
 }
 @media only screen and (min-width: 20em) and (max-width: 29.9999em) {
@@ -836,9 +850,11 @@ body.not-implemented #copy p {
   }
   h3 {
     font-size: 1.6em;
+    padding: 4% 2%;
   }
   .notification-container {
-    margin: 2.5% auto 2.5%;
+    margin: 2.5%;
+    padding: 2.5% 6%;
   }
   #login {
     margin-top: 2%;
