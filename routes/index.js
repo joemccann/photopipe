@@ -822,6 +822,38 @@ exports.user_dashboard = function(req,res,next){
   
 }
 
+exports.user_my_account = function(req,res,next){
+  // CHECK IF WE ARE LOGGED IN, IF NOT, GO TO LOGIN PAGE.
+  if( !(req.session.username && req.session.email_address ) ){
+    return res.redirect('/')
+  }
+  
+  var config = {
+    hasErrors: false,
+    username: req.session.username,
+    email_address: req.session.email_address
+  }
+  
+  return res.render('user_my_account', config)
+  
+}
+
+exports.user_settings = function(req,res,next){
+  // CHECK IF WE ARE LOGGED IN, IF NOT, GO TO LOGIN PAGE.
+  if( !(req.session.username && req.session.email_address ) ){
+    return res.redirect('/')
+  }
+  
+  var config = {
+    hasErrors: false,
+    username: req.session.username,
+    email_address: req.session.email_address
+  }
+  
+  return res.render('user_settings', config)
+  
+}
+
 /*
  * GET not implemented page.
  */

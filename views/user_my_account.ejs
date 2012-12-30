@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<%- include head %>
+<body data-twitter-auth="<%= isTwitterAuth %>" data-facebook-auth="<%= isFacebookAuth %>" data-instagram-auth="<%= isInstagramAuth %>" data-dropbox-auth="<%= isDropboxAuth %>" class="dashboard">
+
+    <%- include nav %>
+    
+    <section class="main box" id="my-account">
+
+      <section class="notification">
+        <h3>My Account</h3>
+        <!-- Determine messages to say here -->
+        <div class="notification-container">
+          Coming Soon!
+        </div>
+      </section>
+      
+      <section class="third-parties">
+        <h3></h3>
+        <div class="third-parties-container">
+        </div>
+      </section>
+
+    </section>
+    
+  <%- include debug %>
+  
+  <div id="overlay"></div>
+  
+  <%- include scripts %>
+</body>
+</html>
