@@ -50,11 +50,13 @@ exports.instagram = function(req, res){
     // wireInstagramGalleryPicker( $photoPickerInstagram )
     
     var config = {
-      thumbs: thumbs,
+      data: data,
       nextPageUrl: nextPageUrl
     }
+    
+    return res.json(config)
 
-    res.render('instagram', config)
+    // res.render('instagram', config)
 
   })
   

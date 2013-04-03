@@ -10,6 +10,7 @@ $(function(){
     , $facebook = $('#facebook')
     , $dropbox = $('#dropbox')
     , $url = $('#url')
+    , $pipeThumbnails = $('#pipe-thumbnails')
     , $twitterDestination = $('.twitter-destination')
     , $facebookDestination = $('.facebook-destination')
     , $dropboxDestination = $('.dropbox-destination')
@@ -723,13 +724,93 @@ $(function(){
 
   var Instagram = (function(){
     
-    var postData = postUrl = ''
+    var postData = postUrl = nextPageUrl = ''
     
-    var $instagramLoadMore = $('#instagram-load-more')
+    var $buttonInstagram = $('.button-instagram')
+      , $instagramLoadMore = $('#instagram-load-more')
       , $photoPickerInstagram = $('#photo-picker-instagram')
       , $oneUpInstagram = $('#one-up-instagram')
       , $oneUpInstagramWrapper = $('#one-up-instagram-wrapper')
       , $usePhoto = $('.use-photo') 
+      
+    // Bind click/tap handler for starting pipe with Instagram
+    function bindInitService(el){
+      
+      el.on('click', function(e){
+        // If we aren't auth'd then pass along thru to instagram auth page.
+        if( !Photopipe.instagram.isAuth ) return true
+        
+        // Otherwise we are auth'd so let's fetch photos...
+        var fetchUrl = el[0].href
+
+        function _beforeSendHandler(){
+          // TODO: Probably clear any current view of a pipe?
+        }
+
+        function _doneHandler(a, b, response){
+          a = b = null // JS hint barks...
+          response = JSON.parse(response.responseText)
+        
+          console.dir(response)
+          
+          _updateNextPageUrl(response)
+          
+            return _renderThumbs(response, $pipeThumbnails)
+        
+        } // end done handler
+
+        function _failHandler(e){
+
+          if(e.status === 400) alert(e.responseText || 'Bad request.')
+          if(e.status === 401) alert(e.responseText || 'Unauthorized request.')
+          if(e.status === 402) alert(e.responseText || 'Forbidden request.')
+          if(e.status === 403) alert(e.responseText || 'Forbidden request.')
+          if(e.status === 404) alert(e.responseText || 'Images were not found.')
+          if(e.status === 405) alert(e.responseText || 'That method is not allowed.')
+          if(e.status === 408) alert(e.responseText || 'The request timed out. Try again.')
+          if(e.status === 500) alert(e.responseText || 'Something went really wrong.')
+        
+        }
+      
+        var config = {
+                        type: 'GET',
+                        dataType: 'json',
+                        url: fetchUrl,
+                        beforeSend: _beforeSendHandler,
+                        error: _failHandler,
+                        success: _doneHandler
+                      }
+
+        $.ajax(config)
+       
+        return false 
+        
+      })
+
+    }
+    
+    // This function takes a result set of instagram photos
+    // and creates a thumbnail view of them
+    function _renderThumbs(resp, appendEl){
+                
+      var thumbs = ""
+
+      // Iterate over the images and add to thumbs string
+      resp.data.forEach(function(el,i){
+        thumbs += "<img class='thumbnail' data-standard-resolution='"
+                  + el.images.standard_resolution.url
+                  +"' src='"+ el.images.thumbnail.url +"' />"
+      })
+      
+      appendEl.append(thumbs)
+                
+      
+    } // end _renderInstagramThumbs
+    
+    // Update the next page's url for fetching moar photos
+    function _updateNextPageUrl(response){
+      nextPageUrl = response.nextPageUrl 
+    }
 
     // Super hack and certainly not bullet proof.
     function _cleanseInput(dirty){
@@ -1045,9 +1126,11 @@ $(function(){
     
     !(function(){
       
-      if($body.hasClass('instagram-active')){
-
-        Photopipe.instagram.isAuth = $body.attr('data-twitter-auth') === 'true' ? true : false
+      Photopipe.instagram.isAuth = $body.attr('data-instagram-auth') === 'true' ? true : false
+      
+      bindInitService( $buttonInstagram )
+      
+      if(Photopipe.instagram.isAuth){
 
         $instagramLoadMore.bind('click', _loadNextPageOfImages)
 
