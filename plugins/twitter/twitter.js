@@ -157,67 +157,71 @@ function normalizeTwitterData(data,req,res){
           normalized.media.push(item)          
 
         }
-        if(url.indexOf('dailybooth.com') > -1){
-          
-          request({
-            followRedirect: false,
-            uri: 'http://'+url,
-            callback: function(e,r,b){
-              if(e) console.error(e)
-
-              var id = r.headers.location.split('/').pop()
-              
-              request({
-                uri: "https://api.dailybooth.com/v1/picture/" + id + ".json",
-                json: true,
-                callback: function(e,r,b){
-                  if(e) return console.error(e)
-                  /*
-                  urls: 
-                    { tiny: 'http://d1oi94rh653f1l.cloudfront.net/15/pictures/tiny/78e4b486c80b29435504d94fdf626b7c_29230840.jpg',
-                      small: 'http://d1oi94rh653f1l.cloudfront.net/15/pictures/small/78e4b486c80b29435504d94fdf626b7c_29230840.jpg',
-                      medium: 'http://d1oi94rh653f1l.cloudfront.net/15/pictures/medium/78e4b486c80b29435504d94fdf626b7c_29230840.jpg',
-                      large: 'http://d1oi94rh653f1l.cloudfront.net/15/pictures/large/78e4b486c80b29435504d94fdf626b7c_29230840.jpg' 
-                    }
-                  
-                  { error: 
-                     { error: 'rate_limit',
-                       error_description: 'Rate limit exceeded.',
-                       error_code: 412 } }
-                  var item = {
-                    full_url: b.urls.large + '/img',
-                    thumb_url: b.urls.small + '/img',
-                  }
-                  */
-                  
-                  if( (r.statusCode >= 400) || b.error) {
-                    console.log('Fail. '.red +'Status Code for Daily Booth request:  %s', r.statusCode)
-                    console.error(b.error)
-                  }
-                  else{
-                    
-                    var item = {
-                      full_url: b.urls.large,
-                      thumb_url: b.urls.small,
-                    }
-                    
-                    normalized.media.push(item)          
-                  }
-                  
-                  delay = false
-                  
-                  processNormalizedResponse(normalized, req, res)
-                  
-                } // end inner request callback
-              }) // end request()
-            } // end outer request callback
-          }) // end request()
-          
-          // Because of the async nature of the above request() calls,
-          // we set the delay here and mark it false in the last callback
-          if(!delay) delay = true
-          
-        }
+        // Daily booth closed down....
+        // if(url.indexOf('dailybooth.com') > -1){
+        //   console.log(url)
+        //   request({
+        //     followRedirect: false,
+        //     uri: 'http://'+url,
+        //     callback: function(e,r,b){
+                // need to handle errors better...
+        //       if(e) console.error(e)
+        //       
+        //       console.dir(r)
+        // 
+        //       var id = r.headers.location.split('/').pop()
+        //       
+        //       request({
+        //         uri: "https://api.dailybooth.com/v1/picture/" + id + ".json",
+        //         json: true,
+        //         callback: function(e,r,b){
+        //           if(e) return console.error(e)
+        //           /*
+        //           urls: 
+        //             { tiny: 'http://d1oi94rh653f1l.cloudfront.net/15/pictures/tiny/78e4b486c80b29435504d94fdf626b7c_29230840.jpg',
+        //               small: 'http://d1oi94rh653f1l.cloudfront.net/15/pictures/small/78e4b486c80b29435504d94fdf626b7c_29230840.jpg',
+        //               medium: 'http://d1oi94rh653f1l.cloudfront.net/15/pictures/medium/78e4b486c80b29435504d94fdf626b7c_29230840.jpg',
+        //               large: 'http://d1oi94rh653f1l.cloudfront.net/15/pictures/large/78e4b486c80b29435504d94fdf626b7c_29230840.jpg' 
+        //             }
+        //           
+        //           { error: 
+        //              { error: 'rate_limit',
+        //                error_description: 'Rate limit exceeded.',
+        //                error_code: 412 } }
+        //           var item = {
+        //             full_url: b.urls.large + '/img',
+        //             thumb_url: b.urls.small + '/img',
+        //           }
+        //           */
+        //           
+        //           if( (r.statusCode >= 400) || b.error) {
+        //             console.log('Fail. '.red +'Status Code for Daily Booth request:  %s', r.statusCode)
+        //             console.error(b.error)
+        //           }
+        //           else{
+        //             
+        //             var item = {
+        //               full_url: b.urls.large,
+        //               thumb_url: b.urls.small,
+        //             }
+        //             
+        //             normalized.media.push(item)          
+        //           }
+        //           
+        //           delay = false
+        //           
+        //           processNormalizedResponse(normalized, req, res)
+        //           
+        //         } // end inner request callback
+        //       }) // end request()
+        //     } // end outer request callback
+        //   }) // end request()
+        //   
+        //   // Because of the async nature of the above request() calls,
+        //   // we set the delay here and mark it false in the last callback
+        //   if(!delay) delay = true
+        //   
+        // }
         if(url.indexOf('yfrog.com') > -1){
           // console.dir(el)
 
