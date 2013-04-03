@@ -1,7 +1,7 @@
 {
   "name": "photopipe",
   "description": "Pipe yer photos all over the web and stuff.",
-  "version": "0.0.5-21",
+  "version": "0.0.6",
   "author": {
     "name": "Joe McCann",
     "email": "joe@subprint.com"
